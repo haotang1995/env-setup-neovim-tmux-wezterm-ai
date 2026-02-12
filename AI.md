@@ -90,6 +90,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Splits:** `prefix + |` or `\` (vertical), `prefix + -` (horizontal), in cwd.
 - **Vi copy mode:** `v` to select, `y` to yank, `Ctrl+V` for block select.
 - **Status bar:** top, minimal, Catppuccin-ish colors.
+- **Automatic AI windows:** new sessions automatically open `gemini`, `claude`,
+  and `codex` in windows 2, 3, and 4, then focus back to window 1.
 
 ### WezTerm
 
