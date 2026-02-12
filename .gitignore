@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Neovim
+nvim-config/.neoconf.json
+nvim-config/plugin/
+
+# lazy.nvim state (not the lockfile — that's committed)
+nvim-config/lazy-lock.json.bak
+
+# Neovim swap / undo / shada
+*.swp
+*.swo
+*~
+
+# Node (markdown-preview.nvim build artifacts)
+node_modules/
+
+# Environment / secrets
+.env
+.env.*
+
+# Editor / IDE
+.vscode/
+.idea/
+*.code-workspace
