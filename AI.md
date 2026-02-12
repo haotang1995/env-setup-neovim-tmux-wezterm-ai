@@ -38,6 +38,9 @@ WezTerm (terminal emulator, cross-platform)
 AI.md                            ← you are here
 wezterm.lua                      ← WezTerm config (→ ~/.wezterm.lua)
 tmux.conf                        ← tmux config    (→ ~/.tmux.conf)
+scripts/                         ← Utility scripts for global use
+  install.sh                     ← Installer (symlinks scripts to ~/.local/bin)
+  init-ai.sh                     ← Unified AI context bootstrapper
 nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   init.lua                       ← LazyVim entry point
   lazyvim.json                   ← LazyVim metadata
@@ -100,6 +103,13 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Colors:** ported from iTerm2 "G33" profile (black bg, gray fg, classic ANSI).
 - **Kitty graphics protocol** enabled for in-terminal images/PDF.
 - **Ctrl+hjkl** explicitly passed through (never intercepted by WezTerm).
+
+### Scripts
+
+- **Location:** `scripts/` directory.
+- **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`.
+- **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
+- **`init-ai`:** Bootstraps `AI.md` and links it to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
 
 ### AI integration
 
