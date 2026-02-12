@@ -11,7 +11,6 @@ return {
     -------------------------------------------------------------------------
     -- macOS: Skim (supports forward/inverse search)
     -- Linux with GUI: zathura (vim-like keybindings)
-    -- Headless with termpdf.py: VimTeX "general" viewer (Kitty graphics)
     -- Fallback: disable viewer, compile only
     if vim.fn.has("mac") == 1 then
       vim.g.vimtex_view_method = "skim"
@@ -19,9 +18,6 @@ return {
       vim.g.vimtex_view_skim_activate = 1   -- bring Skim to front
     elseif vim.fn.executable("zathura") == 1 then
       vim.g.vimtex_view_method = "zathura"
-    elseif vim.fn.executable("termpdf.py") == 1 then
-      vim.g.vimtex_view_method = "general"
-      vim.g.vimtex_view_general_viewer = "termpdf.py"
     else
       vim.g.vimtex_view_enabled = 0          -- no viewer available (SSH)
     end
@@ -65,41 +61,4 @@ return {
     -- LazyVim's lang.tex extra handles the LSP setup.
     -- We just ensure K uses LSP hover instead of VimTeX doc.
   end,
-  keys = {
-    {
-      "<leader>vt",
-      function()
-        if vim.fn.executable("termpdf.py") ~= 1 then
-          vim.notify("termpdf.py not found (see github.com/dsanson/termpdf.py)", vim.log.levels.ERROR)
-          return
-        end
-
-        -- Derive PDF path from VimTeX or the current .tex filename
-        local pdf
-        if vim.b.vimtex and vim.b.vimtex.out then
-          pdf = type(vim.b.vimtex.out) == "function" and vim.b.vimtex.out() or vim.b.vimtex.out
-        end
-        if not pdf or pdf == "" then
-          pdf = vim.fn.expand("%:p:r") .. ".pdf"
-        end
-
-        if vim.fn.filereadable(pdf) ~= 1 then
-          vim.notify("PDF not found: " .. pdf .. " (compile first with \\ll)", vim.log.levels.WARN)
-          return
-        end
-
-        local cmd = "termpdf.py " .. vim.fn.shellescape(pdf)
-
-        if vim.env.TMUX then
-          -- Open in a tmux split pane to the right
-          vim.fn.system("tmux split-window -h -l 40% " .. vim.fn.shellescape(cmd))
-        else
-          -- Fallback: open in a Neovim terminal split
-          vim.cmd("vsplit | terminal " .. cmd)
-        end
-      end,
-      desc = "View PDF in termpdf.py",
-      ft = "tex",
-    },
-  },
 }

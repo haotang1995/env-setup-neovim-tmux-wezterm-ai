@@ -74,8 +74,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Plugin manager:** lazy.nvim (bundled with LazyVim).
 - **LazyVim Extras enabled:** `lang.tex`, `lang.markdown`, `editor.mini-files`.
 - **Custom plugins** go in `lua/plugins/<name>.lua`, one file per logical group.
-- **Keymaps:** `jk` = exit insert, `\cc` = toggle comment, `Ctrl+d/u` = scroll centered,
-  `<leader>vt` = view PDF in termpdf.py (tex files only).
+- **Keymaps:** `jk` = exit insert, `\cc` = toggle comment, `Ctrl+d/u` = scroll centered.
 - **Leader key:** `<Space>` (LazyVim default).
 - **Conceal level 2** globally (shows α instead of \alpha in LaTeX).
 - **OSC 52 clipboard** auto-enabled when `SSH_TTY` is set (copy works over SSH).
@@ -156,10 +155,3 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - Win11/WSL and HPC cluster deploys are not yet done.
 - Deploy scripts need to be written (previous ones were removed as stale).
 - No dotfiles manager yet — currently manual rsync/copy.
-- In-terminal PDF viewing via termpdf.py is set up (`<leader>vt` in tex files,
-  and auto-selected as VimTeX viewer on headless). Install: clone
-  [dsanson/termpdf.py](https://github.com/dsanson/termpdf.py), put the script
-  on `PATH`, and `pip install pymupdf` (plus other deps via its requirements.txt).
-  **Caveat:** Kitty graphics through tmux on WezTerm has a known rendering issue
-  ([wezterm#4531](https://github.com/wezterm/wezterm/issues/4531)); works outside
-  tmux or on native Kitty terminal.
