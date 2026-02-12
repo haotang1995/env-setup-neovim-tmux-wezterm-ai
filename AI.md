@@ -133,6 +133,13 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - Test changes locally before committing. For Neovim: `:Lazy sync` then
   `:checkhealth`. For tmux: `prefix + r` reloads. For WezTerm: auto-reloads
   on save (or `Cmd+Shift+R`).
+- Treat each environment change as a **sync workflow**:
+  1. implement the feature/fix in the relevant config/scripts;
+  2. verify cross-platform behavior or graceful fallback (macOS / WSL / headless Linux);
+  3. update `AI.md` in the same change so setup and conventions stay reproducible on new machines.
+- Before finalizing any local repo update (`git commit`, amend, rebase, merge, push),
+  explicitly check whether `AI.md` should be updated; if behavior, workflow, tooling,
+  dependencies, defaults, or operational decisions changed, include the `AI.md` update.
 - **Don't hardcode paths** — use `vim.fn.has("mac")`, `vim.fn.executable()`,
   `vim.env.SSH_TTY`, `wezterm.target_triple`, etc. for platform detection.
 - `lazy-lock.json` is committed so that plugin versions are reproducible.
