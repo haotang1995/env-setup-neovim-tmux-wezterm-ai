@@ -18,7 +18,8 @@ return {
         claude = {
           endpoint = "https://api.anthropic.com",
           model = "claude-sonnet-4-20250514",
-          api_key_name = "ANTHROPIC_API_KEY",
+          auth_type = "max", -- use Claude subscription login (Pro/Max), not API-key billing
+          api_key_name = "ANTHROPIC_API_KEY", -- optional fallback if auth_type is switched back to "api"
           timeout = 30000,
           extra_request_body = {
             temperature = 0.7,
@@ -58,7 +59,7 @@ return {
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
       "nvim-telescope/telescope.nvim",
-      "hrsh7th/nvim-cmp",
+      "saghen/blink.compat",
       "nvim-tree/nvim-web-devicons",
       -- Optional: render markdown in avante's chat window
       {
@@ -69,6 +70,46 @@ return {
         ft = { "markdown", "Avante" },
       },
     },
+  },
+  {
+    "saghen/blink.cmp",
+    optional = true,
+    opts = function(_, opts)
+      opts.sources = opts.sources or {}
+      opts.sources.compat = opts.sources.compat or {}
+
+      for _, source in ipairs({ "avante_commands", "avante_mentions", "avante_files", "avante_shortcuts" }) do
+        if not vim.tbl_contains(opts.sources.compat, source) then
+          table.insert(opts.sources.compat, source)
+        end
+      end
+
+      opts.sources.providers = opts.sources.providers or {}
+      opts.sources.providers.avante_commands = {
+        name = "avante_commands",
+        module = "blink.compat.source",
+        score_offset = 90,
+        opts = {},
+      }
+      opts.sources.providers.avante_files = {
+        name = "avante_files",
+        module = "blink.compat.source",
+        score_offset = 100,
+        opts = {},
+      }
+      opts.sources.providers.avante_mentions = {
+        name = "avante_mentions",
+        module = "blink.compat.source",
+        score_offset = 1000,
+        opts = {},
+      }
+      opts.sources.providers.avante_shortcuts = {
+        name = "avante_shortcuts",
+        module = "blink.compat.source",
+        score_offset = 1000,
+        opts = {},
+      }
+    end,
   },
 
   ---------------------------------------------------------------------------
