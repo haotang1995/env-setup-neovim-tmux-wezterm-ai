@@ -229,6 +229,18 @@ if is_mac then
 	-- Cmd+Shift+T → new tab (matching Ctrl+Shift+T on other platforms)
 	table.insert(config.keys, { key = "t", mods = "CMD|SHIFT", action = act.SpawnTab("CurrentPaneDomain") })
 
+	-- Cmd+Shift+F → fill screen (maximize window, not macOS fullscreen space)
+	table.insert(config.keys, {
+		key = "f",
+		mods = "CMD|SHIFT",
+		action = wezterm.action_callback(function(window, _pane)
+			window:maximize()
+		end),
+	})
+
+	-- Cmd+Shift+W → close window/tab
+	table.insert(config.keys, { key = "w", mods = "CMD|SHIFT", action = act.CloseCurrentTab({ confirm = false }) })
+
 	-- Cmd+V → paste (macOS native behavior)
 	table.insert(config.keys, { key = "v", mods = "CMD", action = act.PasteFrom("Clipboard") })
 
