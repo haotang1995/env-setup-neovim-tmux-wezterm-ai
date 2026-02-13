@@ -88,6 +88,50 @@ safe_link "$REPO_DIR/tmux.conf" "$HOME/.tmux.conf"
 mkdir -p "$HOME/.config"
 safe_link "$REPO_DIR/nvim-config" "$HOME/.config/nvim"
 
+# --- AI skill library (from git submodules) ---
+SKILLS_REPOS="$REPO_DIR/ai-skills/.repos"
+AGENT_SKILL_DIRS=(
+  "$HOME/.claude/skills"
+  "$HOME/.codex/skills"
+  "$HOME/.gemini/skills"
+)
+
+install_skills_from() {
+  local skill_dir="$1"
+  [ -d "$skill_dir" ] || return
+  local skill_name
+  skill_name="$(basename "$skill_dir")"
+  for agent_dir in "${AGENT_SKILL_DIRS[@]}"; do
+    safe_link "${skill_dir%/}" "$agent_dir/$skill_name"
+  done
+}
+
+if [ -d "$SKILLS_REPOS" ]; then
+  echo ""
+  echo "Installing AI skills..."
+
+  for agent_dir in "${AGENT_SKILL_DIRS[@]}"; do
+    mkdir -p "$agent_dir"
+  done
+
+  # obra/superpowers: skills/<name>/
+  for d in "$SKILLS_REPOS"/superpowers/skills/*/; do
+    install_skills_from "$d"
+  done
+
+  # openai/skills: skills/.curated/<name>/
+  for d in "$SKILLS_REPOS"/openai-skills/skills/.curated/*/; do
+    install_skills_from "$d"
+  done
+
+  # trailofbits/skills: plugins/<plugin>/skills/<skill>/
+  for plugin in "$SKILLS_REPOS"/tob-skills/plugins/*/; do
+    for d in "$plugin"skills/*/; do
+      install_skills_from "$d"
+    done
+  done
+fi
+
 echo ""
 if [ "$BACKUP_CREATED" = true ]; then
   log "INFO" "Backups stored in: $BACKUP_DIR"

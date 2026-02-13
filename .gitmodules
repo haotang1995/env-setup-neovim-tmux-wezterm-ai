@@ -1,0 +1,9 @@
+[submodule "ai-skills/.repos/superpowers"]
+	path = ai-skills/.repos/superpowers
+	url = https://github.com/obra/superpowers.git
+[submodule "ai-skills/.repos/openai-skills"]
+	path = ai-skills/.repos/openai-skills
+	url = https://github.com/openai/skills.git
+[submodule "ai-skills/.repos/tob-skills"]
+	path = ai-skills/.repos/tob-skills
+	url = https://github.com/trailofbits/skills.git

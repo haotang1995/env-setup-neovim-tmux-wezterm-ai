@@ -39,8 +39,13 @@ AI.md                            ← you are here
 wezterm.lua                      ← WezTerm config (→ ~/.wezterm.lua)
 tmux.conf                        ← tmux config    (→ ~/.tmux.conf)
 scripts/                         ← Utility scripts for global use
-  install.sh                     ← Installer (symlinks scripts + configs)
+  install.sh                     ← Installer (symlinks scripts + configs + skills)
   init-ai.sh                     ← Unified AI context bootstrapper
+ai-skills/                       ← Shared AI skill library
+  README.md                      ← Skill format docs & cross-agent reference
+  .repos/superpowers/            ← git submodule: obra/superpowers (14 skills)
+  .repos/openai-skills/          ← git submodule: openai/skills (30 skills)
+  .repos/tob-skills/             ← git submodule: trailofbits/skills (27 skills)
 nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   init.lua                       ← LazyVim entry point
   lazyvim.json                   ← LazyVim metadata
@@ -126,6 +131,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **avante.nvim:** Claude as provider (`claude-sonnet-4-20250514`), needs `ANTHROPIC_API_KEY` env var.
 - **copilot.lua:** inline ghost-text, `<Tab>` to accept. Needs Node 22+ and `:Copilot auth`.
 - **CopilotChat.nvim:** quick Q&A via `<leader>ac`.
+- **Shared skill library (`ai-skills/`):** Cross-agent skills from
+  obra/superpowers, openai/skills, and trailofbits/skills added as git
+  submodules. `install.sh` symlinks each skill into `~/.claude/skills/`,
+  `~/.codex/skills/`, and `~/.gemini/skills/`. Update with
+  `git submodule update --remote`.
 
 ## Editing guidelines
 
@@ -157,4 +167,4 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   explicit `nvim-cmp` dependency in local config.
 - Win11/WSL and HPC cluster deploys are not yet done.
 - `scripts/install.sh` now handles backups, idempotency, and dependency checks, but a full cross-platform test is pending.
-- **AI skills:** Set up a shared skill library for `codex`, `claude`, and `gemini` in each new environment.
+
