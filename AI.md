@@ -152,8 +152,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 
 ## Known issues & TODO
 
-- `avante.nvim` depends on `hrsh7th/nvim-cmp` but LazyVim has migrated to
-  `blink.cmp` — may need updating when avante drops the cmp dependency.
+- `avante.nvim` is configured with `blink.compat` so `blink.cmp` can serve
+  Avante command/mention/file/shortcut completion sources without adding
+  explicit `nvim-cmp` dependency in local config.
 - Win11/WSL and HPC cluster deploys are not yet done.
-- No dotfiles manager yet — `install.sh` handles symlinks but no full dotfiles orchestration.
+- `scripts/install.sh` now handles backups, idempotency, and dependency checks, but a full cross-platform test is pending.
 - **AI skills:** Set up a shared skill library for `codex`, `claude`, and `gemini` in each new environment.
