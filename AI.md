@@ -73,6 +73,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Distribution:** LazyVim. Don't fight its defaults — override only when needed.
 - **Plugin manager:** lazy.nvim (bundled with LazyVim).
 - **LazyVim Extras enabled:** `lang.tex`, `lang.markdown`, `editor.mini-files`.
+- **Markdown rendering parsers:** ensure `markdown`, `markdown_inline`, `latex`, and `html` tree-sitter parsers are installed.
+- **Markdown math in-buffer:** `render-markdown.nvim` needs `utftex` or `latex2text`; config auto-detects common user install paths (e.g. `~/.local/bin`, macOS `~/Library/Python/*/bin`) when PATH is incomplete.
 - **Custom plugins** go in `lua/plugins/<name>.lua`, one file per logical group.
 - **Keymaps:** `jk` = exit insert, `\cc` = toggle comment, `Ctrl+d/u` = scroll centered.
 - **Leader key:** `<Space>` (LazyVim default).
@@ -148,10 +150,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 
 ## Known issues & TODO
 
-- `markdown-preview.nvim` build: currently uses `cd app && npm install`,
-  should switch to `vim.fn["mkdp#util#install"]()` to avoid yarn.lock issues.
 - `avante.nvim` depends on `hrsh7th/nvim-cmp` but LazyVim has migrated to
   `blink.cmp` — may need updating when avante drops the cmp dependency.
 - Win11/WSL and HPC cluster deploys are not yet done.
 - Deploy scripts need to be written (previous ones were removed as stale).
 - No dotfiles manager yet — currently manual rsync/copy.
+- **AI skills:** Set up a shared skill library for `codex`, `claude`, and `gemini` in each new environment.
