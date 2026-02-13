@@ -50,8 +50,10 @@ safe_link() {
 
     # Backup existing file/dir
     ensure_backup_dir
-    mv "$dest" "$BACKUP_DIR/"
-    log "BACKUP" "Moved $dest to $BACKUP_DIR/"
+    local backup_name
+    backup_name="$(basename "$dest")_$(date +%s)_$RANDOM"
+    mv "$dest" "$BACKUP_DIR/$backup_name"
+    log "BACKUP" "Moved $dest to $BACKUP_DIR/$backup_name"
   fi
 
   ln -sfn "$src" "$dest"
