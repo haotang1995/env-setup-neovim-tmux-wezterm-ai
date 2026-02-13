@@ -249,21 +249,22 @@ end
 ---------------------------------------------------------------------------
 -- Mouse bindings
 ---------------------------------------------------------------------------
--- You said no mouse, but these are sensible defaults that don't get in the way
-config.mouse_bindings = {
-	-- Right-click paste (like iTerm2)
-	{
-		event = { Down = { streak = 1, button = "Right" } },
-		mods = "NONE",
-		action = act.PasteFrom("Clipboard"),
-	},
-	-- Cmd/Ctrl+Click to open URLs
-	{
-		event = { Up = { streak = 1, button = "Left" } },
-		mods = is_mac and "CMD" or "CTRL",
-		action = act.OpenLinkAtMouseCursor,
-	},
-}
+-- Start with defaults (preserves selection, scrolling, etc.)
+config.mouse_bindings = wezterm.default_mouse_bindings()
+
+-- Right-click paste (like iTerm2)
+table.insert(config.mouse_bindings, {
+	event = { Down = { streak = 1, button = "Right" } },
+	mods = "NONE",
+	action = act.PasteFrom("Clipboard"),
+})
+
+-- Cmd/Ctrl+Click to open URLs
+table.insert(config.mouse_bindings, {
+	event = { Up = { streak = 1, button = "Left" } },
+	mods = is_mac and "CMD" or "CTRL",
+	action = act.OpenLinkAtMouseCursor,
+})
 
 ---------------------------------------------------------------------------
 -- Misc
