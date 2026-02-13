@@ -21,4 +21,23 @@ for script in "$SCRIPT_DIR"/*.sh; do
   echo "Linked: $name -> $dest"
 done
 
+echo ""
+echo "Installing config symlinks..."
+
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# WezTerm config
+ln -sfn "$REPO_DIR/wezterm.lua" "$HOME/.wezterm.lua"
+echo "Linked: wezterm.lua -> ~/.wezterm.lua"
+
+# tmux config
+ln -sfn "$REPO_DIR/tmux.conf" "$HOME/.tmux.conf"
+echo "Linked: tmux.conf -> ~/.tmux.conf"
+
+# Neovim config
+mkdir -p "$HOME/.config"
+ln -sfn "$REPO_DIR/nvim-config" "$HOME/.config/nvim"
+echo "Linked: nvim-config -> ~/.config/nvim"
+
+echo ""
 echo "Done. Ensure $BIN_DIR is in your PATH."

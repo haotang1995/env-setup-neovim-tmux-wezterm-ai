@@ -226,6 +226,9 @@ end
 -- macOS: Map Cmd+<key> → Ctrl+<key> (matching iTerm2 behavior)
 ---------------------------------------------------------------------------
 if is_mac then
+	-- Cmd+Shift+T → new tab (matching Ctrl+Shift+T on other platforms)
+	table.insert(config.keys, { key = "t", mods = "CMD|SHIFT", action = act.SpawnTab("CurrentPaneDomain") })
+
 	-- Cmd+V → paste (macOS native behavior)
 	table.insert(config.keys, { key = "v", mods = "CMD", action = act.PasteFrom("Clipboard") })
 

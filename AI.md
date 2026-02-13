@@ -39,7 +39,7 @@ AI.md                            ← you are here
 wezterm.lua                      ← WezTerm config (→ ~/.wezterm.lua)
 tmux.conf                        ← tmux config    (→ ~/.tmux.conf)
 scripts/                         ← Utility scripts for global use
-  install.sh                     ← Installer (symlinks scripts to ~/.local/bin)
+  install.sh                     ← Installer (symlinks scripts + configs)
   init-ai.sh                     ← Unified AI context bootstrapper
 nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   init.lua                       ← LazyVim entry point
@@ -104,13 +104,15 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Font:** JetBrains Mono + Symbols Nerd Font Mono fallback.
   Sizes: 17pt Mac, 14pt Windows, 15pt Linux.
 - **Colors:** ported from iTerm2 "G33" profile (black bg, gray fg, classic ANSI).
+- **New tab:** `Cmd+Shift+T` (macOS) / `Ctrl+Shift+T` (Windows/Linux).
 - **Kitty graphics protocol** enabled for in-terminal images/PDF.
 - **Ctrl+hjkl** explicitly passed through (never intercepted by WezTerm).
 
 ### Scripts
 
 - **Location:** `scripts/` directory.
-- **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`.
+- **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`
+  and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`) to their home locations.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
 - **`init-ai`:** Bootstraps `AI.md` and links it to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
 
@@ -153,6 +155,5 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - `avante.nvim` depends on `hrsh7th/nvim-cmp` but LazyVim has migrated to
   `blink.cmp` — may need updating when avante drops the cmp dependency.
 - Win11/WSL and HPC cluster deploys are not yet done.
-- Deploy scripts need to be written (previous ones were removed as stale).
-- No dotfiles manager yet — currently manual rsync/copy.
+- No dotfiles manager yet — `install.sh` handles symlinks but no full dotfiles orchestration.
 - **AI skills:** Set up a shared skill library for `codex`, `claude`, and `gemini` in each new environment.
