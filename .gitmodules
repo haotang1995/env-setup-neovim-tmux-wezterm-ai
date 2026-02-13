@@ -7,3 +7,9 @@
 [submodule "ai-skills/.repos/tob-skills"]
 	path = ai-skills/.repos/tob-skills
 	url = https://github.com/trailofbits/skills.git
+[submodule "ai-skills/.repos/scientific-skills"]
+	path = ai-skills/.repos/scientific-skills
+	url = https://github.com/K-Dense-AI/claude-scientific-skills.git
+[submodule "ai-skills/.repos/ai-research-skills"]
+	path = ai-skills/.repos/ai-research-skills
+	url = https://github.com/Orchestra-Research/AI-research-SKILLs.git

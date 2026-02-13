@@ -132,10 +132,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **copilot.lua:** inline ghost-text, `<Tab>` to accept. Needs Node 22+ and `:Copilot auth`.
 - **CopilotChat.nvim:** quick Q&A via `<leader>ac`.
 - **Shared skill library (`ai-skills/`):** Cross-agent skills from
-  obra/superpowers, openai/skills, and trailofbits/skills added as git
-  submodules. `install.sh` symlinks each skill into `~/.claude/skills/`,
-  `~/.codex/skills/`, and `~/.gemini/skills/`. Update with
-  `git submodule update --remote`.
+  obra/superpowers, openai/skills, trailofbits/skills,
+  K-Dense-AI/claude-scientific-skills, and Orchestra-Research/AI-Research-SKILLs
+  added as git submodules. `install.sh` symlinks each skill into
+  `~/.claude/skills/`, `~/.codex/skills/`, and `~/.gemini/skills/`. Update
+  with `git submodule update --remote`.
 
 ## Editing guidelines
 

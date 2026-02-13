@@ -20,6 +20,8 @@ ai-skills/
     superpowers/                     # obra/superpowers (14 skills)
     openai-skills/                   # openai/skills (30 skills)
     tob-skills/                      # trailofbits/skills (27 skills)
+    scientific-skills/               # K-Dense-AI/claude-scientific-skills (141 skills)
+    ai-research-skills/              # Orchestra-Research/AI-Research-SKILLs (83 skills)
 ```
 
 The installer (`scripts/install.sh`) symlinks each skill directory into every
@@ -38,6 +40,8 @@ agent's discovery path:
 | [obra/superpowers](https://github.com/obra/superpowers) | 14 | TDD, debugging, planning, code review, git worktrees, parallel agents |
 | [openai/skills](https://github.com/openai/skills) | 30 | GitHub workflows, security, deployment, docs, Playwright |
 | [trailofbits/skills](https://github.com/trailofbits/skills) | 27 | Security analysis, Semgrep, property-based testing, modern Python |
+| [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) | 141 | Scientific writing, literature review, peer review, citation management, venue templates, bioinformatics |
+| [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-research-SKILLs) | 83 | ML paper writing, model architecture, fine-tuning, evaluation, MLOps, distributed training |
 
 ## Managing Skills
 

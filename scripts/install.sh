@@ -130,6 +130,21 @@ if [ -d "$SKILLS_REPOS" ]; then
       install_skills_from "$d"
     done
   done
+
+  # K-Dense-AI/claude-scientific-skills: scientific-skills/<name>/
+  for d in "$SKILLS_REPOS"/scientific-skills/scientific-skills/*/; do
+    install_skills_from "$d"
+  done
+
+  # Orchestra-Research/AI-Research-SKILLs: NN-topic/SKILL.md or NN-topic/<tool>/SKILL.md
+  for topic in "$SKILLS_REPOS"/ai-research-skills/[0-9]*/; do
+    if [ -f "$topic/SKILL.md" ]; then
+      install_skills_from "$topic"
+    fi
+    for d in "$topic"*/; do
+      [ -f "$d/SKILL.md" ] && install_skills_from "$d"
+    done
+  done
 fi
 
 echo ""
