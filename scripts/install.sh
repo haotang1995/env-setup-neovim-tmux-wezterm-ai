@@ -60,6 +60,27 @@ safe_link() {
   log "LINK" "$dest -> $src"
 }
 
+update_repo() {
+  log "INFO" "Updating repository..."
+  git -C "$REPO_DIR" pull
+
+  log "INFO" "Updating AI skill submodules..."
+  git -C "$REPO_DIR" submodule update --init --recursive --remote
+}
+
+# Parse arguments
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    -u|--update)
+      update_repo
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 check_dependencies
 
 mkdir -p "$BIN_DIR"
