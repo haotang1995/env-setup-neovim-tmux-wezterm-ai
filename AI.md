@@ -118,6 +118,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Location:** `scripts/` directory.
 - **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`
   and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`) to their home locations.
+  - Use `./scripts/install.sh -u` (or `--update`) to pull the latest repo changes,
+    update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
 - **`init-ai`:** Bootstraps `AI.md` and links it to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
 
@@ -136,7 +138,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   K-Dense-AI/claude-scientific-skills, and Orchestra-Research/AI-Research-SKILLs
   added as git submodules. `install.sh` symlinks each skill into
   `~/.claude/skills/`, `~/.codex/skills/`, and `~/.gemini/skills/`. Update
-  with `git submodule update --remote`.
+  with `./scripts/install.sh -u` (or `git submodule update --remote`).
 
 ## Editing guidelines
 
