@@ -194,6 +194,16 @@ config.keys = {
 	{ key = "f", mods = "CTRL|SHIFT", action = act.Search("CurrentSelectionOrEmptyString") },
 
 	-------------------------------------------------
+	-- Cursor movement shortcuts
+	-------------------------------------------------
+	-- Ctrl+Left/Right: previous/next word (Meta-b / Meta-f)
+	{ key = "LeftArrow", mods = "CTRL", action = act.SendString("\x1bb") },
+	{ key = "RightArrow", mods = "CTRL", action = act.SendString("\x1bf") },
+	-- Alt+Left/Right: beginning/end of line
+	{ key = "LeftArrow", mods = "ALT", action = act.SendKey({ key = "Home" }) },
+	{ key = "RightArrow", mods = "ALT", action = act.SendKey({ key = "End" }) },
+
+	-------------------------------------------------
 	-- Quick select mode (clickable URLs, paths, etc.)
 	-------------------------------------------------
 	{ key = "Space", mods = is_mac and "CMD|SHIFT" or "CTRL|SHIFT", action = act.QuickSelect },
@@ -228,6 +238,10 @@ end
 if is_mac then
 	-- Cmd+Shift+T → new tab (matching Ctrl+Shift+T on other platforms)
 	table.insert(config.keys, { key = "t", mods = "CMD|SHIFT", action = act.SpawnTab("CurrentPaneDomain") })
+
+	-- Cmd+Left/Right → previous/next word (match Ctrl+Left/Right behavior)
+	table.insert(config.keys, { key = "LeftArrow", mods = "CMD", action = act.SendString("\x1bb") })
+	table.insert(config.keys, { key = "RightArrow", mods = "CMD", action = act.SendString("\x1bf") })
 
 	-- Cmd+Shift+F → fill screen (maximize window, not macOS fullscreen space)
 	table.insert(config.keys, {
