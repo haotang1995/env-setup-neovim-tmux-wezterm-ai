@@ -249,8 +249,8 @@ end
 ---------------------------------------------------------------------------
 -- Mouse bindings
 ---------------------------------------------------------------------------
--- Start with defaults (preserves selection, scrolling, etc.)
-config.mouse_bindings = wezterm.default_mouse_bindings()
+-- Keep defaults enabled; add custom bindings on top
+config.mouse_bindings = config.mouse_bindings or {}
 
 -- Right-click paste (like iTerm2)
 table.insert(config.mouse_bindings, {
