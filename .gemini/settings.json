@@ -24,7 +24,8 @@
       "read_file",
       "list_files",
       "web_search",
-      "view_image"
+      "view_image",
+      "activate_skill"
     ],
     "sandbox": "sandbox-exec"
   }
