@@ -139,6 +139,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   added as git submodules. `install.sh` symlinks each skill into
   `~/.claude/skills/`, `~/.codex/skills/`, and `~/.gemini/skills/`. Update
   with `./scripts/install.sh -u` (or `git submodule update --remote`).
+  Skill decisions in `ai-skills/skill-decisions.json` are enforced on each
+  install run (denied skills are skipped and existing denied links are removed).
+  Manage decisions with `python3 scripts/review_skills.py`:
+  `--skill <name>` for one skill, `--redo` to revisit already-decided skills,
+  and `--no-apply` for record-only mode.
 
 ## Editing guidelines
 
@@ -170,4 +175,5 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   explicit `nvim-cmp` dependency in local config.
 - Win11/WSL and HPC cluster deploys are not yet done.
 - `scripts/install.sh` now handles backups, idempotency, and dependency checks, but a full cross-platform test is pending.
-
+- update global `AI.md`.
+- update skills after using it.
