@@ -127,6 +127,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, and `~/.gemini/skills`.
 
+- **`v`:** Wrapper script for `nvim` that allows using `v` as a shorthand.
+
 ### AI integration
 
 - **CLI Agents (via tmux windows):**
