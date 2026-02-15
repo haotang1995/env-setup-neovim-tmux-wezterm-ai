@@ -121,6 +121,18 @@ safe_link "$REPO_DIR/tmux.conf" "$HOME/.tmux.conf"
 mkdir -p "$HOME/.config"
 safe_link "$REPO_DIR/nvim-config" "$HOME/.config/nvim"
 
+# Gemini config
+mkdir -p "$HOME/.gemini"
+safe_link "$REPO_DIR/.gemini/settings.json" "$HOME/.gemini/settings.json"
+
+# Claude config
+mkdir -p "$HOME/.claude"
+safe_link "$REPO_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
+
+# Codex config
+mkdir -p "$HOME/.codex"
+safe_link "$REPO_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
+
 # --- AI skill library (from git submodules) ---
 SKILLS_REPOS="$REPO_DIR/ai-skills/.repos"
 AGENT_SKILL_DIRS=(

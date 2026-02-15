@@ -62,6 +62,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     vimtex.lua                   ← VimTeX overrides (platform-detecting viewer)
     markdown.lua                 ← render-markdown.nvim + markdown-preview.nvim
     tmux-navigator.lua           ← vim-tmux-navigator (Ctrl+hjkl across panes)
+.gemini/                         ← Gemini agent config (→ ~/.gemini/settings.json)
+.claude/                         ← Claude agent config (→ ~/.claude/settings.json)
+.codex/                          ← Codex agent config  (→ ~/.codex/config.toml)
 ```
 
 ## Target machines
@@ -118,7 +121,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 
 - **Location:** `scripts/` directory.
 - **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`
-  and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`) to their home locations.
+  and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`, `.gemini/`, `.claude/`, `.codex/`) to their home locations.
   - Use `./scripts/install.sh -u` (or `--update`) to pull the latest repo changes,
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
@@ -126,8 +129,6 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, and `~/.gemini/skills`.
-
-- **`v`:** Wrapper script for `nvim` that allows using `v` as a shorthand.
 
 ### AI integration
 

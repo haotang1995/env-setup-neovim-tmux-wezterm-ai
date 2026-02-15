@@ -1,0 +1,31 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "model": {
+    "name": "gemini-3-pro-preview"
+  },
+  "general": {
+    "previewFeatures": true
+  },
+  "tools": {
+    "core": [
+      "read_file",
+      "list_files",
+      "web_search",
+      "run_shell_command",
+      "write_file",
+      "view_image",
+      "replace"
+    ],
+    "allowed": [
+      "read_file",
+      "list_files",
+      "web_search",
+      "view_image"
+    ],
+    "sandbox": "sandbox-exec"
+  }
+}
