@@ -2103,11 +2103,523 @@
       "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/executing-plans",
       "source": "superpowers",
       "updated_at": "2026-02-13T23:33:19+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/finishing-a-development-branch/SKILL.md": {
+      "keep": true,
+      "name": "finishing-a-development-branch",
+      "path": "ai-skills/.repos/superpowers/skills/finishing-a-development-branch/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/finishing-a-development-branch",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T02:56:28+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/receiving-code-review/SKILL.md": {
+      "keep": true,
+      "name": "receiving-code-review",
+      "path": "ai-skills/.repos/superpowers/skills/receiving-code-review/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/receiving-code-review",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T02:57:26+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/requesting-code-review/SKILL.md": {
+      "keep": true,
+      "name": "requesting-code-review",
+      "path": "ai-skills/.repos/superpowers/skills/requesting-code-review/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/requesting-code-review",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T02:57:30+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/subagent-driven-development/SKILL.md": {
+      "keep": true,
+      "name": "subagent-driven-development",
+      "path": "ai-skills/.repos/superpowers/skills/subagent-driven-development/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/subagent-driven-development",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T02:57:35+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/systematic-debugging/SKILL.md": {
+      "keep": true,
+      "name": "systematic-debugging",
+      "path": "ai-skills/.repos/superpowers/skills/systematic-debugging/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/systematic-debugging",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T02:57:43+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/test-driven-development/SKILL.md": {
+      "keep": true,
+      "name": "test-driven-development",
+      "path": "ai-skills/.repos/superpowers/skills/test-driven-development/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/test-driven-development",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T02:57:52+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/using-git-worktrees/SKILL.md": {
+      "keep": true,
+      "name": "using-git-worktrees",
+      "path": "ai-skills/.repos/superpowers/skills/using-git-worktrees/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/using-git-worktrees",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T03:01:15+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/using-superpowers/SKILL.md": {
+      "keep": true,
+      "name": "using-superpowers",
+      "path": "ai-skills/.repos/superpowers/skills/using-superpowers/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/using-superpowers",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T03:01:32+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/verification-before-completion/SKILL.md": {
+      "keep": true,
+      "name": "verification-before-completion",
+      "path": "ai-skills/.repos/superpowers/skills/verification-before-completion/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/verification-before-completion",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T03:01:46+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/writing-plans/SKILL.md": {
+      "keep": true,
+      "name": "writing-plans",
+      "path": "ai-skills/.repos/superpowers/skills/writing-plans/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/writing-plans",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T03:02:16+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/writing-skills/SKILL.md": {
+      "keep": true,
+      "name": "writing-skills",
+      "path": "ai-skills/.repos/superpowers/skills/writing-skills/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/writing-skills",
+      "source": "superpowers",
+      "updated_at": "2026-02-15T03:02:20+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/ask-questions-if-underspecified/skills/ask-questions-if-underspecified/SKILL.md": {
+      "keep": true,
+      "name": "ask-questions-if-underspecified",
+      "path": "ai-skills/.repos/tob-skills/plugins/ask-questions-if-underspecified/skills/ask-questions-if-underspecified/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/ask-questions-if-underspecified/skills/ask-questions-if-underspecified",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:02:49+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/audit-context-building/skills/audit-context-building/SKILL.md": {
+      "keep": false,
+      "name": "audit-context-building",
+      "path": "ai-skills/.repos/tob-skills/plugins/audit-context-building/skills/audit-context-building/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/audit-context-building/skills/audit-context-building",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:03:16+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/algorand-vulnerability-scanner/SKILL.md": {
+      "keep": false,
+      "name": "algorand-vulnerability-scanner",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/algorand-vulnerability-scanner/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/algorand-vulnerability-scanner",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:02:44+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/audit-prep-assistant/SKILL.md": {
+      "keep": false,
+      "name": "audit-prep-assistant",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/audit-prep-assistant/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/audit-prep-assistant",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:04:32+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/cairo-vulnerability-scanner/SKILL.md": {
+      "keep": false,
+      "name": "cairo-vulnerability-scanner",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/cairo-vulnerability-scanner/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/cairo-vulnerability-scanner",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:04:43+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/code-maturity-assessor/SKILL.md": {
+      "keep": false,
+      "name": "code-maturity-assessor",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/code-maturity-assessor/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/code-maturity-assessor",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:05+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/cosmos-vulnerability-scanner/SKILL.md": {
+      "keep": false,
+      "name": "cosmos-vulnerability-scanner",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/cosmos-vulnerability-scanner/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/cosmos-vulnerability-scanner",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:27+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/guidelines-advisor/SKILL.md": {
+      "keep": false,
+      "name": "guidelines-advisor",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/guidelines-advisor/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/guidelines-advisor",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:04+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/secure-workflow-guide/SKILL.md": {
+      "keep": false,
+      "name": "secure-workflow-guide",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/secure-workflow-guide/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/secure-workflow-guide",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:29+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/solana-vulnerability-scanner/SKILL.md": {
+      "keep": false,
+      "name": "solana-vulnerability-scanner",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/solana-vulnerability-scanner/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/solana-vulnerability-scanner",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:52+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/substrate-vulnerability-scanner/SKILL.md": {
+      "keep": false,
+      "name": "substrate-vulnerability-scanner",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/substrate-vulnerability-scanner/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/substrate-vulnerability-scanner",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:06+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/token-integration-analyzer/SKILL.md": {
+      "keep": false,
+      "name": "token-integration-analyzer",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/token-integration-analyzer/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/token-integration-analyzer",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:13+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/ton-vulnerability-scanner/SKILL.md": {
+      "keep": false,
+      "name": "ton-vulnerability-scanner",
+      "path": "ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/ton-vulnerability-scanner/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/building-secure-contracts/skills/ton-vulnerability-scanner",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:15+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/burpsuite-project-parser/skills/SKILL.md": {
+      "keep": false,
+      "name": "burpsuite-project-parser",
+      "path": "ai-skills/.repos/tob-skills/plugins/burpsuite-project-parser/skills/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/burpsuite-project-parser/skills",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:04:40+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/claude-in-chrome-troubleshooting/skills/claude-in-chrome-troubleshooting/SKILL.md": {
+      "keep": true,
+      "name": "claude-in-chrome-troubleshooting",
+      "path": "ai-skills/.repos/tob-skills/plugins/claude-in-chrome-troubleshooting/skills/claude-in-chrome-troubleshooting/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/claude-in-chrome-troubleshooting/skills/claude-in-chrome-troubleshooting",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:02+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/constant-time-analysis/skills/constant-time-analysis/SKILL.md": {
+      "keep": false,
+      "name": "constant-time-analysis",
+      "path": "ai-skills/.repos/tob-skills/plugins/constant-time-analysis/skills/constant-time-analysis/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/constant-time-analysis/skills/constant-time-analysis",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:19+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/culture-index/skills/interpreting-culture-index/SKILL.md": {
+      "keep": false,
+      "name": "interpreting-culture-index",
+      "path": "ai-skills/.repos/tob-skills/plugins/culture-index/skills/interpreting-culture-index/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/culture-index/skills/interpreting-culture-index",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:11+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/debug-buttercup/skills/debug-buttercup/SKILL.md": {
+      "keep": true,
+      "name": "debug-buttercup",
+      "path": "ai-skills/.repos/tob-skills/plugins/debug-buttercup/skills/debug-buttercup/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/debug-buttercup/skills/debug-buttercup",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:43+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/devcontainer-setup/skills/devcontainer-setup/SKILL.md": {
+      "keep": true,
+      "name": "devcontainer-setup",
+      "path": "ai-skills/.repos/tob-skills/plugins/devcontainer-setup/skills/devcontainer-setup/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/devcontainer-setup/skills/devcontainer-setup",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:51+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/differential-review/skills/differential-review/SKILL.md": {
+      "keep": true,
+      "name": "differential-review",
+      "path": "ai-skills/.repos/tob-skills/plugins/differential-review/skills/differential-review/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/differential-review/skills/differential-review",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:57+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/dwarf-expert/skills/dwarf-expert/SKILL.md": {
+      "keep": true,
+      "name": "dwarf-expert",
+      "path": "ai-skills/.repos/tob-skills/plugins/dwarf-expert/skills/dwarf-expert/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/dwarf-expert/skills/dwarf-expert",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:06:05+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/entry-point-analyzer/skills/entry-point-analyzer/SKILL.md": {
+      "keep": false,
+      "name": "entry-point-analyzer",
+      "path": "ai-skills/.repos/tob-skills/plugins/entry-point-analyzer/skills/entry-point-analyzer/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/entry-point-analyzer/skills/entry-point-analyzer",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:06:09+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/firebase-apk-scanner/skills/firebase-apk-scanner/SKILL.md": {
+      "keep": false,
+      "name": "firebase-apk-scanner",
+      "path": "ai-skills/.repos/tob-skills/plugins/firebase-apk-scanner/skills/firebase-apk-scanner/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/firebase-apk-scanner/skills/firebase-apk-scanner",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:06:12+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/gh-cli/skills/using-gh-cli/SKILL.md": {
+      "keep": true,
+      "name": "using-gh-cli",
+      "path": "ai-skills/.repos/tob-skills/plugins/gh-cli/skills/using-gh-cli/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/gh-cli/skills/using-gh-cli",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:18+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/git-cleanup/skills/git-cleanup/SKILL.md": {
+      "keep": true,
+      "name": "git-cleanup",
+      "path": "ai-skills/.repos/tob-skills/plugins/git-cleanup/skills/git-cleanup/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/git-cleanup/skills/git-cleanup",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:07:58+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/insecure-defaults/skills/insecure-defaults/SKILL.md": {
+      "keep": false,
+      "name": "insecure-defaults",
+      "path": "ai-skills/.repos/tob-skills/plugins/insecure-defaults/skills/insecure-defaults/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/insecure-defaults/skills/insecure-defaults",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:08+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/modern-python/skills/modern-python/SKILL.md": {
+      "keep": true,
+      "name": "modern-python",
+      "path": "ai-skills/.repos/tob-skills/plugins/modern-python/skills/modern-python/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/modern-python/skills/modern-python",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:31+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/property-based-testing/skills/property-based-testing/SKILL.md": {
+      "keep": false,
+      "name": "property-based-testing",
+      "path": "ai-skills/.repos/tob-skills/plugins/property-based-testing/skills/property-based-testing/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/property-based-testing/skills/property-based-testing",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:55+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/second-opinion/skills/second-opinion/SKILL.md": {
+      "keep": true,
+      "name": "second-opinion",
+      "path": "ai-skills/.repos/tob-skills/plugins/second-opinion/skills/second-opinion/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/second-opinion/skills/second-opinion",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:09+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/semgrep-rule-creator/skills/semgrep-rule-creator/SKILL.md": {
+      "keep": false,
+      "name": "semgrep-rule-creator",
+      "path": "ai-skills/.repos/tob-skills/plugins/semgrep-rule-creator/skills/semgrep-rule-creator/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/semgrep-rule-creator/skills/semgrep-rule-creator",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:40+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/semgrep-rule-variant-creator/skills/semgrep-rule-variant-creator/SKILL.md": {
+      "keep": false,
+      "name": "semgrep-rule-variant-creator",
+      "path": "ai-skills/.repos/tob-skills/plugins/semgrep-rule-variant-creator/skills/semgrep-rule-variant-creator/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/semgrep-rule-variant-creator/skills/semgrep-rule-variant-creator",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:42+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/sharp-edges/skills/sharp-edges/SKILL.md": {
+      "keep": false,
+      "name": "sharp-edges",
+      "path": "ai-skills/.repos/tob-skills/plugins/sharp-edges/skills/sharp-edges/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/sharp-edges/skills/sharp-edges",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:49+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/SKILL.md": {
+      "keep": false,
+      "name": "spec-to-code-compliance",
+      "path": "ai-skills/.repos/tob-skills/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/spec-to-code-compliance/skills/spec-to-code-compliance",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:58+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/static-analysis/skills/codeql/SKILL.md": {
+      "keep": false,
+      "name": "codeql",
+      "path": "ai-skills/.repos/tob-skills/plugins/static-analysis/skills/codeql/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/static-analysis/skills/codeql",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:08+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/static-analysis/skills/sarif-parsing/SKILL.md": {
+      "keep": false,
+      "name": "sarif-parsing",
+      "path": "ai-skills/.repos/tob-skills/plugins/static-analysis/skills/sarif-parsing/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/static-analysis/skills/sarif-parsing",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:59+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/static-analysis/skills/semgrep/SKILL.md": {
+      "keep": false,
+      "name": "semgrep",
+      "path": "ai-skills/.repos/tob-skills/plugins/static-analysis/skills/semgrep/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/static-analysis/skills/semgrep",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:09:31+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/address-sanitizer/SKILL.md": {
+      "keep": true,
+      "name": "address-sanitizer",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/address-sanitizer/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/address-sanitizer",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:02:31+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/aflpp/SKILL.md": {
+      "keep": false,
+      "name": "aflpp",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/aflpp/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/aflpp",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:02:34+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/atheris/SKILL.md": {
+      "keep": false,
+      "name": "atheris",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/atheris/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/atheris",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:02:59+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/cargo-fuzz/SKILL.md": {
+      "keep": false,
+      "name": "cargo-fuzz",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/cargo-fuzz/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/cargo-fuzz",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:04:51+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/constant-time-testing/SKILL.md": {
+      "keep": false,
+      "name": "constant-time-testing",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/constant-time-testing/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/constant-time-testing",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:25+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/coverage-analysis/SKILL.md": {
+      "keep": false,
+      "name": "coverage-analysis",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/coverage-analysis/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/coverage-analysis",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:05:32+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/fuzzing-dictionary/SKILL.md": {
+      "keep": false,
+      "name": "fuzzing-dictionary",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/fuzzing-dictionary/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/fuzzing-dictionary",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:07:52+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/fuzzing-obstacles/SKILL.md": {
+      "keep": false,
+      "name": "fuzzing-obstacles",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/fuzzing-obstacles/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/fuzzing-obstacles",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:07:53+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/harness-writing/SKILL.md": {
+      "keep": false,
+      "name": "harness-writing",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/harness-writing/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/harness-writing",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:06+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/libafl/SKILL.md": {
+      "keep": false,
+      "name": "libafl",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/libafl/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/libafl",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:16+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/libfuzzer/SKILL.md": {
+      "keep": false,
+      "name": "libfuzzer",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/libfuzzer/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/libfuzzer",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:20+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/ossfuzz/SKILL.md": {
+      "keep": false,
+      "name": "ossfuzz",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/ossfuzz/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/ossfuzz",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:40+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/ruzzy/SKILL.md": {
+      "keep": false,
+      "name": "ruzzy",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/ruzzy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/ruzzy",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:08:57+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/testing-handbook-generator/SKILL.md": {
+      "keep": false,
+      "name": "testing-handbook-generator",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/testing-handbook-generator/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/testing-handbook-generator",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:08+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/wycheproof/SKILL.md": {
+      "keep": false,
+      "name": "wycheproof",
+      "path": "ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/wycheproof/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/testing-handbook-skills/skills/wycheproof",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:25+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/variant-analysis/skills/variant-analysis/SKILL.md": {
+      "keep": false,
+      "name": "variant-analysis",
+      "path": "ai-skills/.repos/tob-skills/plugins/variant-analysis/skills/variant-analysis/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/variant-analysis/skills/variant-analysis",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:22+00:00"
+    },
+    "ai-skills/.repos/tob-skills/plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md": {
+      "keep": false,
+      "name": "yara-rule-authoring",
+      "path": "ai-skills/.repos/tob-skills/plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/tob-skills/plugins/yara-authoring/skills/yara-rule-authoring",
+      "source": "tob-skills",
+      "updated_at": "2026-02-15T03:10:29+00:00"
     }
   },
   "meta": {
     "created_at": "2026-02-13T22:23:30+00:00",
-    "updated_at": "2026-02-13T23:33:19+00:00",
+    "updated_at": "2026-02-15T03:10:29+00:00",
     "version": 1
   }
 }
