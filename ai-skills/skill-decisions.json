@@ -1,0 +1,2113 @@
+{
+  "decisions": {
+    "ai-skills/.repos/ai-research-skills/01-model-architecture/litgpt/SKILL.md": {
+      "keep": true,
+      "name": "implementing-llms-litgpt",
+      "path": "ai-skills/.repos/ai-research-skills/01-model-architecture/litgpt/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/01-model-architecture/litgpt",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:28:35+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/01-model-architecture/mamba/SKILL.md": {
+      "keep": true,
+      "name": "mamba-architecture",
+      "path": "ai-skills/.repos/ai-research-skills/01-model-architecture/mamba/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/01-model-architecture/mamba",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:48+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/01-model-architecture/nanogpt/SKILL.md": {
+      "keep": true,
+      "name": "nanogpt",
+      "path": "ai-skills/.repos/ai-research-skills/01-model-architecture/nanogpt/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/01-model-architecture/nanogpt",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:34+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/01-model-architecture/rwkv/SKILL.md": {
+      "keep": false,
+      "name": "rwkv-architecture",
+      "path": "ai-skills/.repos/ai-research-skills/01-model-architecture/rwkv/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/01-model-architecture/rwkv",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:56+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/01-model-architecture/torchtitan/SKILL.md": {
+      "keep": true,
+      "name": "distributed-llm-pretraining-torchtitan",
+      "path": "ai-skills/.repos/ai-research-skills/01-model-architecture/torchtitan/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/01-model-architecture/torchtitan",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:26:12+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/02-tokenization/huggingface-tokenizers/SKILL.md": {
+      "keep": true,
+      "name": "huggingface-tokenizers",
+      "path": "ai-skills/.repos/ai-research-skills/02-tokenization/huggingface-tokenizers/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/02-tokenization/huggingface-tokenizers",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:28:21+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/02-tokenization/sentencepiece/SKILL.md": {
+      "keep": true,
+      "name": "sentencepiece",
+      "path": "ai-skills/.repos/ai-research-skills/02-tokenization/sentencepiece/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/02-tokenization/sentencepiece",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:05+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/03-fine-tuning/axolotl/SKILL.md": {
+      "keep": false,
+      "name": "axolotl",
+      "path": "ai-skills/.repos/ai-research-skills/03-fine-tuning/axolotl/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/03-fine-tuning/axolotl",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:24:43+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/03-fine-tuning/llama-factory/SKILL.md": {
+      "keep": true,
+      "name": "llama-factory",
+      "path": "ai-skills/.repos/ai-research-skills/03-fine-tuning/llama-factory/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/03-fine-tuning/llama-factory",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:19+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/03-fine-tuning/peft/SKILL.md": {
+      "keep": true,
+      "name": "peft-fine-tuning",
+      "path": "ai-skills/.repos/ai-research-skills/03-fine-tuning/peft/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/03-fine-tuning/peft",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:11+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/03-fine-tuning/unsloth/SKILL.md": {
+      "keep": true,
+      "name": "unsloth",
+      "path": "ai-skills/.repos/ai-research-skills/03-fine-tuning/unsloth/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/03-fine-tuning/unsloth",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:33:03+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/nnsight/SKILL.md": {
+      "keep": false,
+      "name": "nnsight-remote-interpretability",
+      "path": "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/nnsight/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/nnsight",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:59+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/pyvene/SKILL.md": {
+      "keep": false,
+      "name": "pyvene-interventions",
+      "path": "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/pyvene/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/pyvene",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:36+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/saelens/SKILL.md": {
+      "keep": true,
+      "name": "sparse-autoencoder-training",
+      "path": "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/saelens/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/saelens",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:37+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/transformer-lens/SKILL.md": {
+      "keep": false,
+      "name": "transformer-lens-interpretability",
+      "path": "ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/transformer-lens/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/04-mechanistic-interpretability/transformer-lens",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:33:01+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/05-data-processing/nemo-curator/SKILL.md": {
+      "keep": true,
+      "name": "nemo-curator",
+      "path": "ai-skills/.repos/ai-research-skills/05-data-processing/nemo-curator/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/05-data-processing/nemo-curator",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:41+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/05-data-processing/ray-data/SKILL.md": {
+      "keep": true,
+      "name": "ray-data",
+      "path": "ai-skills/.repos/ai-research-skills/05-data-processing/ray-data/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/05-data-processing/ray-data",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:50+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/grpo-rl-training/SKILL.md": {
+      "keep": true,
+      "name": "grpo-rl-training",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/grpo-rl-training/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/grpo-rl-training",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:27:14+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/miles/SKILL.md": {
+      "keep": false,
+      "name": "miles-rl-training",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/miles/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/miles",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:57+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/openrlhf/SKILL.md": {
+      "keep": true,
+      "name": "openrlhf-training",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/openrlhf/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/openrlhf",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:01+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/simpo/SKILL.md": {
+      "keep": true,
+      "name": "simpo-training",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/simpo/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/simpo",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:17+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/slime/SKILL.md": {
+      "keep": true,
+      "name": "slime-rl-training",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/slime/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/slime",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:32+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/torchforge/SKILL.md": {
+      "keep": true,
+      "name": "torchforge-rl-training",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/torchforge/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/torchforge",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:55+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/trl-fine-tuning/SKILL.md": {
+      "keep": true,
+      "name": "fine-tuning-with-trl",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/trl-fine-tuning/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/trl-fine-tuning",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:26:57+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/06-post-training/verl/SKILL.md": {
+      "keep": true,
+      "name": "verl-rl-training",
+      "path": "ai-skills/.repos/ai-research-skills/06-post-training/verl/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/06-post-training/verl",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:33:04+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/07-safety-alignment/constitutional-ai/SKILL.md": {
+      "keep": false,
+      "name": "constitutional-ai",
+      "path": "ai-skills/.repos/ai-research-skills/07-safety-alignment/constitutional-ai/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/07-safety-alignment/constitutional-ai",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:25:27+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/07-safety-alignment/llamaguard/SKILL.md": {
+      "keep": false,
+      "name": "llamaguard",
+      "path": "ai-skills/.repos/ai-research-skills/07-safety-alignment/llamaguard/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/07-safety-alignment/llamaguard",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:22+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/07-safety-alignment/nemo-guardrails/SKILL.md": {
+      "keep": false,
+      "name": "nemo-guardrails",
+      "path": "ai-skills/.repos/ai-research-skills/07-safety-alignment/nemo-guardrails/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/07-safety-alignment/nemo-guardrails",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:46+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/07-safety-alignment/prompt-guard/SKILL.md": {
+      "keep": false,
+      "name": "prompt-guard",
+      "path": "ai-skills/.repos/ai-research-skills/07-safety-alignment/prompt-guard/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/07-safety-alignment/prompt-guard",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:21+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/08-distributed-training/accelerate/SKILL.md": {
+      "keep": true,
+      "name": "huggingface-accelerate",
+      "path": "ai-skills/.repos/ai-research-skills/08-distributed-training/accelerate/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/08-distributed-training/accelerate",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:27:29+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/08-distributed-training/deepspeed/SKILL.md": {
+      "keep": true,
+      "name": "deepspeed",
+      "path": "ai-skills/.repos/ai-research-skills/08-distributed-training/deepspeed/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/08-distributed-training/deepspeed",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:25:57+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/08-distributed-training/megatron-core/SKILL.md": {
+      "keep": true,
+      "name": "training-llms-megatron",
+      "path": "ai-skills/.repos/ai-research-skills/08-distributed-training/megatron-core/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/08-distributed-training/megatron-core",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:57+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/08-distributed-training/pytorch-fsdp2/SKILL.md": {
+      "keep": true,
+      "name": "pytorch-fsdp2",
+      "path": "ai-skills/.repos/ai-research-skills/08-distributed-training/pytorch-fsdp2/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/08-distributed-training/pytorch-fsdp2",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:24+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/08-distributed-training/pytorch-lightning/SKILL.md": {
+      "keep": true,
+      "name": "pytorch-lightning",
+      "path": "ai-skills/.repos/ai-research-skills/08-distributed-training/pytorch-lightning/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/08-distributed-training/pytorch-lightning",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:28+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/08-distributed-training/ray-train/SKILL.md": {
+      "keep": true,
+      "name": "ray-train",
+      "path": "ai-skills/.repos/ai-research-skills/08-distributed-training/ray-train/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/08-distributed-training/ray-train",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:52+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/09-infrastructure/lambda-labs/SKILL.md": {
+      "keep": true,
+      "name": "lambda-labs-gpu-cloud",
+      "path": "ai-skills/.repos/ai-research-skills/09-infrastructure/lambda-labs/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/09-infrastructure/lambda-labs",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:28:58+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/09-infrastructure/modal/SKILL.md": {
+      "keep": true,
+      "name": "modal-serverless-gpu",
+      "path": "ai-skills/.repos/ai-research-skills/09-infrastructure/modal/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/09-infrastructure/modal",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:15+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/09-infrastructure/skypilot/SKILL.md": {
+      "keep": false,
+      "name": "skypilot-multi-cloud-orchestration",
+      "path": "ai-skills/.repos/ai-research-skills/09-infrastructure/skypilot/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/09-infrastructure/skypilot",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:28+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/10-optimization/awq/SKILL.md": {
+      "keep": false,
+      "name": "awq-quantization",
+      "path": "ai-skills/.repos/ai-research-skills/10-optimization/awq/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/10-optimization/awq",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:24:32+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/10-optimization/bitsandbytes/SKILL.md": {
+      "keep": true,
+      "name": "quantizing-models-bitsandbytes",
+      "path": "ai-skills/.repos/ai-research-skills/10-optimization/bitsandbytes/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/10-optimization/bitsandbytes",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:47+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/10-optimization/flash-attention/SKILL.md": {
+      "keep": true,
+      "name": "optimizing-attention-flash",
+      "path": "ai-skills/.repos/ai-research-skills/10-optimization/flash-attention/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/10-optimization/flash-attention",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:02+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/10-optimization/gguf/SKILL.md": {
+      "keep": false,
+      "name": "gguf-quantization",
+      "path": "ai-skills/.repos/ai-research-skills/10-optimization/gguf/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/10-optimization/gguf",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:27:05+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/10-optimization/gptq/SKILL.md": {
+      "keep": false,
+      "name": "gptq",
+      "path": "ai-skills/.repos/ai-research-skills/10-optimization/gptq/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/10-optimization/gptq",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:27:08+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/10-optimization/hqq/SKILL.md": {
+      "keep": false,
+      "name": "hqq-quantization",
+      "path": "ai-skills/.repos/ai-research-skills/10-optimization/hqq/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/10-optimization/hqq",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:27:25+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/11-evaluation/bigcode-evaluation-harness/SKILL.md": {
+      "keep": true,
+      "name": "evaluating-code-models",
+      "path": "ai-skills/.repos/ai-research-skills/11-evaluation/bigcode-evaluation-harness/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/11-evaluation/bigcode-evaluation-harness",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:26:41+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/11-evaluation/lm-evaluation-harness/SKILL.md": {
+      "keep": true,
+      "name": "evaluating-llms-harness",
+      "path": "ai-skills/.repos/ai-research-skills/11-evaluation/lm-evaluation-harness/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/11-evaluation/lm-evaluation-harness",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:26:45+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/11-evaluation/nemo-evaluator/SKILL.md": {
+      "keep": true,
+      "name": "nemo-evaluator-sdk",
+      "path": "ai-skills/.repos/ai-research-skills/11-evaluation/nemo-evaluator/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/11-evaluation/nemo-evaluator",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:43+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/12-inference-serving/llama-cpp/SKILL.md": {
+      "keep": true,
+      "name": "llama-cpp",
+      "path": "ai-skills/.repos/ai-research-skills/12-inference-serving/llama-cpp/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/12-inference-serving/llama-cpp",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:16+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/12-inference-serving/sglang/SKILL.md": {
+      "keep": true,
+      "name": "sglang",
+      "path": "ai-skills/.repos/ai-research-skills/12-inference-serving/sglang/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/12-inference-serving/sglang",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:08+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/12-inference-serving/tensorrt-llm/SKILL.md": {
+      "keep": true,
+      "name": "tensorrt-llm",
+      "path": "ai-skills/.repos/ai-research-skills/12-inference-serving/tensorrt-llm/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/12-inference-serving/tensorrt-llm",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:51+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/12-inference-serving/vllm/SKILL.md": {
+      "keep": true,
+      "name": "serving-llms-vllm",
+      "path": "ai-skills/.repos/ai-research-skills/12-inference-serving/vllm/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/12-inference-serving/vllm",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:07+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/13-mlops/mlflow/SKILL.md": {
+      "keep": true,
+      "name": "mlflow",
+      "path": "ai-skills/.repos/ai-research-skills/13-mlops/mlflow/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/13-mlops/mlflow",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:04+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/13-mlops/tensorboard/SKILL.md": {
+      "keep": true,
+      "name": "tensorboard",
+      "path": "ai-skills/.repos/ai-research-skills/13-mlops/tensorboard/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/13-mlops/tensorboard",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:47+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/13-mlops/weights-and-biases/SKILL.md": {
+      "keep": true,
+      "name": "weights-and-biases",
+      "path": "ai-skills/.repos/ai-research-skills/13-mlops/weights-and-biases/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/13-mlops/weights-and-biases",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:33:06+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/14-agents/autogpt/SKILL.md": {
+      "keep": true,
+      "name": "autogpt-agents",
+      "path": "ai-skills/.repos/ai-research-skills/14-agents/autogpt/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/14-agents/autogpt",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:24:11+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/14-agents/crewai/SKILL.md": {
+      "keep": true,
+      "name": "crewai-multi-agent",
+      "path": "ai-skills/.repos/ai-research-skills/14-agents/crewai/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/14-agents/crewai",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:25:49+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/14-agents/langchain/SKILL.md": {
+      "keep": false,
+      "name": "langchain",
+      "path": "ai-skills/.repos/ai-research-skills/14-agents/langchain/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/14-agents/langchain",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:00+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/14-agents/llamaindex/SKILL.md": {
+      "keep": true,
+      "name": "llamaindex",
+      "path": "ai-skills/.repos/ai-research-skills/14-agents/llamaindex/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/14-agents/llamaindex",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:26+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/15-rag/chroma/SKILL.md": {
+      "keep": false,
+      "name": "chroma",
+      "path": "ai-skills/.repos/ai-research-skills/15-rag/chroma/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/15-rag/chroma",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:25:08+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/15-rag/faiss/SKILL.md": {
+      "keep": true,
+      "name": "faiss",
+      "path": "ai-skills/.repos/ai-research-skills/15-rag/faiss/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/15-rag/faiss",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:26:51+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/15-rag/pinecone/SKILL.md": {
+      "keep": true,
+      "name": "pinecone",
+      "path": "ai-skills/.repos/ai-research-skills/15-rag/pinecone/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/15-rag/pinecone",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:20+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/15-rag/qdrant/SKILL.md": {
+      "keep": false,
+      "name": "qdrant-vector-search",
+      "path": "ai-skills/.repos/ai-research-skills/15-rag/qdrant/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/15-rag/qdrant",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:46+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/15-rag/sentence-transformers/SKILL.md": {
+      "keep": true,
+      "name": "sentence-transformers",
+      "path": "ai-skills/.repos/ai-research-skills/15-rag/sentence-transformers/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/15-rag/sentence-transformers",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:04+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/16-prompt-engineering/dspy/SKILL.md": {
+      "keep": true,
+      "name": "dspy",
+      "path": "ai-skills/.repos/ai-research-skills/16-prompt-engineering/dspy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/16-prompt-engineering/dspy",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:26:29+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/16-prompt-engineering/guidance/SKILL.md": {
+      "keep": true,
+      "name": "guidance",
+      "path": "ai-skills/.repos/ai-research-skills/16-prompt-engineering/guidance/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/16-prompt-engineering/guidance",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:27:20+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/16-prompt-engineering/instructor/SKILL.md": {
+      "keep": true,
+      "name": "instructor",
+      "path": "ai-skills/.repos/ai-research-skills/16-prompt-engineering/instructor/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/16-prompt-engineering/instructor",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:28:39+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/16-prompt-engineering/outlines/SKILL.md": {
+      "keep": true,
+      "name": "outlines",
+      "path": "ai-skills/.repos/ai-research-skills/16-prompt-engineering/outlines/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/16-prompt-engineering/outlines",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:09+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/17-observability/langsmith/SKILL.md": {
+      "keep": false,
+      "name": "langsmith-observability",
+      "path": "ai-skills/.repos/ai-research-skills/17-observability/langsmith/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/17-observability/langsmith",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:14+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/17-observability/phoenix/SKILL.md": {
+      "keep": false,
+      "name": "phoenix-observability",
+      "path": "ai-skills/.repos/ai-research-skills/17-observability/phoenix/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/17-observability/phoenix",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:14+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/18-multimodal/audiocraft/SKILL.md": {
+      "keep": false,
+      "name": "audiocraft-audio-generation",
+      "path": "ai-skills/.repos/ai-research-skills/18-multimodal/audiocraft/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/18-multimodal/audiocraft",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:23:53+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/18-multimodal/blip-2/SKILL.md": {
+      "keep": false,
+      "name": "blip-2-vision-language",
+      "path": "ai-skills/.repos/ai-research-skills/18-multimodal/blip-2/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/18-multimodal/blip-2",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:24:55+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/18-multimodal/clip/SKILL.md": {
+      "keep": false,
+      "name": "clip",
+      "path": "ai-skills/.repos/ai-research-skills/18-multimodal/clip/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/18-multimodal/clip",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:25:19+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/18-multimodal/llava/SKILL.md": {
+      "keep": true,
+      "name": "llava",
+      "path": "ai-skills/.repos/ai-research-skills/18-multimodal/llava/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/18-multimodal/llava",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:29+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/18-multimodal/segment-anything/SKILL.md": {
+      "keep": true,
+      "name": "segment-anything-model",
+      "path": "ai-skills/.repos/ai-research-skills/18-multimodal/segment-anything/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/18-multimodal/segment-anything",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:31:58+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/18-multimodal/stable-diffusion/SKILL.md": {
+      "keep": true,
+      "name": "stable-diffusion-image-generation",
+      "path": "ai-skills/.repos/ai-research-skills/18-multimodal/stable-diffusion/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/18-multimodal/stable-diffusion",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:45+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/18-multimodal/whisper/SKILL.md": {
+      "keep": true,
+      "name": "whisper",
+      "path": "ai-skills/.repos/ai-research-skills/18-multimodal/whisper/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/18-multimodal/whisper",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:33:08+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/19-emerging-techniques/knowledge-distillation/SKILL.md": {
+      "keep": true,
+      "name": "knowledge-distillation",
+      "path": "ai-skills/.repos/ai-research-skills/19-emerging-techniques/knowledge-distillation/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/19-emerging-techniques/knowledge-distillation",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:28:51+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/19-emerging-techniques/long-context/SKILL.md": {
+      "keep": true,
+      "name": "long-context",
+      "path": "ai-skills/.repos/ai-research-skills/19-emerging-techniques/long-context/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/19-emerging-techniques/long-context",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:29:40+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/19-emerging-techniques/model-merging/SKILL.md": {
+      "keep": true,
+      "name": "model-merging",
+      "path": "ai-skills/.repos/ai-research-skills/19-emerging-techniques/model-merging/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/19-emerging-techniques/model-merging",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:21+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/19-emerging-techniques/model-pruning/SKILL.md": {
+      "keep": true,
+      "name": "model-pruning",
+      "path": "ai-skills/.repos/ai-research-skills/19-emerging-techniques/model-pruning/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/19-emerging-techniques/model-pruning",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:29+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/19-emerging-techniques/moe-training/SKILL.md": {
+      "keep": true,
+      "name": "moe-training",
+      "path": "ai-skills/.repos/ai-research-skills/19-emerging-techniques/moe-training/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/19-emerging-techniques/moe-training",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:32+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/19-emerging-techniques/speculative-decoding/SKILL.md": {
+      "keep": true,
+      "name": "speculative-decoding",
+      "path": "ai-skills/.repos/ai-research-skills/19-emerging-techniques/speculative-decoding/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/19-emerging-techniques/speculative-decoding",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:32:39+00:00"
+    },
+    "ai-skills/.repos/ai-research-skills/20-ml-paper-writing/SKILL.md": {
+      "keep": true,
+      "name": "ml-paper-writing",
+      "path": "ai-skills/.repos/ai-research-skills/20-ml-paper-writing/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/ai-research-skills/20-ml-paper-writing",
+      "source": "ai-research-skills",
+      "updated_at": "2026-02-13T22:30:01+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/cloudflare-deploy/SKILL.md": {
+      "keep": false,
+      "name": "cloudflare-deploy",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/cloudflare-deploy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/cloudflare-deploy",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:15+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/develop-web-game/SKILL.md": {
+      "keep": true,
+      "name": "develop-web-game",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/develop-web-game/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/develop-web-game",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:25+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/doc/SKILL.md": {
+      "keep": false,
+      "name": "doc",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/doc/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/doc",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:30+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/figma-implement-design/SKILL.md": {
+      "keep": true,
+      "name": "figma-implement-design",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/figma-implement-design/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/figma-implement-design",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:37+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/figma/SKILL.md": {
+      "keep": true,
+      "name": "figma",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/figma/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/figma",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:34+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/gh-address-comments/SKILL.md": {
+      "keep": true,
+      "name": "gh-address-comments",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/gh-address-comments/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/gh-address-comments",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:54+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/gh-fix-ci/SKILL.md": {
+      "keep": true,
+      "name": "gh-fix-ci",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/gh-fix-ci/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/gh-fix-ci",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:56+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/imagegen/SKILL.md": {
+      "keep": true,
+      "name": "imagegen",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/imagegen/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/imagegen",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:33:58+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/jupyter-notebook/SKILL.md": {
+      "keep": true,
+      "name": "jupyter-notebook",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/jupyter-notebook/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/jupyter-notebook",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:34:00+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/linear/SKILL.md": {
+      "keep": false,
+      "name": "linear",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/linear/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/linear",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:10+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/netlify-deploy/SKILL.md": {
+      "keep": false,
+      "name": "netlify-deploy",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/netlify-deploy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/netlify-deploy",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:20+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/notion-knowledge-capture/SKILL.md": {
+      "keep": true,
+      "name": "notion-knowledge-capture",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/notion-knowledge-capture/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/notion-knowledge-capture",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:26+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/notion-meeting-intelligence/SKILL.md": {
+      "keep": true,
+      "name": "notion-meeting-intelligence",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/notion-meeting-intelligence/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/notion-meeting-intelligence",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:30+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/notion-research-documentation/SKILL.md": {
+      "keep": true,
+      "name": "notion-research-documentation",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/notion-research-documentation/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/notion-research-documentation",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:32+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/notion-spec-to-implementation/SKILL.md": {
+      "keep": true,
+      "name": "notion-spec-to-implementation",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/notion-spec-to-implementation/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/notion-spec-to-implementation",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:33+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/openai-docs/SKILL.md": {
+      "keep": true,
+      "name": "openai-docs",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/openai-docs/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/openai-docs",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:38+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/pdf/SKILL.md": {
+      "keep": true,
+      "name": "pdf",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/pdf/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/pdf",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:40+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/playwright/SKILL.md": {
+      "keep": true,
+      "name": "playwright",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/playwright/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/playwright",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:50+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/render-deploy/SKILL.md": {
+      "keep": false,
+      "name": "render-deploy",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/render-deploy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/render-deploy",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:55:58+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/screenshot/SKILL.md": {
+      "keep": true,
+      "name": "screenshot",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/screenshot/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/screenshot",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:04+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/security-best-practices/SKILL.md": {
+      "keep": false,
+      "name": "security-best-practices",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/security-best-practices/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/security-best-practices",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:13+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/security-ownership-map/SKILL.md": {
+      "keep": false,
+      "name": "security-ownership-map",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/security-ownership-map/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/security-ownership-map",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:19+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/security-threat-model/SKILL.md": {
+      "keep": false,
+      "name": "security-threat-model",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/security-threat-model/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/security-threat-model",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:20+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/sentry/SKILL.md": {
+      "keep": false,
+      "name": "sentry",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/sentry/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/sentry",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:25+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/sora/SKILL.md": {
+      "keep": true,
+      "name": "sora",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/sora/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/sora",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:37+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/speech/SKILL.md": {
+      "keep": true,
+      "name": "speech",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/speech/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/speech",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:39+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/spreadsheet/SKILL.md": {
+      "keep": true,
+      "name": "spreadsheet",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/spreadsheet/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/spreadsheet",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:46+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/transcribe/SKILL.md": {
+      "keep": true,
+      "name": "transcribe",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/transcribe/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/transcribe",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:51+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/vercel-deploy/SKILL.md": {
+      "keep": false,
+      "name": "vercel-deploy",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/vercel-deploy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/vercel-deploy",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:57:00+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.curated/yeet/SKILL.md": {
+      "keep": true,
+      "name": "yeet",
+      "path": "ai-skills/.repos/openai-skills/skills/.curated/yeet/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.curated/yeet",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:57:10+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.system/skill-creator/SKILL.md": {
+      "keep": true,
+      "name": "skill-creator",
+      "path": "ai-skills/.repos/openai-skills/skills/.system/skill-creator/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.system/skill-creator",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:29+00:00"
+    },
+    "ai-skills/.repos/openai-skills/skills/.system/skill-installer/SKILL.md": {
+      "keep": false,
+      "name": "skill-installer",
+      "path": "ai-skills/.repos/openai-skills/skills/.system/skill-installer/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/openai-skills/skills/.system/skill-installer",
+      "source": "openai-skills",
+      "updated_at": "2026-02-13T22:56:35+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/adaptyv/SKILL.md": {
+      "keep": false,
+      "name": "adaptyv",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/adaptyv/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/adaptyv",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:15+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/aeon/SKILL.md": {
+      "keep": false,
+      "name": "aeon",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/aeon/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/aeon",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:22+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/alphafold-database/SKILL.md": {
+      "keep": false,
+      "name": "alphafold-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/alphafold-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/alphafold-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:25+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/anndata/SKILL.md": {
+      "keep": false,
+      "name": "anndata",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/anndata/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/anndata",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:27+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/arboreto/SKILL.md": {
+      "keep": false,
+      "name": "arboreto",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/arboreto/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/arboreto",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:30+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/astropy/SKILL.md": {
+      "keep": false,
+      "name": "astropy",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/astropy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/astropy",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:33+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/benchling-integration/SKILL.md": {
+      "keep": false,
+      "name": "benchling-integration",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/benchling-integration/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/benchling-integration",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:38+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/biopython/SKILL.md": {
+      "keep": false,
+      "name": "biopython",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/biopython/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/biopython",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:39+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/biorxiv-database/SKILL.md": {
+      "keep": false,
+      "name": "biorxiv-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/biorxiv-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/biorxiv-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:40+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/bioservices/SKILL.md": {
+      "keep": false,
+      "name": "bioservices",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/bioservices/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/bioservices",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:41+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/brenda-database/SKILL.md": {
+      "keep": false,
+      "name": "brenda-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/brenda-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/brenda-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:57:44+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/cellxgene-census/SKILL.md": {
+      "keep": false,
+      "name": "cellxgene-census",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/cellxgene-census/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/cellxgene-census",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:04+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/chembl-database/SKILL.md": {
+      "keep": false,
+      "name": "chembl-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/chembl-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/chembl-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:05+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/cirq/SKILL.md": {
+      "keep": false,
+      "name": "cirq",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/cirq/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/cirq",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:07+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/citation-management/SKILL.md": {
+      "keep": true,
+      "name": "citation-management",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/citation-management/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/citation-management",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:13+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/clinical-decision-support/SKILL.md": {
+      "keep": false,
+      "name": "clinical-decision-support",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/clinical-decision-support/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/clinical-decision-support",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:14+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/clinical-reports/SKILL.md": {
+      "keep": false,
+      "name": "clinical-reports",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/clinical-reports/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/clinical-reports",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:15+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/clinicaltrials-database/SKILL.md": {
+      "keep": false,
+      "name": "clinicaltrials-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/clinicaltrials-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/clinicaltrials-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:16+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/clinpgx-database/SKILL.md": {
+      "keep": false,
+      "name": "clinpgx-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/clinpgx-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/clinpgx-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:18+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/clinvar-database/SKILL.md": {
+      "keep": false,
+      "name": "clinvar-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/clinvar-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/clinvar-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:19+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/cobrapy/SKILL.md": {
+      "keep": false,
+      "name": "cobrapy",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/cobrapy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/cobrapy",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:24+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/cosmic-database/SKILL.md": {
+      "keep": false,
+      "name": "cosmic-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/cosmic-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/cosmic-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:26+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/dask/SKILL.md": {
+      "keep": true,
+      "name": "dask",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/dask/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/dask",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:31+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/datacommons-client/SKILL.md": {
+      "keep": false,
+      "name": "datacommons-client",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/datacommons-client/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/datacommons-client",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:36+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/datamol/SKILL.md": {
+      "keep": false,
+      "name": "datamol",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/datamol/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/datamol",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:42+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/deepchem/SKILL.md": {
+      "keep": false,
+      "name": "deepchem",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/deepchem/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/deepchem",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:43+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/deeptools/SKILL.md": {
+      "keep": false,
+      "name": "deeptools",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/deeptools/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/deeptools",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:49+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/denario/SKILL.md": {
+      "keep": false,
+      "name": "denario",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/denario/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/denario",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:58:57+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/diffdock/SKILL.md": {
+      "keep": false,
+      "name": "diffdock",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/diffdock/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/diffdock",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:00+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/dnanexus-integration/SKILL.md": {
+      "keep": false,
+      "name": "dnanexus-integration",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/dnanexus-integration/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/dnanexus-integration",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:02+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/docx/SKILL.md": {
+      "keep": true,
+      "name": "docx",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/docx/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/document-skills/docx",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:08+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/pdf/SKILL.md": {
+      "keep": true,
+      "name": "pdf",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/pdf/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/document-skills/pdf",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:11+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/pptx/SKILL.md": {
+      "keep": true,
+      "name": "pptx",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/pptx/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/document-skills/pptx",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:59+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/xlsx/SKILL.md": {
+      "keep": true,
+      "name": "xlsx",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/document-skills/xlsx/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/document-skills/xlsx",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:32:05+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/drugbank-database/SKILL.md": {
+      "keep": false,
+      "name": "drugbank-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/drugbank-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/drugbank-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:10+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/ena-database/SKILL.md": {
+      "keep": false,
+      "name": "ena-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/ena-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/ena-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:12+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/ensembl-database/SKILL.md": {
+      "keep": false,
+      "name": "ensembl-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/ensembl-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/ensembl-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:14+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/esm/SKILL.md": {
+      "keep": false,
+      "name": "esm",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/esm/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/esm",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:16+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/etetoolkit/SKILL.md": {
+      "keep": false,
+      "name": "etetoolkit",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/etetoolkit/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/etetoolkit",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T22:59:28+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/exploratory-data-analysis/SKILL.md": {
+      "keep": true,
+      "name": "exploratory-data-analysis",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/exploratory-data-analysis/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/exploratory-data-analysis",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:20+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/fda-database/SKILL.md": {
+      "keep": false,
+      "name": "fda-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/fda-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/fda-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:24+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/flowio/SKILL.md": {
+      "keep": false,
+      "name": "flowio",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/flowio/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/flowio",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:27+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/fluidsim/SKILL.md": {
+      "keep": false,
+      "name": "fluidsim",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/fluidsim/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/fluidsim",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:29+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/fred-economic-data/SKILL.md": {
+      "keep": false,
+      "name": "fred-economic-data",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/fred-economic-data/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/fred-economic-data",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:34+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/gene-database/SKILL.md": {
+      "keep": false,
+      "name": "gene-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/gene-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/gene-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:35+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/generate-image/SKILL.md": {
+      "keep": true,
+      "name": "generate-image",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/generate-image/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/generate-image",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:39+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/geniml/SKILL.md": {
+      "keep": false,
+      "name": "geniml",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/geniml/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/geniml",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:47+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/geo-database/SKILL.md": {
+      "keep": false,
+      "name": "geo-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/geo-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/geo-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:48+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/geopandas/SKILL.md": {
+      "keep": false,
+      "name": "geopandas",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/geopandas/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/geopandas",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:49+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/get-available-resources/SKILL.md": {
+      "keep": true,
+      "name": "get-available-resources",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/get-available-resources/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/get-available-resources",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:16:57+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/gget/SKILL.md": {
+      "keep": false,
+      "name": "gget",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/gget/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/gget",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:01+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/gtars/SKILL.md": {
+      "keep": false,
+      "name": "gtars",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/gtars/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/gtars",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:04+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/gwas-database/SKILL.md": {
+      "keep": false,
+      "name": "gwas-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/gwas-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/gwas-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:06+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/histolab/SKILL.md": {
+      "keep": false,
+      "name": "histolab",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/histolab/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/histolab",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:11+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/hmdb-database/SKILL.md": {
+      "keep": false,
+      "name": "hmdb-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/hmdb-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/hmdb-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:15+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/hypogenic/SKILL.md": {
+      "keep": false,
+      "name": "hypogenic",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/hypogenic/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/hypogenic",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:26+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/hypothesis-generation/SKILL.md": {
+      "keep": true,
+      "name": "hypothesis-generation",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/hypothesis-generation/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/hypothesis-generation",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:30+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/imaging-data-commons/SKILL.md": {
+      "keep": false,
+      "name": "imaging-data-commons",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/imaging-data-commons/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/imaging-data-commons",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:36+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/infographics/SKILL.md": {
+      "keep": true,
+      "name": "infographics",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/infographics/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/infographics",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:41+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/iso-13485-certification/SKILL.md": {
+      "keep": false,
+      "name": "iso-13485-certification",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/iso-13485-certification/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/iso-13485-certification",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:45+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/kegg-database/SKILL.md": {
+      "keep": false,
+      "name": "kegg-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/kegg-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/kegg-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:47+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/labarchive-integration/SKILL.md": {
+      "keep": false,
+      "name": "labarchive-integration",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/labarchive-integration/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/labarchive-integration",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:52+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/lamindb/SKILL.md": {
+      "keep": false,
+      "name": "lamindb",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/lamindb/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/lamindb",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:55+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/latchbio-integration/SKILL.md": {
+      "keep": false,
+      "name": "latchbio-integration",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/latchbio-integration/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/latchbio-integration",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:17:57+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/latex-posters/SKILL.md": {
+      "keep": true,
+      "name": "latex-posters",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/latex-posters/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/latex-posters",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:00+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/literature-review/SKILL.md": {
+      "keep": true,
+      "name": "literature-review",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/literature-review/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/literature-review",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:02+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/market-research-reports/SKILL.md": {
+      "keep": false,
+      "name": "market-research-reports",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/market-research-reports/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/market-research-reports",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:23+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/markitdown/SKILL.md": {
+      "keep": true,
+      "name": "markitdown",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/markitdown/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/markitdown",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:36+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/matchms/SKILL.md": {
+      "keep": false,
+      "name": "matchms",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/matchms/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/matchms",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:39+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/matlab/SKILL.md": {
+      "keep": false,
+      "name": "matlab",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/matlab/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/matlab",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:42+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/matplotlib/SKILL.md": {
+      "keep": true,
+      "name": "matplotlib",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/matplotlib/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/matplotlib",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:45+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/medchem/SKILL.md": {
+      "keep": false,
+      "name": "medchem",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/medchem/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/medchem",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:47+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/metabolomics-workbench-database/SKILL.md": {
+      "keep": false,
+      "name": "metabolomics-workbench-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/metabolomics-workbench-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/metabolomics-workbench-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:51+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/modal/SKILL.md": {
+      "keep": true,
+      "name": "modal",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/modal/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/modal",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:56+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/molfeat/SKILL.md": {
+      "keep": false,
+      "name": "molfeat",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/molfeat/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/molfeat",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:18:59+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/networkx/SKILL.md": {
+      "keep": true,
+      "name": "networkx",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/networkx/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/networkx",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:19:00+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/neurokit2/SKILL.md": {
+      "keep": false,
+      "name": "neurokit2",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/neurokit2/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/neurokit2",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:19:02+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/neuropixels-analysis/SKILL.md": {
+      "keep": false,
+      "name": "neuropixels-analysis",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/neuropixels-analysis/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/neuropixels-analysis",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:19:07+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/offer-k-dense-web/SKILL.md": {
+      "keep": false,
+      "name": "offer-k-dense-web",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/offer-k-dense-web/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/offer-k-dense-web",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:19:39+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/omero-integration/SKILL.md": {
+      "keep": false,
+      "name": "omero-integration",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/omero-integration/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/omero-integration",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:19:43+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/openalex-database/SKILL.md": {
+      "keep": false,
+      "name": "openalex-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/openalex-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/openalex-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:19:49+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/opentargets-database/SKILL.md": {
+      "keep": false,
+      "name": "opentargets-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/opentargets-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/opentargets-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:19:51+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/opentrons-integration/SKILL.md": {
+      "keep": false,
+      "name": "opentrons-integration",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/opentrons-integration/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/opentrons-integration",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:20:50+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/paper-2-web/SKILL.md": {
+      "keep": true,
+      "name": "paper-2-web",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/paper-2-web/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/paper-2-web",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:20:57+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pathml/SKILL.md": {
+      "keep": false,
+      "name": "pathml",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pathml/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pathml",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:05+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pdb-database/SKILL.md": {
+      "keep": false,
+      "name": "pdb-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pdb-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pdb-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:08+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/peer-review/SKILL.md": {
+      "keep": true,
+      "name": "peer-review",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/peer-review/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/peer-review",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:15+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pennylane/SKILL.md": {
+      "keep": false,
+      "name": "pennylane",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pennylane/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pennylane",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:17+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/perplexity-search/SKILL.md": {
+      "keep": false,
+      "name": "perplexity-search",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/perplexity-search/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/perplexity-search",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:22+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/plotly/SKILL.md": {
+      "keep": true,
+      "name": "plotly",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/plotly/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/plotly",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:35+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/polars/SKILL.md": {
+      "keep": true,
+      "name": "polars",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/polars/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/polars",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:21:48+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pptx-posters/SKILL.md": {
+      "keep": true,
+      "name": "pptx-posters",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pptx-posters/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pptx-posters",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:22:01+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/protocolsio-integration/SKILL.md": {
+      "keep": false,
+      "name": "protocolsio-integration",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/protocolsio-integration/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/protocolsio-integration",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:17+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pubchem-database/SKILL.md": {
+      "keep": false,
+      "name": "pubchem-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pubchem-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pubchem-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:19+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pubmed-database/SKILL.md": {
+      "keep": false,
+      "name": "pubmed-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pubmed-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pubmed-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:20+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pufferlib/SKILL.md": {
+      "keep": false,
+      "name": "pufferlib",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pufferlib/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pufferlib",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:27+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pydeseq2/SKILL.md": {
+      "keep": false,
+      "name": "pydeseq2",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pydeseq2/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pydeseq2",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:30+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pydicom/SKILL.md": {
+      "keep": false,
+      "name": "pydicom",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pydicom/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pydicom",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:33+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pyhealth/SKILL.md": {
+      "keep": false,
+      "name": "pyhealth",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pyhealth/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pyhealth",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:34+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pylabrobot/SKILL.md": {
+      "keep": false,
+      "name": "pylabrobot",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pylabrobot/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pylabrobot",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:37+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pymatgen/SKILL.md": {
+      "keep": false,
+      "name": "pymatgen",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pymatgen/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pymatgen",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:39+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pymc/SKILL.md": {
+      "keep": true,
+      "name": "pymc-bayesian-modeling",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pymc/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pymc",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:48+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pymoo/SKILL.md": {
+      "keep": false,
+      "name": "pymoo",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pymoo/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pymoo",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:54+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pyopenms/SKILL.md": {
+      "keep": false,
+      "name": "pyopenms",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pyopenms/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pyopenms",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:23:59+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pysam/SKILL.md": {
+      "keep": false,
+      "name": "pysam",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pysam/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pysam",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:00+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pytdc/SKILL.md": {
+      "keep": false,
+      "name": "pytdc",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pytdc/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pytdc",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:02+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/pytorch-lightning/SKILL.md": {
+      "keep": false,
+      "name": "pytorch-lightning",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/pytorch-lightning/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/pytorch-lightning",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:05+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/qiskit/SKILL.md": {
+      "keep": false,
+      "name": "qiskit",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/qiskit/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/qiskit",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:09+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/qutip/SKILL.md": {
+      "keep": false,
+      "name": "qutip",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/qutip/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/qutip",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:11+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/rdkit/SKILL.md": {
+      "keep": false,
+      "name": "rdkit",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/rdkit/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/rdkit",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:13+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/reactome-database/SKILL.md": {
+      "keep": false,
+      "name": "reactome-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/reactome-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/reactome-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:15+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/research-grants/SKILL.md": {
+      "keep": true,
+      "name": "research-grants",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/research-grants/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/research-grants",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:22+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/research-lookup/SKILL.md": {
+      "keep": false,
+      "name": "research-lookup",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/research-lookup/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/research-lookup",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:30+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/rowan/SKILL.md": {
+      "keep": false,
+      "name": "rowan",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/rowan/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/rowan",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:32+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scanpy/SKILL.md": {
+      "keep": false,
+      "name": "scanpy",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scanpy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scanpy",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:39+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scholar-evaluation/SKILL.md": {
+      "keep": false,
+      "name": "scholar-evaluation",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scholar-evaluation/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scholar-evaluation",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:45+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scientific-brainstorming/SKILL.md": {
+      "keep": true,
+      "name": "scientific-brainstorming",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scientific-brainstorming/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scientific-brainstorming",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:24:47+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scientific-critical-thinking/SKILL.md": {
+      "keep": true,
+      "name": "scientific-critical-thinking",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scientific-critical-thinking/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scientific-critical-thinking",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:12+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scientific-schematics/SKILL.md": {
+      "keep": true,
+      "name": "scientific-schematics",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scientific-schematics/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scientific-schematics",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:17+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scientific-slides/SKILL.md": {
+      "keep": true,
+      "name": "scientific-slides",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scientific-slides/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scientific-slides",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:19+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scientific-visualization/SKILL.md": {
+      "keep": true,
+      "name": "scientific-visualization",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scientific-visualization/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scientific-visualization",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:22+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scientific-writing/SKILL.md": {
+      "keep": true,
+      "name": "scientific-writing",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scientific-writing/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scientific-writing",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:23+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scikit-bio/SKILL.md": {
+      "keep": false,
+      "name": "scikit-bio",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scikit-bio/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scikit-bio",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:28+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scikit-learn/SKILL.md": {
+      "keep": true,
+      "name": "scikit-learn",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scikit-learn/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scikit-learn",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:29+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scikit-survival/SKILL.md": {
+      "keep": false,
+      "name": "scikit-survival",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scikit-survival/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scikit-survival",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:41+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/scvi-tools/SKILL.md": {
+      "keep": false,
+      "name": "scvi-tools",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/scvi-tools/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/scvi-tools",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:43+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/seaborn/SKILL.md": {
+      "keep": true,
+      "name": "seaborn",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/seaborn/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/seaborn",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:44+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/shap/SKILL.md": {
+      "keep": false,
+      "name": "shap",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/shap/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/shap",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:47+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/simpy/SKILL.md": {
+      "keep": true,
+      "name": "simpy",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/simpy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/simpy",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:25:51+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/stable-baselines3/SKILL.md": {
+      "keep": true,
+      "name": "stable-baselines3",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/stable-baselines3/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/stable-baselines3",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:30:46+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/statistical-analysis/SKILL.md": {
+      "keep": false,
+      "name": "statistical-analysis",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/statistical-analysis/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/statistical-analysis",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:30:57+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/statsmodels/SKILL.md": {
+      "keep": false,
+      "name": "statsmodels",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/statsmodels/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/statsmodels",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:06+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/string-database/SKILL.md": {
+      "keep": false,
+      "name": "string-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/string-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/string-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:09+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/sympy/SKILL.md": {
+      "keep": true,
+      "name": "sympy",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/sympy/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/sympy",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:16+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/torch_geometric/SKILL.md": {
+      "keep": true,
+      "name": "torch-geometric",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/torch_geometric/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/torch_geometric",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:20+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/torchdrug/SKILL.md": {
+      "keep": false,
+      "name": "torchdrug",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/torchdrug/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/torchdrug",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:23+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/transformers/SKILL.md": {
+      "keep": true,
+      "name": "transformers",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/transformers/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/transformers",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:25+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/treatment-plans/SKILL.md": {
+      "keep": false,
+      "name": "treatment-plans",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/treatment-plans/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/treatment-plans",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:28+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/umap-learn/SKILL.md": {
+      "keep": false,
+      "name": "umap-learn",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/umap-learn/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/umap-learn",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:32+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/uniprot-database/SKILL.md": {
+      "keep": false,
+      "name": "uniprot-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/uniprot-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/uniprot-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:39+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/uspto-database/SKILL.md": {
+      "keep": false,
+      "name": "uspto-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/uspto-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/uspto-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:46+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/vaex/SKILL.md": {
+      "keep": true,
+      "name": "vaex",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/vaex/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/vaex",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:31:56+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/venue-templates/SKILL.md": {
+      "keep": true,
+      "name": "venue-templates",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/venue-templates/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/venue-templates",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:32:00+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/zarr-python/SKILL.md": {
+      "keep": true,
+      "name": "zarr-python",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/zarr-python/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/zarr-python",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:32:13+00:00"
+    },
+    "ai-skills/.repos/scientific-skills/scientific-skills/zinc-database/SKILL.md": {
+      "keep": false,
+      "name": "zinc-database",
+      "path": "ai-skills/.repos/scientific-skills/scientific-skills/zinc-database/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/scientific-skills/scientific-skills/zinc-database",
+      "source": "scientific-skills",
+      "updated_at": "2026-02-13T23:32:20+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/brainstorming/SKILL.md": {
+      "keep": true,
+      "name": "brainstorming",
+      "path": "ai-skills/.repos/superpowers/skills/brainstorming/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/brainstorming",
+      "source": "superpowers",
+      "updated_at": "2026-02-13T23:32:30+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/dispatching-parallel-agents/SKILL.md": {
+      "keep": true,
+      "name": "dispatching-parallel-agents",
+      "path": "ai-skills/.repos/superpowers/skills/dispatching-parallel-agents/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/dispatching-parallel-agents",
+      "source": "superpowers",
+      "updated_at": "2026-02-13T23:33:16+00:00"
+    },
+    "ai-skills/.repos/superpowers/skills/executing-plans/SKILL.md": {
+      "keep": true,
+      "name": "executing-plans",
+      "path": "ai-skills/.repos/superpowers/skills/executing-plans/SKILL.md",
+      "skill_dir": "/Users/haotang/Codes/setup-neovim/ai-skills/.repos/superpowers/skills/executing-plans",
+      "source": "superpowers",
+      "updated_at": "2026-02-13T23:33:19+00:00"
+    }
+  },
+  "meta": {
+    "created_at": "2026-02-13T22:23:30+00:00",
+    "updated_at": "2026-02-13T23:33:19+00:00",
+    "version": 1
+  }
+}

@@ -41,6 +41,7 @@ tmux.conf                        ← tmux config    (→ ~/.tmux.conf)
 scripts/                         ← Utility scripts for global use
   install.sh                     ← Installer (symlinks scripts + configs + skills)
   init-ai.sh                     ← Unified AI context bootstrapper
+  review_skills.py               ← Interactive keep/remove review for skills
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
   .repos/superpowers/            ← git submodule: obra/superpowers (14 skills)
@@ -122,6 +123,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
 - **`init-ai`:** Bootstraps `AI.md` and links it to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
+- **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
+  `ai-skills/skill-decisions.json` and, by default, applies each answer
+  immediately to `~/.claude/skills`, `~/.codex/skills`, and `~/.gemini/skills`.
 
 ### AI integration
 

@@ -7,10 +7,20 @@ REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 BIN_DIR="$HOME/.local/bin"
 BACKUP_DIR="$HOME/dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 BACKUP_CREATED=false
+SKILL_DECISIONS_JSON="$REPO_DIR/ai-skills/skill-decisions.json"
+SKILL_DECISIONS_TSV=""
 
 log() {
   echo "[$1] $2"
 }
+
+cleanup() {
+  if [ -n "${SKILL_DECISIONS_TSV:-}" ] && [ -f "$SKILL_DECISIONS_TSV" ]; then
+    rm -f "$SKILL_DECISIONS_TSV"
+  fi
+}
+
+trap cleanup EXIT
 
 check_dependencies() {
   local missing=()
@@ -119,11 +129,96 @@ AGENT_SKILL_DIRS=(
   "$HOME/.gemini/skills"
 )
 
+load_skill_decisions() {
+  if [ ! -f "$SKILL_DECISIONS_JSON" ]; then
+    return
+  fi
+
+  if ! command -v python3 >/dev/null 2>&1; then
+    log "WARN" "python3 not found; ignoring $SKILL_DECISIONS_JSON"
+    return
+  fi
+
+  SKILL_DECISIONS_TSV="$(mktemp)"
+  if ! python3 - "$SKILL_DECISIONS_JSON" >"$SKILL_DECISIONS_TSV" <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+data = json.load(open(path, "r", encoding="utf-8"))
+decisions = data.get("decisions", {})
+
+# Resolve duplicates by latest updated_at per skill name.
+by_name = {}
+for rec in decisions.values():
+    if not isinstance(rec, dict):
+        continue
+    name = rec.get("name")
+    keep = rec.get("keep")
+    updated_at = rec.get("updated_at", "")
+    if not name or not isinstance(keep, bool):
+        continue
+    prev = by_name.get(name)
+    if prev is None or updated_at >= prev[0]:
+        by_name[name] = (updated_at, keep)
+
+for name in sorted(by_name):
+    keep = by_name[name][1]
+    print(f"{name}\t{1 if keep else 0}")
+PY
+  then
+    log "WARN" "Failed to parse $SKILL_DECISIONS_JSON; ignoring decisions"
+    rm -f "$SKILL_DECISIONS_TSV"
+    SKILL_DECISIONS_TSV=""
+    return
+  fi
+
+  log "INFO" "Loaded skill decisions from $SKILL_DECISIONS_JSON"
+}
+
+should_install_skill() {
+  local skill_name="$1"
+  if [ -z "$SKILL_DECISIONS_TSV" ] || [ ! -f "$SKILL_DECISIONS_TSV" ]; then
+    return 0
+  fi
+
+  local decision
+  decision="$(awk -F '\t' -v n="$skill_name" '$1==n {print $2; exit}' "$SKILL_DECISIONS_TSV")"
+  # Default install if no decision exists.
+  if [ -z "$decision" ] || [ "$decision" = "1" ]; then
+    return 0
+  fi
+  return 1
+}
+
+remove_denied_skill_links() {
+  if [ -z "$SKILL_DECISIONS_TSV" ] || [ ! -f "$SKILL_DECISIONS_TSV" ]; then
+    return
+  fi
+
+  while IFS=$'\t' read -r skill_name keep; do
+    [ "$keep" = "0" ] || continue
+    for agent_dir in "${AGENT_SKILL_DIRS[@]}"; do
+      local target="$agent_dir/$skill_name"
+      if [ -L "$target" ]; then
+        rm -f "$target"
+        log "REMOVE" "Removed denied skill link: $target"
+      elif [ -e "$target" ]; then
+        log "WARN" "Denied skill exists but is not a symlink, left unchanged: $target"
+      fi
+    done
+  done < "$SKILL_DECISIONS_TSV"
+}
+
 install_skills_from() {
   local skill_dir="$1"
   [ -d "$skill_dir" ] || return
   local skill_name
   skill_name="$(basename "$skill_dir")"
+  if ! should_install_skill "$skill_name"; then
+    log "SKIP" "Denied by skill decisions: $skill_name"
+    return
+  fi
   for agent_dir in "${AGENT_SKILL_DIRS[@]}"; do
     safe_link "${skill_dir%/}" "$agent_dir/$skill_name"
   done
@@ -136,6 +231,9 @@ if [ -d "$SKILLS_REPOS" ]; then
   for agent_dir in "${AGENT_SKILL_DIRS[@]}"; do
     mkdir -p "$agent_dir"
   done
+
+  load_skill_decisions
+  remove_denied_skill_links
 
   # obra/superpowers: skills/<name>/
   for d in "$SKILLS_REPOS"/superpowers/skills/*/; do

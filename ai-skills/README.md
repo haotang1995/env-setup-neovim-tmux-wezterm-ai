@@ -33,6 +33,11 @@ agent's discovery path:
 ~/.gemini/skills/<name>/  →  <repo>/ai-skills/.repos/<source>/.../<name>/
 ```
 
+If `ai-skills/skill-decisions.json` exists, `install.sh` enforces it:
+- `keep: false` skills are not installed.
+- Existing denied skill symlinks are removed from all three agent dirs.
+- Undecided skills are installed by default.
+
 ## Included Skill Repos
 
 | Repo | Skills | Focus |
@@ -75,18 +80,44 @@ git rm ai-skills/.repos/<name>
 rm -rf .git/modules/ai-skills/.repos/<name>
 ```
 
-### Disable individual skills
+### Disable individual skills (persistent)
 
-Remove the symlink from the agent's skills directory:
+Use the interactive reviewer and set the skill to remove:
 
 ```bash
-rm ~/.claude/skills/<skill-name>
-rm ~/.codex/skills/<skill-name>
-rm ~/.gemini/skills/<skill-name>
+python3 scripts/review_skills.py
 ```
 
-The symlink will be recreated on next `install.sh` run. To permanently skip
-a skill, add a filter in the `install_skills_from` function in `install.sh`.
+This writes `ai-skills/skill-decisions.json`, and `./scripts/install.sh` will
+continue enforcing those decisions on future runs.
+
+Reviewer options:
+
+```bash
+# Review one specific skill only
+python3 scripts/review_skills.py --skill openai-docs
+
+# Re-ask only skills that already have decisions
+python3 scripts/review_skills.py --redo
+
+# Record decisions only (do not apply symlink changes immediately)
+python3 scripts/review_skills.py --no-apply
+```
+
+By default, each answer is applied immediately across all agent dirs
+(`~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`) and saved to
+`ai-skills/skill-decisions.json`.
+
+Decision semantics:
+- Default run (`python3 scripts/review_skills.py`) asks only **undecided** skills.
+- `--redo` re-asks only skills that are **already decided** in the JSON.
+- `--skill <name>` asks exactly one named skill and updates only that skill.
+- Previously saved decisions remain unchanged unless that skill is answered again.
+
+Decision file format (`ai-skills/skill-decisions.json`):
+- Top-level keys: `meta`, `decisions`.
+- `decisions` is keyed by internal skill id/path.
+- Each record contains: `name`, `source`, `path`, `skill_dir`, `keep`, `updated_at`.
 
 ## SKILL.md Format
 
