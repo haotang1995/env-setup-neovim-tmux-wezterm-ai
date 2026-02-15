@@ -1,5 +1,4 @@
 - One skill to check consistency of documents vs local
 - sub-agents
-- memory
 - self-evolving skills
 - chat history, keep track for all ai-agents, especially which skill, etc.; Get context maybe doable as a fake tool?
