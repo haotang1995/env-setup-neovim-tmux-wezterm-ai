@@ -13,3 +13,6 @@
 [submodule "ai-skills/.repos/ai-research-skills"]
 	path = ai-skills/.repos/ai-research-skills
 	url = https://github.com/Orchestra-Research/AI-research-SKILLs.git
+[submodule "ai-skills/.repos/my_skills"]
+	path = ai-skills/.repos/my_skills
+	url = git@github.com:haotang1995/my_skills.git

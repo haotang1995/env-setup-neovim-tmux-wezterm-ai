@@ -213,15 +213,60 @@ remove_denied_skill_links() {
 install_skills_from() {
   local skill_dir="$1"
   [ -d "$skill_dir" ] || return
+  local dir_name
+  dir_name="$(basename "$skill_dir")"
   local skill_name
-  skill_name="$(basename "$skill_dir")"
+  skill_name="$(resolve_skill_name "$skill_dir")"
   if ! should_install_skill "$skill_name"; then
     log "SKIP" "Denied by skill decisions: $skill_name"
     return
   fi
+
+  # Remove old alias links (directory-name based) when canonical name differs.
+  if [ "$dir_name" != "$skill_name" ]; then
+    for agent_dir in "${AGENT_SKILL_DIRS[@]}"; do
+      local alias_target="$agent_dir/$dir_name"
+      if [ -L "$alias_target" ] && [ "$(readlink "$alias_target")" = "${skill_dir%/}" ]; then
+        rm -f "$alias_target"
+        log "REMOVE" "Removed legacy alias skill link: $alias_target"
+      fi
+    done
+  fi
+
   for agent_dir in "${AGENT_SKILL_DIRS[@]}"; do
     safe_link "${skill_dir%/}" "$agent_dir/$skill_name"
   done
+}
+
+resolve_skill_name() {
+  local skill_dir="$1"
+  local skill_md="$skill_dir/SKILL.md"
+  local fallback
+  fallback="$(basename "$skill_dir")"
+
+  [ -f "$skill_md" ] || {
+    echo "$fallback"
+    return
+  }
+
+  # Parse frontmatter "name:" and fall back to directory name when absent.
+  local parsed
+  parsed="$(awk '
+    NR == 1 && $0 ~ /^---[[:space:]]*$/ { in_fm = 1; next }
+    in_fm && $0 ~ /^---[[:space:]]*$/ { exit }
+    in_fm && $0 ~ /^name:[[:space:]]*/ {
+      sub(/^name:[[:space:]]*/, "", $0)
+      gsub(/^[\"\047]|[\"\047]$/, "", $0)
+      print $0
+      exit
+    }
+  ' "$skill_md")"
+
+  if [ -n "$parsed" ]; then
+    echo "$parsed"
+  else
+    echo "$fallback"
+  fi
 }
 
 if [ -d "$SKILLS_REPOS" ]; then
@@ -255,6 +300,11 @@ if [ -d "$SKILLS_REPOS" ]; then
   # K-Dense-AI/claude-scientific-skills: scientific-skills/<name>/
   for d in "$SKILLS_REPOS"/scientific-skills/scientific-skills/*/; do
     install_skills_from "$d"
+  done
+
+  # Custom my_skills repo: <skill-name>/SKILL.md
+  for d in "$SKILLS_REPOS"/my_skills/*/; do
+    [ -f "$d/SKILL.md" ] && install_skills_from "$d"
   done
 
   # Orchestra-Research/AI-Research-SKILLs: NN-topic/SKILL.md or NN-topic/<tool>/SKILL.md
