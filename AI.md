@@ -44,9 +44,9 @@ scripts/                         ← Utility scripts for global use
   review_skills.py               ← Interactive keep/remove review for skills
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
-  .repos/superpowers/            ← git submodule: obra/superpowers (14 skills)
-  .repos/openai-skills/          ← git submodule: openai/skills (30 skills)
-  .repos/tob-skills/             ← git submodule: trailofbits/skills (27 skills)
+  .repos/superpowers/            ← git submodule: obra/superpowers
+  .repos/openai-skills/          ← git submodule: openai/skills
+  .repos/tob-skills/             ← git submodule: trailofbits/skills
 nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   init.lua                       ← LazyVim entry point
   lazyvim.json                   ← LazyVim metadata
@@ -80,7 +80,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Plugin manager:** lazy.nvim (bundled with LazyVim).
 - **LazyVim Extras enabled:** `lang.tex`, `lang.markdown`, `editor.mini-files`.
 - **Markdown rendering parsers:** ensure `markdown`, `markdown_inline`, `latex`, and `html` tree-sitter parsers are installed.
-- **Markdown math in-buffer:** `render-markdown.nvim` needs `utftex` or `latex2text`; config auto-detects common user install paths (e.g. `~/.local/bin`, macOS `~/Library/Python/*/bin`) when PATH is incomplete.
+- **Markdown math in-buffer:** `render-markdown.nvim` may rely on tools such as `utftex` or `latex2text` depending on your setup.
 - **Custom plugins** go in `lua/plugins/<name>.lua`, one file per logical group.
 - **Keymaps:** `jk` = exit insert, `\cc` = toggle comment, `Ctrl+d/u` = scroll centered.
 - **Leader key:** `<Space>` (LazyVim default).
@@ -129,7 +129,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 
 ### AI integration
 
-- **CLI Agents (via tmux popups):**
+- **CLI Agents (via tmux windows):**
   - `gemini`: Google's Gemini CLI for quick codebase queries and tasks.
   - `claude`: Claude Code for agentic coding and complex refactors.
   - `codex`: Codex CLI for AI-powered shell assistance and automation.
@@ -172,12 +172,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - `lazy-lock.json` is committed so that plugin versions are reproducible.
   Run `:Lazy sync` (not `:Lazy update`) on fresh deploys to match the lockfile.
 
-## Known issues & TODO
+## Task tracking
 
-- `avante.nvim` is configured with `blink.compat` so `blink.cmp` can serve
-  Avante command/mention/file/shortcut completion sources without adding
-  explicit `nvim-cmp` dependency in local config.
-- Win11/WSL and HPC cluster deploys are not yet done.
-- `scripts/install.sh` now handles backups, idempotency, and dependency checks, but a full cross-platform test is pending.
-- update global `AI.md`.
-- update skills after using it.
+- Source of truth for pending work: `TODO/TODO.md`.
+- For each active task, maintain a progress note at
+  `TODO/<task>_progress.md` (one file per task).

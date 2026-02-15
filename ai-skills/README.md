@@ -17,11 +17,11 @@ Skills are sourced from community repos as **git submodules** under `.repos/`:
 ai-skills/
   README.md
   .repos/                            # git submodules (skill sources)
-    superpowers/                     # obra/superpowers (14 skills)
-    openai-skills/                   # openai/skills (30 skills)
-    tob-skills/                      # trailofbits/skills (27 skills)
-    scientific-skills/               # K-Dense-AI/claude-scientific-skills (141 skills)
-    ai-research-skills/              # Orchestra-Research/AI-Research-SKILLs (83 skills)
+    superpowers/                     # obra/superpowers
+    openai-skills/                   # openai/skills
+    tob-skills/                      # trailofbits/skills
+    scientific-skills/               # K-Dense-AI/claude-scientific-skills
+    ai-research-skills/              # Orchestra-Research/AI-Research-SKILLs
 ```
 
 The installer (`scripts/install.sh`) symlinks each skill directory into every
@@ -40,13 +40,13 @@ If `ai-skills/skill-decisions.json` exists, `install.sh` enforces it:
 
 ## Included Skill Repos
 
-| Repo | Skills | Focus |
-|------|--------|-------|
-| [obra/superpowers](https://github.com/obra/superpowers) | 14 | TDD, debugging, planning, code review, git worktrees, parallel agents |
-| [openai/skills](https://github.com/openai/skills) | 30 | GitHub workflows, security, deployment, docs, Playwright |
-| [trailofbits/skills](https://github.com/trailofbits/skills) | 27 | Security analysis, Semgrep, property-based testing, modern Python |
-| [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) | 141 | Scientific writing, literature review, peer review, citation management, venue templates, bioinformatics |
-| [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-research-SKILLs) | 83 | ML paper writing, model architecture, fine-tuning, evaluation, MLOps, distributed training |
+| Repo | Focus |
+|------|-------|
+| [obra/superpowers](https://github.com/obra/superpowers) | TDD, debugging, planning, code review, git worktrees, parallel agents |
+| [openai/skills](https://github.com/openai/skills) | GitHub workflows, security, deployment, docs, Playwright |
+| [trailofbits/skills](https://github.com/trailofbits/skills) | Security analysis, Semgrep, property-based testing, modern Python |
+| [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) | Scientific writing, literature review, peer review, citation management, venue templates, bioinformatics |
+| [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-research-SKILLs) | ML paper writing, model architecture, fine-tuning, evaluation, MLOps, distributed training |
 
 ## Managing Skills
 
