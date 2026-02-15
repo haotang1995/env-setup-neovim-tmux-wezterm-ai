@@ -126,6 +126,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
 - **`init-ai`:** Bootstraps `AI.md` and links it to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
+- **`codex-sandbox`:** Runs Codex in Docker with `/workspace` bind-mounted, builds/uses a local image (`codex-sandbox:node22`) so core tools (git, SSH client, certs, pager) are always present, and mirrors host git config (`~/.gitconfig`, `~/.config/git`) into the container when available.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, and `~/.gemini/skills`.

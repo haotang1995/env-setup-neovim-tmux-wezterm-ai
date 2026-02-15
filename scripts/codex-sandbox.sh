@@ -21,22 +21,45 @@ set -euo pipefail
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CODEX_HOST="${HOME}/.codex"
 CODEX_CONTAINER="${HOME}/.codex"
+SANDBOX_IMAGE="${SANDBOX_IMAGE:-codex-sandbox:node22}"
 
-exec docker run --rm -it \
-  -v "${PWD}:/workspace" \
-  -v codex-home:"${CODEX_CONTAINER}" \
-  -v "${REPO_DIR}:${REPO_DIR}:ro" \
-  -v codex-npm-cache:/root/.npm \
-  --mount "type=bind,src=${CODEX_HOST},dst=/host-codex,readonly" \
-  -w /workspace \
-  -e HOME="${HOME}" \
-  node:22-slim \
+# Build a local base image with required tooling (git, ssh, certs, pager).
+if ! docker image inspect "${SANDBOX_IMAGE}" >/dev/null 2>&1; then
+  docker build -q \
+    -t "${SANDBOX_IMAGE}" \
+    -f "${REPO_DIR}/scripts/codex-sandbox.Dockerfile" \
+    "${REPO_DIR}" >/dev/null
+fi
+
+docker_args=(
+  --rm -it
+  -v "${PWD}:/workspace"
+  -v codex-home:"${CODEX_CONTAINER}"
+  -v "${REPO_DIR}:${REPO_DIR}:ro"
+  -v codex-npm-cache:/root/.npm
+  --mount "type=bind,src=${CODEX_HOST},dst=/host-codex,readonly"
+  -w /workspace
+  -e HOME="${HOME}"
+)
+
+# Optionally pass through host git configuration.
+if [[ -f "${HOME}/.gitconfig" ]]; then
+  docker_args+=(--mount "type=bind,src=${HOME}/.gitconfig,dst=/host-gitconfig,readonly")
+fi
+if [[ -d "${HOME}/.config/git" ]]; then
+  docker_args+=(--mount "type=bind,src=${HOME}/.config/git,dst=/host-git-config,readonly")
+fi
+
+exec docker run "${docker_args[@]}" \
+  "${SANDBOX_IMAGE}" \
   bash -c '
-    # Ensure CA certificates are present (needed by the Rust-based codex binary)
-    apt-get update -qq && apt-get install -y -qq ca-certificates >/dev/null 2>&1
     # Always refresh OAuth + config from host (tokens expire)
     cp /host-codex/auth.json "'"${CODEX_CONTAINER}"'/" 2>/dev/null || true
     cp /host-codex/config.toml "'"${CODEX_CONTAINER}"'/" 2>/dev/null || true
+    # Keep git config aligned with host when available.
+    cp /host-gitconfig "${HOME}/.gitconfig" 2>/dev/null || true
+    mkdir -p "${HOME}/.config/git"
+    cp -R /host-git-config/. "${HOME}/.config/git/" 2>/dev/null || true
     # Set up skills on first run
     if [ ! -d "'"${CODEX_CONTAINER}"'/skills" ]; then
       "'"${REPO_DIR}"'/scripts/install.sh" >/dev/null 2>&1 || true
