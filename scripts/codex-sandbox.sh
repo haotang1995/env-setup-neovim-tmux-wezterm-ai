@@ -115,10 +115,16 @@ exec docker run "${docker_args[@]}" \
       cp -a "${CODEX_CONTAINER}/.codex/skills/." "${CODEX_CONTAINER}/skills/" 2>/dev/null || true
     fi
 
-    # Set up skills when missing or effectively empty (only .system).
+    # Set up skills when missing, effectively empty (only .system),
+    # or containing only broken symlinks.
     if [ ! -d "${CODEX_CONTAINER}/skills" ] || \
-       ! find "${CODEX_CONTAINER}/skills" -mindepth 1 -maxdepth 1 ! -name ".system" | grep -q .; then
-      "${REPO_DIR}/scripts/install.sh" >/dev/null 2>&1 || true
+       ! find "${CODEX_CONTAINER}/skills" -mindepth 1 -maxdepth 1 ! -name ".system" \
+           -exec test -e {} \; -print -quit | grep -q .; then
+      echo "Bootstrapping skills into ${CODEX_CONTAINER}/skills..." >&2
+      if ! "${REPO_DIR}/scripts/install.sh" >/tmp/codex-install.log 2>&1; then
+        echo "Warning: skill bootstrap failed. Showing install output:" >&2
+        cat /tmp/codex-install.log >&2 || true
+      fi
     fi
     npm i -g @openai/codex >/dev/null 2>&1
     exec codex --sandbox danger-full-access "$@"
