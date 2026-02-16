@@ -59,7 +59,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     autocmds.lua                 ← autocommands (reload, filetype, trim whitespace)
   lua/plugins/
     ai.lua                       ← avante.nvim + copilot.lua + CopilotChat
-    vimtex.lua                   ← VimTeX overrides (platform-detecting viewer)
+    vimtex.lua                   ← VimTeX overrides (lualatex engine, platform-detecting viewer)
     markdown.lua                 ← render-markdown.nvim + markdown-preview.nvim
     tmux-navigator.lua           ← vim-tmux-navigator (Ctrl+hjkl across panes)
 .gemini/                         ← Gemini agent config (→ ~/.gemini/settings.json)
