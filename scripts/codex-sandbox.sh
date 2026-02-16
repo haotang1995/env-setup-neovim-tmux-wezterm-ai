@@ -21,14 +21,60 @@ set -euo pipefail
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CODEX_HOST="${HOME}/.codex"
 CODEX_CONTAINER="/root/.codex"
-SANDBOX_IMAGE="${SANDBOX_IMAGE:-codex-sandbox:node22}"
+
+resolve_abs_path() {
+  local candidate="$1"
+  if [[ "${candidate}" = /* ]]; then
+    printf '%s\n' "${candidate}"
+  else
+    printf '%s\n' "${PWD}/${candidate}"
+  fi
+}
+
+DOCKERFILE_PATH=""
+BUILD_CONTEXT=""
+DOCKERFILE_SOURCE="default"
+
+# Dockerfile selection order:
+# 1) SANDBOX_DOCKERFILE
+# 2) ./Dockerfile in caller's current directory
+# 3) repository default scripts/codex-sandbox.Dockerfile
+if [[ -n "${SANDBOX_DOCKERFILE:-}" ]]; then
+  DOCKERFILE_PATH="$(resolve_abs_path "${SANDBOX_DOCKERFILE}")"
+  if [[ ! -f "${DOCKERFILE_PATH}" ]]; then
+    echo "Error: SANDBOX_DOCKERFILE does not exist: ${DOCKERFILE_PATH}" >&2
+    exit 1
+  fi
+  BUILD_CONTEXT="${SANDBOX_DOCKER_CONTEXT:-$(cd "$(dirname "${DOCKERFILE_PATH}")" && pwd)}"
+  DOCKERFILE_SOURCE="custom"
+elif [[ -f "${PWD}/Dockerfile" ]]; then
+  DOCKERFILE_PATH="${PWD}/Dockerfile"
+  BUILD_CONTEXT="${PWD}"
+  DOCKERFILE_SOURCE="cwd"
+else
+  DOCKERFILE_PATH="${REPO_DIR}/scripts/codex-sandbox.Dockerfile"
+  BUILD_CONTEXT="${REPO_DIR}"
+fi
+
+# Keep the existing default tag for the built-in Dockerfile. For custom
+# Dockerfiles, derive a content-based tag to avoid image collisions.
+if [[ -n "${SANDBOX_IMAGE:-}" ]]; then
+  SANDBOX_IMAGE="${SANDBOX_IMAGE}"
+elif [[ "${DOCKERFILE_SOURCE}" = "default" ]]; then
+  SANDBOX_IMAGE="codex-sandbox:node22"
+else
+  dockerfile_hash="$(sha256sum "${DOCKERFILE_PATH}" | awk '{print substr($1,1,12)}')"
+  SANDBOX_IMAGE="codex-sandbox:custom-${dockerfile_hash}"
+fi
+
+echo "Using sandbox image: ${SANDBOX_IMAGE}" >&2
 
 # Build a local base image with required tooling (git, ssh, certs, pager).
 if ! docker image inspect "${SANDBOX_IMAGE}" >/dev/null 2>&1; then
   docker build -q \
     -t "${SANDBOX_IMAGE}" \
-    -f "${REPO_DIR}/scripts/codex-sandbox.Dockerfile" \
-    "${REPO_DIR}" >/dev/null
+    -f "${DOCKERFILE_PATH}" \
+    "${BUILD_CONTEXT}" >/dev/null
 fi
 
 docker_args=(
