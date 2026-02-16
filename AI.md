@@ -125,7 +125,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   - Use `./scripts/install.sh -u` (or `--update`) to pull the latest repo changes,
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
-- **`init-ai`:** Bootstraps `AI.md` and links it to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
+- **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile`, initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
 - **`codex-sandbox`:** Runs Codex in Docker with `/workspace` bind-mounted, supports Dockerfile selection in this order: `SANDBOX_DOCKERFILE`, `./Dockerfile` in the caller directory, then the default `scripts/codex-sandbox.Dockerfile`, prints the selected sandbox image, uses `/root/.codex` as the container Codex home, mirrors host git config (`~/.gitconfig`, `~/.config/git`) into the container when available, and auto-migrates legacy nested skills path (`~/.codex/.codex/skills`) while bootstrapping skills when missing/empty or only broken symlinks are present.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_DOCKERFILE="${SCRIPT_DIR}/codex-sandbox.Dockerfile"
 TARGET_DIR="${1:-.}"
 
 if [ ! -d "$TARGET_DIR" ]; then
@@ -8,6 +10,21 @@ if [ ! -d "$TARGET_DIR" ]; then
 fi
 
 cd "$TARGET_DIR"
+
+# Always provide a default Dockerfile for codex-sandbox cwd builds.
+cp "${DEFAULT_DOCKERFILE}" Dockerfile
+
+# Initialize a null installer for project-specific setup hooks.
+if [ ! -f install.sh ]; then
+  cat > install.sh <<'DOC'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# No-op project installer. Add setup steps when needed.
+exit 0
+DOC
+  chmod +x install.sh
+fi
 
 if [ ! -f AI.md ]; then
   cat > AI.md <<'DOC'
