@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_DOCKERFILE="${SCRIPT_DIR}/codex-sandbox.Dockerfile"
+DEFAULT_DOCKERFILE="${SCRIPT_DIR}/ai-sandbox.Dockerfile"
 TARGET_DIR="${1:-.}"
 
 if [ ! -d "$TARGET_DIR" ]; then

@@ -100,12 +100,31 @@ echo "Installing scripts to $BIN_DIR..."
 for script in "$SCRIPT_DIR"/*.sh; do
   # Skip the installer itself
   [ "$(basename "$script")" = "install.sh" ] && continue
-  
+
   # Remove .sh extension for the global command name
   name=$(basename "$script" .sh)
   dest="$BIN_DIR/$name"
-  
+
   safe_link "$script" "$dest"
+done
+
+# Clean up stale symlinks from old per-agent sandbox scripts
+for old_name in claude-sandbox gemini-sandbox codex-sandbox; do
+  old_link="$BIN_DIR/$old_name"
+  if [ -L "$old_link" ]; then
+    old_target="$(readlink "$old_link")"
+    case "$old_target" in
+      *claude-sandbox.sh|*gemini-sandbox.sh|*codex-sandbox.sh)
+        rm -f "$old_link"
+        log "REMOVE" "Removed stale symlink: $old_link -> $old_target"
+        ;;
+    esac
+  fi
+done
+
+# Backward-compat symlinks: old names -> unified ai-sandbox.sh
+for compat_name in claude-sandbox gemini-sandbox codex-sandbox; do
+  safe_link "$SCRIPT_DIR/ai-sandbox.sh" "$BIN_DIR/$compat_name"
 done
 
 echo ""

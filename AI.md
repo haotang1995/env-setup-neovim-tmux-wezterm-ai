@@ -41,6 +41,8 @@ tmux.conf                        ← tmux config    (→ ~/.tmux.conf)
 scripts/                         ← Utility scripts for global use
   install.sh                     ← Installer (symlinks scripts + configs + skills)
   init-ai.sh                     ← Unified AI context bootstrapper
+  ai-sandbox.sh                  ← Unified Docker sandbox (claude/gemini/codex)
+  ai-sandbox.Dockerfile          ← Shared sandbox image (all three CLIs pre-installed)
   review_skills.py               ← Interactive keep/remove review for skills
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
@@ -125,10 +127,25 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   - Use `./scripts/install.sh -u` (or `--update`) to pull the latest repo changes,
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
-- **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile`, initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
-- **`gemini-sandbox`:** Runs Gemini CLI in Docker with `/workspace` bind-mounted, supports Dockerfile selection in this order: `SANDBOX_DOCKERFILE`, `./Dockerfile` in the caller directory, then the default `scripts/codex-sandbox.Dockerfile`, uses `/root/.gemini` as the container Gemini home, mirrors host git config (`~/.gitconfig`, `~/.config/git`) into the container when available, and bootstraps skills when missing/empty or only broken symlinks are present.
-- **`claude-sandbox`:** Runs Claude Code in Docker with `/workspace` bind-mounted, supports Dockerfile selection in this order: `SANDBOX_DOCKERFILE`, `./Dockerfile` in the caller directory, then the default `scripts/codex-sandbox.Dockerfile`, uses `/root/.claude` as the container Claude home, mirrors host git config (`~/.gitconfig`, `~/.config/git`) and account metadata (`~/.claude.json`) into the container when available, on macOS automatically extracts OAuth credentials from the Keychain (service `Claude Code-credentials`) and writes them to `~/.claude/.credentials.json` inside the container so auth and token refresh work without manual login (skipped when `CLAUDE_CODE_OAUTH_TOKEN` is already set), and bootstraps skills when missing/empty or only broken symlinks are present.
-- **`codex-sandbox`:** Runs Codex in Docker with `/workspace` bind-mounted, supports Dockerfile selection in this order: `SANDBOX_DOCKERFILE`, `./Dockerfile` in the caller directory, then the default `scripts/codex-sandbox.Dockerfile`, prints the selected sandbox image, uses `/root/.codex` as the container Codex home, mirrors host git config (`~/.gitconfig`, `~/.config/git`) into the container when available, and auto-migrates legacy nested skills path (`~/.codex/.codex/skills`) while bootstrapping skills when missing/empty or only broken symlinks are present.
+- **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
+- **`ai-sandbox`:** Unified Docker sandbox for all three AI CLI agents. Usage:
+  `ai-sandbox <claude|gemini|codex> [args...]`, or via backward-compat symlinks
+  (`claude-sandbox`, `gemini-sandbox`, `codex-sandbox`). All agents share a
+  single Docker image (`ai-sandbox:node22`, built from `scripts/ai-sandbox.Dockerfile`)
+  with all three CLIs pre-installed at build time for near-instant startup.
+  Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
+  Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
+  Mirrors host git config. Agent-specific behavior:
+  **claude** — extra named volumes for `/root/.config` and `/root/.local/share`,
+  mounts `~/.claude.json` and `~/.config/claude{,-code}`, macOS Keychain credential
+  extraction (service `Claude Code-credentials`), Anthropic env var passthrough,
+  drops to non-root user via `setpriv` then launches with `--dangerously-skip-permissions`;
+  **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
+  `sandbox-exec` setting, disables auto-update, launches with `--sandbox false --yolo`;
+  **codex** — selective `auth.json`/`config.toml` refresh, legacy `~/.codex/.codex/skills`
+  migration, launches with `--sandbox danger-full-access`.
+  Bootstraps skills when missing/empty or only broken symlinks are present.
+  Falls back to `npm i -g` only when the CLI binary is not found (custom Dockerfiles).
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, and `~/.gemini/skills`.

@@ -7,3 +7,5 @@ RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
   less \
   && rm -rf /var/lib/apt/lists/*
 
+RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex \
+  && npm cache clean --force
