@@ -42,7 +42,7 @@ scripts/                         ← Utility scripts for global use
   install.sh                     ← Installer (symlinks scripts + configs + skills)
   init-ai.sh                     ← Unified AI context bootstrapper
   ai-sandbox.sh                  ← Unified Docker sandbox (claude/gemini/codex)
-  ai-sandbox.Dockerfile          ← Shared sandbox image (all three CLIs pre-installed)
+  ai-sandbox.Dockerfile          ← Shared sandbox image (ubuntu:24.04 + Node 22 + all three CLIs)
   review_skills.py               ← Interactive keep/remove review for skills
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
@@ -131,8 +131,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **`ai-sandbox`:** Unified Docker sandbox for all three AI CLI agents. Usage:
   `ai-sandbox <claude|gemini|codex> [args...]`, or via backward-compat symlinks
   (`claude-sandbox`, `gemini-sandbox`, `codex-sandbox`). All agents share a
-  single Docker image (`ai-sandbox:node22`, built from `scripts/ai-sandbox.Dockerfile`)
-  with all three CLIs pre-installed at build time for near-instant startup.
+  single Docker image (`ai-sandbox:node22`, built from `scripts/ai-sandbox.Dockerfile`,
+  based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22,
+  and all three CLIs) pre-installed at build time for near-instant startup.
   Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
   Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
   Mirrors host git config. Agent-specific behavior:

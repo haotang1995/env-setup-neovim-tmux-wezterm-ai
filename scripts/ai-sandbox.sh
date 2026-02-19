@@ -275,7 +275,7 @@ exec docker run "${docker_args[@]}" \
     case "${AGENT}" in
       claude)
         # Claude refuses --dangerously-skip-permissions as root;
-        # drop to the node user (uid 1000, pre-exists in node:22 image).
+        # drop to the sandbox user (uid 1000, created in Dockerfile).
         chmod 755 /root 2>/dev/null || true
         chown -R 1000:1000 "${AGENT_CONTAINER}" /workspace \
           /root/.config /root/.local 2>/dev/null || true
