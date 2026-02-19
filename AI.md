@@ -136,7 +136,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   and all three CLIs) pre-installed at build time for near-instant startup.
   Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
   Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
-  Mirrors host git config. Agent-specific behavior:
+  Mirrors host git config, marks `/workspace` as a Git `safe.directory`, and
+  auto-mounts external Git metadata paths (`git-dir` / `git-common-dir`) when
+  running inside linked worktrees. Agent-specific behavior:
   **claude** — extra named volumes for `/root/.config` and `/root/.local/share`,
   mounts `~/.claude.json` and `~/.config/claude{,-code}`, macOS Keychain credential
   extraction (service `Claude Code-credentials`), Anthropic env var passthrough,

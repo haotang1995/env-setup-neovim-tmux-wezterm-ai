@@ -143,6 +143,20 @@ docker_args=(
   -e REPO_DIR="${REPO_DIR}"
 )
 
+# Worktree support: mount external git metadata paths when /workspace/.git
+# points outside the current directory.
+if git -C "${PWD}" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git_dir_abs="$(cd "${PWD}" && cd "$(git rev-parse --git-dir)" && pwd -P)"
+  git_common_dir_abs="$(cd "${PWD}" && cd "$(git rev-parse --git-common-dir)" && pwd -P)"
+
+  if [[ -n "${git_dir_abs}" && -d "${git_dir_abs}" ]]; then
+    docker_args+=(--mount "type=bind,src=${git_dir_abs},dst=${git_dir_abs}")
+  fi
+  if [[ -n "${git_common_dir_abs}" && -d "${git_common_dir_abs}" && "${git_common_dir_abs}" != "${git_dir_abs}" ]]; then
+    docker_args+=(--mount "type=bind,src=${git_common_dir_abs},dst=${git_common_dir_abs}")
+  fi
+fi
+
 # Gemini: suppress auto-update (CLIs are pre-installed in the image;
 # in-place npm updates corrupt the binary and crash on restart).
 if [[ "${AGENT}" = "gemini" ]]; then
@@ -271,6 +285,9 @@ exec docker run "${docker_args[@]}" \
       npm i -g "${AGENT_NPM_PKG}" >/dev/null 2>&1
     fi
 
+    # Allow Git operations in bind-mounted repositories with differing ownership.
+    git config --global --add safe.directory /workspace 2>/dev/null || true
+
     # ── Launch ──
     case "${AGENT}" in
       claude)
@@ -280,7 +297,6 @@ exec docker run "${docker_args[@]}" \
         chown -R 1000:1000 "${AGENT_CONTAINER}" /workspace \
           /root/.config /root/.local 2>/dev/null || true
         [ -f "${HOME}/.claude.json" ] && chown 1000:1000 "${HOME}/.claude.json" 2>/dev/null || true
-        git config --global --add safe.directory /workspace 2>/dev/null || true
         exec setpriv --reuid=1000 --regid=1000 --init-groups -- \
           claude --dangerously-skip-permissions "$@"
         ;;
