@@ -135,6 +135,8 @@ docker_args=(
   --mount "type=bind,src=${AGENT_HOST},dst=/host-agent-home,readonly"
   -w /workspace
   -e HOME=/root
+  -e TERM="${TERM:-xterm-256color}"
+  -e COLORTERM="${COLORTERM:-truecolor}"
   -e AGENT="${AGENT}"
   -e AGENT_CONTAINER="${AGENT_CONTAINER}"
   -e AGENT_NPM_PKG="${AGENT_NPM_PKG}"
