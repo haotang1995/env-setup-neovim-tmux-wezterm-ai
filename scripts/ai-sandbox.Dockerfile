@@ -14,6 +14,7 @@ RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
   python3-venv \
   ripgrep \
   tree \
+  unzip \
   wget \
   && rm -rf /var/lib/apt/lists/*
 
