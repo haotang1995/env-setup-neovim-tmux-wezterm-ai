@@ -148,7 +148,10 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   running inside linked worktrees. Agent-specific behavior:
   **claude** — extra named volumes for `/root/.config` and `/root/.local/share`,
   mounts `~/.claude.json` and `~/.config/claude{,-code}`, macOS Keychain credential
-  extraction (service `Claude Code-credentials`), Anthropic env var passthrough,
+  extraction (service `Claude Code-credentials`), Anthropic env var passthrough;
+  auth/credential files (`.claude.json`, `.credentials.json`,
+  `~/.config/claude{,-code}`) are **always overwritten** from the host so rotated
+  tokens are picked up, while non-auth agent-home files use no-clobber seeding;
   drops to non-root user via `setpriv` then launches with `--dangerously-skip-permissions`;
   **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
   `sandbox-exec` setting, disables auto-update, launches with `--sandbox false --yolo`;

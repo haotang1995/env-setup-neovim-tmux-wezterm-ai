@@ -225,12 +225,17 @@ exec docker run "${docker_args[@]}" \
     # ── Per-agent auth/config sync ──
     case "${AGENT}" in
       claude)
-        # Seed only when files are missing (do not overwrite container state)
         # -L dereferences symlinks (install.sh creates symlinks in host agent dirs)
+        # Seed non-auth files only when missing (no-clobber)
         cp -anL /host-agent-home/. "${AGENT_CONTAINER}/" 2>/dev/null || true
-        cp -anL /host-claude-json "${HOME}/.claude.json" 2>/dev/null || true
+        # Always overwrite auth files so rotated tokens are picked up
+        cp -aL /host-claude-json "${HOME}/.claude.json" 2>/dev/null || true
+        for _f in .credentials.json credentials.json; do
+          [ -f "/host-agent-home/${_f}" ] && \
+            cp -aL "/host-agent-home/${_f}" "${AGENT_CONTAINER}/${_f}" 2>/dev/null || true
+        done
 
-        # Write Keychain-extracted credentials
+        # Write Keychain-extracted credentials (overrides file-based copy above)
         if [ -n "${_CLAUDE_CREDS_JSON:-}" ]; then
           printf "%s" "${_CLAUDE_CREDS_JSON}" > "${AGENT_CONTAINER}/.credentials.json"
           chmod 600 "${AGENT_CONTAINER}/.credentials.json"
@@ -238,8 +243,8 @@ exec docker run "${docker_args[@]}" \
         fi
 
         mkdir -p "${HOME}/.config/claude" "${HOME}/.config/claude-code"
-        cp -an /host-claude-config/. "${HOME}/.config/claude/" 2>/dev/null || true
-        cp -an /host-claude-code-config/. "${HOME}/.config/claude-code/" 2>/dev/null || true
+        cp -aL /host-claude-config/. "${HOME}/.config/claude/" 2>/dev/null || true
+        cp -aL /host-claude-code-config/. "${HOME}/.config/claude-code/" 2>/dev/null || true
         ;;
       gemini)
         # Keep Gemini auth/config in sync with host, including nested files
