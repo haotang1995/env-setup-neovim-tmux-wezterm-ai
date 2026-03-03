@@ -2,3 +2,6 @@
 - sub-agents
 - self-evolving skills
 - chat history, keep track for all ai-agents, especially which skill, etc.; Get context maybe doable as a fake tool?
+- Got an online always running agent, especially regarding privacy, it should be able to run local models for parsing and private tasks, etc.
+- ~~Docker image outdated issue~~ — solved: biweekly rotating tags (`w0`/`w1`) + `--rebuild` flag
+- ~~Dockerfile add python3, rg~~ — already in base image

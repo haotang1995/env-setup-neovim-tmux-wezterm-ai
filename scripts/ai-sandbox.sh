@@ -3,10 +3,10 @@
 # Docker container scoped to the current directory.
 #
 # Usage:
-#   ai-sandbox <agent> [agent args...]    (agent = claude | gemini | codex)
-#   claude-sandbox [args...]              (via compat symlink)
-#   gemini-sandbox [args...]
-#   codex-sandbox  [args...]
+#   ai-sandbox [--rebuild] <agent> [agent args...]  (agent = claude | gemini | codex)
+#   claude-sandbox [--rebuild] [args...]             (via compat symlink)
+#   gemini-sandbox [--rebuild] [args...]
+#   codex-sandbox  [--rebuild] [args...]
 
 set -euo pipefail
 
@@ -19,6 +19,13 @@ while [[ -L "$_source" ]]; do
   [[ "$_source" != /* ]] && _source="$_dir/$_source"
 done
 REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
+
+# ── Rebuild flag ─────────────────────────────────────────────────────────
+FORCE_REBUILD="${SANDBOX_REBUILD:-0}"
+if [[ "${1:-}" = "--rebuild" ]]; then
+  FORCE_REBUILD=1
+  shift
+fi
 
 # ── Agent selection ──────────────────────────────────────────────────────
 # Priority: explicit first arg > basename detection > error
@@ -35,7 +42,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox <claude|gemini|codex> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] <claude|gemini|codex> [args...]" >&2
       exit 1
       ;;
   esac
@@ -110,7 +117,7 @@ fi
 if [[ -n "${SANDBOX_IMAGE:-}" ]]; then
   SANDBOX_IMAGE="${SANDBOX_IMAGE}"
 elif [[ "${DOCKERFILE_SOURCE}" = "default" ]]; then
-  SANDBOX_IMAGE="ai-sandbox:node22"
+  SANDBOX_IMAGE="ai-sandbox:w$(( $(date +%V) % 2 ))"
 else
   dockerfile_hash="$(sha256sum "${DOCKERFILE_PATH}" | awk '{print substr($1,1,12)}')"
   SANDBOX_IMAGE="ai-sandbox:custom-${dockerfile_hash}"
@@ -118,11 +125,10 @@ fi
 
 echo "Using sandbox image: ${SANDBOX_IMAGE}" >&2
 
-if ! docker image inspect "${SANDBOX_IMAGE}" >/dev/null 2>&1; then
-  docker build -q \
-    -t "${SANDBOX_IMAGE}" \
-    -f "${DOCKERFILE_PATH}" \
-    "${BUILD_CONTEXT}" >/dev/null
+if [[ "${FORCE_REBUILD}" = "1" ]] || ! docker image inspect "${SANDBOX_IMAGE}" >/dev/null 2>&1; then
+  build_flags=(-q -t "${SANDBOX_IMAGE}" -f "${DOCKERFILE_PATH}")
+  [[ "${FORCE_REBUILD}" = "1" ]] && build_flags+=(--no-cache)
+  docker build "${build_flags[@]}" "${BUILD_CONTEXT}" >/dev/null
 fi
 
 # ── Docker args (shared) ─────────────────────────────────────────────────

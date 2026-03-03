@@ -129,11 +129,18 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
 - **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
 - **`ai-sandbox`:** Unified Docker sandbox for all three AI CLI agents. Usage:
-  `ai-sandbox <claude|gemini|codex> [args...]`, or via backward-compat symlinks
-  (`claude-sandbox`, `gemini-sandbox`, `codex-sandbox`). All agents share a
-  single Docker image (`ai-sandbox:node22`, built from `scripts/ai-sandbox.Dockerfile`,
-  based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22,
-  and all three CLIs) pre-installed at build time for near-instant startup.
+  `ai-sandbox [--rebuild] <claude|gemini|codex> [args...]`, or via backward-compat
+  symlinks (`claude-sandbox`, `gemini-sandbox`, `codex-sandbox`). All agents share
+  a single Docker image (built from `scripts/ai-sandbox.Dockerfile`, based on
+  `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, and all
+  three CLIs) pre-installed at build time for near-instant startup.
+  **Biweekly auto-rebuild:** the default image uses a rotating tag (`ai-sandbox:w0`
+  / `ai-sandbox:w1`) based on ISO week number, so every other week the tag flips,
+  the old image is unused, and a fresh build picks up the latest CLI versions.
+  At most two default images exist at any time.
+  **Force rebuild:** pass `--rebuild` (or set `SANDBOX_REBUILD=1`) to force a
+  `docker build --no-cache` even when the image already exists — useful for
+  mid-week CLI updates.
   Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
   Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
   Mirrors host git config, marks `/workspace` as a Git `safe.directory`, and

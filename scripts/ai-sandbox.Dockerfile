@@ -24,7 +24,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && rm -rf /var/lib/apt/lists/*
 
 # Non-root user (uid 1000) for Claude's --dangerously-skip-permissions
-RUN groupadd -g 1000 sandbox && useradd -m -u 1000 -g sandbox sandbox
+# ubuntu:24.04 ships with a 'ubuntu' user at uid 1000; reuse it or create fresh.
+RUN if getent passwd 1000 >/dev/null; then \
+      usermod -l sandbox -d /home/sandbox -m $(getent passwd 1000 | cut -d: -f1) 2>/dev/null || true; \
+    else \
+      groupadd -g 1000 sandbox && useradd -m -u 1000 -g sandbox sandbox; \
+    fi
 
 RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex \
   && npm cache clean --force
