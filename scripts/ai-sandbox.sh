@@ -3,11 +3,14 @@
 # inside a Docker container scoped to the current directory.
 #
 # Usage:
-#   ai-sandbox [--rebuild] <agent> [agent args...]  (agent = claude | gemini | codex | copilot)
-#   claude-sandbox [--rebuild] [args...]             (via compat symlink)
-#   gemini-sandbox [--rebuild] [args...]
-#   codex-sandbox  [--rebuild] [args...]
-#   copilot-sandbox [--rebuild] [args...]
+#   ai-sandbox [--rebuild] [--gpu|--no-gpu] <agent> [agent args...]
+#   claude-sandbox [--rebuild] [--gpu|--no-gpu] [args...]   (via compat symlink)
+#   gemini-sandbox [--rebuild] [--gpu|--no-gpu] [args...]
+#   codex-sandbox  [--rebuild] [--gpu|--no-gpu] [args...]
+#   copilot-sandbox [--rebuild] [--gpu|--no-gpu] [args...]
+#
+# GPU: auto-detected by default (enabled when NVIDIA Container Toolkit is
+#      available). Override with --gpu / --no-gpu or SANDBOX_GPU=1|0.
 
 set -euo pipefail
 
@@ -21,12 +24,18 @@ while [[ -L "$_source" ]]; do
 done
 REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
 
-# ── Rebuild flag ─────────────────────────────────────────────────────────
+# ── Flags ────────────────────────────────────────────────────────────────
 FORCE_REBUILD="${SANDBOX_REBUILD:-0}"
-if [[ "${1:-}" = "--rebuild" ]]; then
-  FORCE_REBUILD=1
-  shift
-fi
+USE_GPU="${SANDBOX_GPU:-auto}"
+
+while [[ "${1:-}" = --* ]]; do
+  case "$1" in
+    --rebuild) FORCE_REBUILD=1; shift ;;
+    --gpu)     USE_GPU=1; shift ;;
+    --no-gpu)  USE_GPU=0; shift ;;
+    *) break ;;
+  esac
+done
 
 # ── Agent selection ──────────────────────────────────────────────────────
 # Priority: explicit first arg > basename detection > error
@@ -44,7 +53,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] <claude|gemini|codex|copilot> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] <claude|gemini|codex|copilot> [args...]" >&2
       exit 1
       ;;
   esac
@@ -248,6 +257,22 @@ if [[ "${AGENT}" = "copilot" ]]; then
   if [[ -n "${COPILOT_HOME:-}" ]]; then
     docker_args+=(-e "COPILOT_HOME")
   fi
+fi
+
+# ── GPU passthrough ──────────────────────────────────────────────────────
+# Auto-detect: enable GPU if nvidia-container-runtime or nvidia-smi is available.
+if [[ "${USE_GPU}" = "auto" ]]; then
+  if docker info --format '{{.Runtimes}}' 2>/dev/null | grep -q nvidia \
+     || command -v nvidia-smi &>/dev/null; then
+    USE_GPU=1
+  else
+    USE_GPU=0
+  fi
+fi
+
+if [[ "${USE_GPU}" = "1" ]]; then
+  docker_args+=(--gpus all)
+  echo "GPU passthrough enabled (--gpus all)" >&2
 fi
 
 # ── Run container ────────────────────────────────────────────────────────

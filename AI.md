@@ -130,8 +130,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
 - **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, `CODEX.md`, and `COPILOT.md` in the current directory.
 - **`ai-sandbox`:** Unified Docker sandbox for all four AI CLI agents. Usage:
-  `ai-sandbox [--rebuild] <claude|gemini|codex|copilot> [args...]`, or via backward-compat
-  symlinks (`claude-sandbox`, `gemini-sandbox`, `codex-sandbox`, `copilot-sandbox`).
+  `ai-sandbox [--rebuild] [--gpu|--no-gpu] <claude|gemini|codex|copilot> [args...]`,
+  or via backward-compat symlinks (`claude-sandbox`, `gemini-sandbox`,
+  `codex-sandbox`, `copilot-sandbox`).
   All agents share a single Docker image (built from `scripts/ai-sandbox.Dockerfile`,
   based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, and all
   four CLIs) pre-installed at build time for near-instant startup.
@@ -142,6 +143,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **Force rebuild:** pass `--rebuild` (or set `SANDBOX_REBUILD=1`) to force a
   `docker build --no-cache` even when the image already exists — useful for
   mid-week CLI updates.
+  **GPU passthrough:** auto-detected by default — enabled when the NVIDIA
+  Container Toolkit is available. Override with `--gpu` / `--no-gpu` flags
+  or `SANDBOX_GPU=1|0` env var. Passes `--gpus all` to `docker run`.
   Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
   Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
   Mirrors host git config, marks `/workspace` as a Git `safe.directory`, and
