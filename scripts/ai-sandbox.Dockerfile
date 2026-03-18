@@ -31,5 +31,5 @@ RUN if getent passwd 1000 >/dev/null; then \
       groupadd -g 1000 sandbox && useradd -m -u 1000 -g sandbox sandbox; \
     fi
 
-RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex \
+RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex @github/copilot \
   && npm cache clean --force

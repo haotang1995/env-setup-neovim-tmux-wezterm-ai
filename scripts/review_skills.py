@@ -287,6 +287,7 @@ def main() -> None:
         Path.home() / ".claude" / "skills",
         Path.home() / ".codex" / "skills",
         Path.home() / ".gemini" / "skills",
+        Path.home() / ".copilot" / "skills",
     ]
 
     skills = collect_skills(repo_root=repo_root, include_system=args.include_system)

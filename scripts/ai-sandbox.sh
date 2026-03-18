@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Unified AI sandbox — launch Claude Code, Gemini CLI, or Codex inside a
-# Docker container scoped to the current directory.
+# Unified AI sandbox — launch Claude Code, Gemini CLI, Codex, or Copilot CLI
+# inside a Docker container scoped to the current directory.
 #
 # Usage:
-#   ai-sandbox [--rebuild] <agent> [agent args...]  (agent = claude | gemini | codex)
+#   ai-sandbox [--rebuild] <agent> [agent args...]  (agent = claude | gemini | codex | copilot)
 #   claude-sandbox [--rebuild] [args...]             (via compat symlink)
 #   gemini-sandbox [--rebuild] [args...]
 #   codex-sandbox  [--rebuild] [args...]
+#   copilot-sandbox [--rebuild] [args...]
 
 set -euo pipefail
 
@@ -33,16 +34,17 @@ AGENT=""
 INVOKED_AS="$(basename "$0")"
 
 case "${INVOKED_AS}" in
-  claude-sandbox) AGENT="claude" ;;
-  gemini-sandbox) AGENT="gemini" ;;
-  codex-sandbox)  AGENT="codex"  ;;
+  claude-sandbox)  AGENT="claude"  ;;
+  gemini-sandbox)  AGENT="gemini"  ;;
+  codex-sandbox)   AGENT="codex"   ;;
+  copilot-sandbox) AGENT="copilot" ;;
 esac
 
 if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
-    claude|gemini|codex) AGENT="$1"; shift ;;
+    claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] <claude|gemini|codex> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] <claude|gemini|codex|copilot> [args...]" >&2
       exit 1
       ;;
   esac
@@ -76,6 +78,13 @@ case "${AGENT}" in
     AGENT_HOME_VOL="codex-home"
     AGENT_CMD="codex"
     AGENT_NPM_PKG="@openai/codex"
+    ;;
+  copilot)
+    AGENT_HOST="${HOME}/.copilot"
+    AGENT_CONTAINER="/root/.copilot"
+    AGENT_HOME_VOL="copilot-home"
+    AGENT_CMD="copilot"
+    AGENT_NPM_PKG="@github/copilot"
     ;;
 esac
 
@@ -216,6 +225,31 @@ if [[ "${AGENT}" = "claude" ]]; then
   done
 fi
 
+# ── Copilot-specific extras ──────────────────────────────────────────────
+if [[ "${AGENT}" = "copilot" ]]; then
+  # Resolve a GitHub token from available sources (first wins):
+  #   1) GITHUB_TOKEN / GH_TOKEN already in env
+  #   2) macOS Keychain (service "copilot-cli")
+  #   3) gh auth token (GitHub CLI)
+  _GH_TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+
+  if [[ -z "${_GH_TOKEN}" ]] && command -v security &>/dev/null; then
+    _GH_TOKEN="$(security find-generic-password -s "copilot-cli" -w 2>/dev/null || true)"
+  fi
+
+  if [[ -z "${_GH_TOKEN}" ]] && command -v gh &>/dev/null; then
+    _GH_TOKEN="$(gh auth token 2>/dev/null || true)"
+  fi
+
+  if [[ -n "${_GH_TOKEN}" ]]; then
+    docker_args+=(-e "GITHUB_TOKEN=${_GH_TOKEN}")
+  fi
+
+  if [[ -n "${COPILOT_HOME:-}" ]]; then
+    docker_args+=(-e "COPILOT_HOME")
+  fi
+fi
+
 # ── Run container ────────────────────────────────────────────────────────
 exec docker run "${docker_args[@]}" \
   "${SANDBOX_IMAGE}" \
@@ -273,6 +307,29 @@ exec docker run "${docker_args[@]}" \
           cp -a "${AGENT_CONTAINER}/.codex/skills/." "${AGENT_CONTAINER}/skills/" 2>/dev/null || true
         fi
         ;;
+      copilot)
+        # Seed non-auth files only when missing (no-clobber).
+        # config.json holds auth tokens (no keychain in Docker), so never overwrite.
+        cp -anL /host-agent-home/. "${AGENT_CONTAINER}/" 2>/dev/null || true
+        # MCP config is pure settings — always refresh from host.
+        cp /host-agent-home/mcp-config.json "${AGENT_CONTAINER}/" 2>/dev/null || true
+
+        # Merge host config keys (model, banner, etc.) into container config
+        # without clobbering auth tokens already present.
+        if [ -f "/host-agent-home/config.json" ]; then
+          node -e '\''
+            const fs = require("fs");
+            const hostF = process.argv[1], contF = process.argv[2];
+            let host = {}, cont = {};
+            try { host = JSON.parse(fs.readFileSync(hostF, "utf8")); } catch {}
+            try { cont = JSON.parse(fs.readFileSync(contF, "utf8")); } catch {}
+            const merged = { ...host, ...cont };
+            fs.writeFileSync(contF, JSON.stringify(merged, null, 2) + "\n");
+          '\'' "/host-agent-home/config.json" "${AGENT_CONTAINER}/config.json" \
+            2>/dev/null || true
+        fi
+
+        ;;
     esac
 
     # ── Git config (shared) ──
@@ -311,7 +368,8 @@ exec docker run "${docker_args[@]}" \
         exec setpriv --reuid=1000 --regid=1000 --init-groups -- \
           claude --dangerously-skip-permissions "$@"
         ;;
-      gemini) exec gemini --sandbox false --yolo "$@" ;;
-      codex)  exec codex --sandbox danger-full-access "$@" ;;
+      gemini)  exec gemini --sandbox false --yolo "$@" ;;
+      codex)   exec codex --sandbox danger-full-access "$@" ;;
+      copilot) exec copilot --yolo "$@" ;;
     esac
   ' _ "$@"

@@ -29,7 +29,7 @@ WezTerm (terminal emulator, cross-platform)
      │   ├─ copilot.lua  (inline ghost-text completions)
      │   └─ VimTeX       (LaTeX compilation + forward search)
      ├─ Terminal pane     (shell, git, builds)
-     └─ AI Agent Popups   (gemini, claude, codex, aider)
+     └─ AI Agent Popups   (gemini, claude, codex, copilot, aider)
 ```
 
 ## Repo layout
@@ -41,8 +41,8 @@ tmux.conf                        ← tmux config    (→ ~/.tmux.conf)
 scripts/                         ← Utility scripts for global use
   install.sh                     ← Installer (symlinks scripts + configs + skills)
   init-ai.sh                     ← Unified AI context bootstrapper
-  ai-sandbox.sh                  ← Unified Docker sandbox (claude/gemini/codex)
-  ai-sandbox.Dockerfile          ← Shared sandbox image (ubuntu:24.04 + Node 22 + all three CLIs)
+  ai-sandbox.sh                  ← Unified Docker sandbox (claude/gemini/codex/copilot)
+  ai-sandbox.Dockerfile          ← Shared sandbox image (ubuntu:24.04 + Node 22 + all four CLIs)
   review_skills.py               ← Interactive keep/remove review for skills
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
@@ -64,9 +64,10 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     vimtex.lua                   ← VimTeX overrides (lualatex engine, platform-detecting viewer)
     markdown.lua                 ← render-markdown.nvim + markdown-preview.nvim
     tmux-navigator.lua           ← vim-tmux-navigator (Ctrl+hjkl across panes)
-.gemini/                         ← Gemini agent config (→ ~/.gemini/settings.json)
-.claude/                         ← Claude agent config (→ ~/.claude/settings.json)
-.codex/                          ← Codex agent config  (→ ~/.codex/config.toml)
+.gemini/                         ← Gemini agent config  (→ ~/.gemini/settings.json)
+.claude/                         ← Claude agent config  (→ ~/.claude/settings.json)
+.codex/                          ← Codex agent config   (→ ~/.codex/config.toml)
+.copilot/                        ← Copilot agent config (→ ~/.copilot/config.json)
 ```
 
 ## Target machines
@@ -103,7 +104,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Vi copy mode:** `v` to select, `y` to yank, `Ctrl+V` for block select.
 - **Status bar:** top, minimal, Catppuccin-ish colors.
 - **Automatic AI windows:** new sessions automatically open `gemini`, `claude`,
-  and `codex` in windows 2, 3, and 4, then focus back to window 1.
+  `codex`, and `copilot` in windows 2, 3, 4, and 5, then focus back to window 1.
 
 ### WezTerm
 
@@ -123,17 +124,17 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 
 - **Location:** `scripts/` directory.
 - **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`
-  and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`, `.gemini/`, `.claude/`, `.codex/`) to their home locations.
+  and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`, `.gemini/`, `.claude/`, `.codex/`, `.copilot/`) to their home locations.
   - Use `./scripts/install.sh -u` (or `--update`) to pull the latest repo changes,
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
-- **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, and `CODEX.md` in the current directory.
-- **`ai-sandbox`:** Unified Docker sandbox for all three AI CLI agents. Usage:
-  `ai-sandbox [--rebuild] <claude|gemini|codex> [args...]`, or via backward-compat
-  symlinks (`claude-sandbox`, `gemini-sandbox`, `codex-sandbox`). All agents share
-  a single Docker image (built from `scripts/ai-sandbox.Dockerfile`, based on
-  `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, and all
-  three CLIs) pre-installed at build time for near-instant startup.
+- **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, `CODEX.md`, and `COPILOT.md` in the current directory.
+- **`ai-sandbox`:** Unified Docker sandbox for all four AI CLI agents. Usage:
+  `ai-sandbox [--rebuild] <claude|gemini|codex|copilot> [args...]`, or via backward-compat
+  symlinks (`claude-sandbox`, `gemini-sandbox`, `codex-sandbox`, `copilot-sandbox`).
+  All agents share a single Docker image (built from `scripts/ai-sandbox.Dockerfile`,
+  based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, and all
+  four CLIs) pre-installed at build time for near-instant startup.
   **Biweekly auto-rebuild:** the default image uses a rotating tag (`ai-sandbox:w0`
   / `ai-sandbox:w1`) based on ISO week number, so every other week the tag flips,
   the old image is unused, and a fresh build picks up the latest CLI versions.
@@ -156,12 +157,18 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
   `sandbox-exec` setting, disables auto-update, launches with `--sandbox false --yolo`;
   **codex** — selective `auth.json`/`config.toml` refresh, legacy `~/.codex/.codex/skills`
-  migration, launches with `--sandbox danger-full-access`.
+  migration, launches with `--sandbox danger-full-access`;
+  **copilot** — no-clobber sync from host `~/.copilot`, merges host config keys
+  into container `config.json` without clobbering auth tokens (no keychain in
+  Docker), always refreshes `mcp-config.json`; resolves a GitHub token from
+  `GITHUB_TOKEN`/`GH_TOKEN` env, macOS Keychain (`copilot-cli`), or
+  `gh auth token` (GitHub CLI) and passes it as `GITHUB_TOKEN`;
+  launches with `--yolo`.
   Bootstraps skills when missing/empty or only broken symlinks are present.
   Falls back to `npm i -g` only when the CLI binary is not found (custom Dockerfiles).
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
-  immediately to `~/.claude/skills`, `~/.codex/skills`, and `~/.gemini/skills`.
+  immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.
 
 ### AI integration
 
@@ -169,6 +176,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   - `gemini`: Google's Gemini CLI for quick codebase queries and tasks.
   - `claude`: Claude Code for agentic coding and complex refactors.
   - `codex`: Codex CLI for AI-powered shell assistance and automation.
+  - `copilot`: GitHub Copilot CLI for agentic coding with GitHub integration.
   - `aider`: Aider for AI pair programming (requires installation).
 - **avante.nvim:** Claude as provider (`claude-sonnet-4-20250514`), needs `ANTHROPIC_API_KEY` env var.
 - **copilot.lua:** inline ghost-text, `<Tab>` to accept. Needs Node 22+ and `:Copilot auth`.
@@ -177,7 +185,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   obra/superpowers, openai/skills, trailofbits/skills,
   K-Dense-AI/claude-scientific-skills, and Orchestra-Research/AI-Research-SKILLs
   added as git submodules. `install.sh` symlinks each skill into
-  `~/.claude/skills/`, `~/.codex/skills/`, and `~/.gemini/skills/`. Update
+  `~/.claude/skills/`, `~/.codex/skills/`, `~/.gemini/skills/`, and
+  `~/.copilot/skills/`. Update
   with `./scripts/install.sh -u` (or `git submodule update --remote`).
   Skill decisions in `ai-skills/skill-decisions.json` are enforced on each
   install run (denied skills are skipped and existing denied links are removed).

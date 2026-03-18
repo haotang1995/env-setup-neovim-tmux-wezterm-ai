@@ -109,12 +109,12 @@ for script in "$SCRIPT_DIR"/*.sh; do
 done
 
 # Clean up stale symlinks from old per-agent sandbox scripts
-for old_name in claude-sandbox gemini-sandbox codex-sandbox; do
+for old_name in claude-sandbox gemini-sandbox codex-sandbox copilot-sandbox; do
   old_link="$BIN_DIR/$old_name"
   if [ -L "$old_link" ]; then
     old_target="$(readlink "$old_link")"
     case "$old_target" in
-      *claude-sandbox.sh|*gemini-sandbox.sh|*codex-sandbox.sh)
+      *claude-sandbox.sh|*gemini-sandbox.sh|*codex-sandbox.sh|*copilot-sandbox.sh)
         rm -f "$old_link"
         log "REMOVE" "Removed stale symlink: $old_link -> $old_target"
         ;;
@@ -123,7 +123,7 @@ for old_name in claude-sandbox gemini-sandbox codex-sandbox; do
 done
 
 # Backward-compat symlinks: old names -> unified ai-sandbox.sh
-for compat_name in claude-sandbox gemini-sandbox codex-sandbox; do
+for compat_name in claude-sandbox gemini-sandbox codex-sandbox copilot-sandbox; do
   safe_link "$SCRIPT_DIR/ai-sandbox.sh" "$BIN_DIR/$compat_name"
 done
 
@@ -152,12 +152,17 @@ safe_link "$REPO_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
 mkdir -p "$HOME/.codex"
 safe_link "$REPO_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
 
+# Copilot config
+mkdir -p "$HOME/.copilot"
+safe_link "$REPO_DIR/.copilot/config.json" "$HOME/.copilot/config.json"
+
 # --- AI skill library (from git submodules) ---
 SKILLS_REPOS="$REPO_DIR/ai-skills/.repos"
 AGENT_SKILL_DIRS=(
   "$HOME/.claude/skills"
   "$HOME/.codex/skills"
   "$HOME/.gemini/skills"
+  "$HOME/.copilot/skills"
 )
 
 load_skill_decisions() {
