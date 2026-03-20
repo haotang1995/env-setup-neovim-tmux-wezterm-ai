@@ -5,7 +5,8 @@
 nvim-config/.neoconf.json
 nvim-config/plugin/
 
-# lazy.nvim state (not the lockfile — that's committed)
+# lazy.nvim state
+nvim-config/lazy-lock.json
 nvim-config/lazy-lock.json.bak
 
 # Neovim swap / undo / shada
@@ -15,6 +16,9 @@ nvim-config/lazy-lock.json.bak
 
 # Node (markdown-preview.nvim build artifacts)
 node_modules/
+
+# Python
+__pycache__/
 
 # Environment / secrets
 .env

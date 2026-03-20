@@ -52,7 +52,7 @@ ai-skills/                       ← Shared AI skill library
 nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   init.lua                       ← LazyVim entry point
   lazyvim.json                   ← LazyVim metadata
-  lazy-lock.json                 ← plugin lockfile (committed for reproducibility)
+  lazy-lock.json                 ← plugin lockfile (gitignored; machine-local)
   stylua.toml                    ← Lua formatter config
   lua/config/
     lazy.lua                     ← lazy.nvim bootstrap + LazyVim extras
@@ -218,8 +218,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   dependencies, defaults, or operational decisions changed, include the `AI.md` update.
 - **Don't hardcode paths** — use `vim.fn.has("mac")`, `vim.fn.executable()`,
   `vim.env.SSH_TTY`, `wezterm.target_triple`, etc. for platform detection.
-- `lazy-lock.json` is committed so that plugin versions are reproducible.
-  Run `:Lazy sync` (not `:Lazy update`) on fresh deploys to match the lockfile.
+- `lazy-lock.json` is gitignored (machine-local). Each machine manages its own
+  plugin versions via `:Lazy sync` / `:Lazy update`.
 
 ## Task tracking
 
