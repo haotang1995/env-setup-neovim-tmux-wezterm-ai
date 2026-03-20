@@ -24,6 +24,12 @@ __pycache__/
 .env
 .env.*
 
+# Agent auth tokens (may contain OAuth credentials)
+.copilot/config.json
+
+# Windows-side WezTerm copy (produced by install.sh on WSL)
+.wezterm.lua
+
 # Editor / IDE
 .vscode/
 .idea/

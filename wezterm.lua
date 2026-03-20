@@ -122,9 +122,7 @@ if is_mac then
 	config.send_composed_key_when_right_alt_is_pressed = false
 elseif is_windows then
 	config.font_size = 14.0 -- Windows renders larger; adjust to taste
-	config.default_domain = "WSL:Ubuntu"
-	-- Launch directly into WSL Ubuntu
-	config.default_prog = { "wsl.exe", "--distribution", "Ubuntu" }
+	config.default_domain = "WSL:Ubuntu-24.04"
 elseif is_linux then
 	config.font_size = 15.0
 end
