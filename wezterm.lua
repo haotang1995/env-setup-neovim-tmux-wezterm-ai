@@ -187,9 +187,10 @@ config.keys = {
 	},
 
 	-------------------------------------------------
-	-- Scrollback search (like Cmd+F in iTerm2)
+	-- Scrollback search (Ctrl+Shift+F on macOS; Ctrl+Shift+Alt+F on
+	-- Windows/Linux where Ctrl+Shift+F is used for fullscreen)
 	-------------------------------------------------
-	{ key = "f", mods = "CTRL|SHIFT", action = act.Search("CurrentSelectionOrEmptyString") },
+	{ key = "f", mods = is_mac and "CTRL|SHIFT" or "CTRL|SHIFT|ALT", action = act.Search("CurrentSelectionOrEmptyString") },
 
 	-------------------------------------------------
 	-- Cursor movement shortcuts
@@ -298,6 +299,11 @@ config.check_for_updates_interval_seconds = 86400 -- daily
 
 -- Don't prompt on close if a tmux session is running
 config.window_close_confirmation = "NeverPrompt"
+
+-- Ctrl+Shift+F → toggle fullscreen on Windows/Linux (matches Cmd+Shift+F on macOS)
+if not is_mac then
+	table.insert(config.keys, { key = "f", mods = "CTRL|SHIFT", action = act.ToggleFullScreen })
+end
 
 -- Disable default Alt+Enter fullscreen (conflicts with some tools)
 config.keys = config.keys or {}
