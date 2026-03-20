@@ -102,6 +102,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   (via `is_vim` detection in tmux + vim-tmux-navigator in Neovim).
 - **Splits:** `prefix + |` or `\` (vertical), `prefix + -` (horizontal), in cwd.
 - **Vi copy mode:** `v` to select, `y` to yank, `Ctrl+V` for block select.
+- **Hyperlinks:** OSC 8 passthrough enabled so clickable URLs work inside tmux.
+  `Shift+Ctrl+Click` (or `Shift+Cmd+Click` on macOS) to open in browser.
+  Shift bypasses tmux mouse capture.
 - **Status bar:** top, minimal, Catppuccin-ish colors.
 - **Automatic AI windows:** new sessions automatically open `gemini`, `claude`,
   `codex`, and `copilot` in windows 2, 3, 4, and 5, then focus back to window 1.
