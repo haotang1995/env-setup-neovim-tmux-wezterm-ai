@@ -55,7 +55,8 @@ fi
 ln -sfn AI.md CLAUDE.md
 ln -sfn AI.md CODEX.md
 ln -sfn AI.md GEMINI.md
-ln -sfn AI.md COPILOT.md
+mkdir -p .github
+ln -sfn ../AI.md .github/copilot-instructions.md
 
 echo "Bootstrapped AI docs in: $(pwd)"
-ls -l AI.md CLAUDE.md CODEX.md GEMINI.md COPILOT.md TODO/TODO.md
+ls -l AI.md CLAUDE.md CODEX.md GEMINI.md .github/copilot-instructions.md TODO/TODO.md

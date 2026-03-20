@@ -67,7 +67,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 .gemini/                         ← Gemini agent config  (→ ~/.gemini/settings.json)
 .claude/                         ← Claude agent config  (→ ~/.claude/settings.json)
 .codex/                          ← Codex agent config   (→ ~/.codex/config.toml)
-.copilot/                        ← Copilot agent config (→ ~/.copilot/config.json)
+.github/copilot-instructions.md  ← Copilot instructions (symlink → AI.md)
 ```
 
 ## Target machines
@@ -128,7 +128,10 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 
 - **Location:** `scripts/` directory.
 - **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`
-  and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`, `.gemini/`, `.claude/`, `.codex/`, `.copilot/`) to their home locations.
+  and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`, `.gemini/`, `.claude/`, `.codex/`) to their home locations.
+  Copilot reads `.github/copilot-instructions.md` (symlinked to `AI.md` by `init-ai`)
+  and manages its own `~/.copilot/config.json` (auth tokens); `install.sh` only
+  ensures `~/.copilot/` exists for the skills directory.
   - **WSL note:** `wezterm.lua` is **copied** (not symlinked) to the Windows
     user profile (`C:\Users\<user>\.wezterm.lua`) because Windows apps cannot
     follow symlinks into `\\wsl$\...`. Re-run `install.sh` after editing
@@ -136,7 +139,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   - Use `./scripts/install.sh -u` (or `--update`) to pull the latest repo changes,
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
-- **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, `CODEX.md`, and `COPILOT.md` in the current directory.
+- **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, `CODEX.md`, and `.github/copilot-instructions.md` in the current directory.
 - **`ai-sandbox`:** Unified Docker sandbox for all four AI CLI agents. Usage:
   `ai-sandbox [--rebuild] [--gpu|--no-gpu] <claude|gemini|codex|copilot> [args...]`,
   or via backward-compat symlinks (`claude-sandbox`, `gemini-sandbox`,

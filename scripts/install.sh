@@ -152,9 +152,9 @@ safe_link "$REPO_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
 mkdir -p "$HOME/.codex"
 safe_link "$REPO_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
 
-# Copilot config
+# Copilot — config.json is managed by Copilot itself (contains auth tokens);
+# we only need the skills directory (handled below).
 mkdir -p "$HOME/.copilot"
-safe_link "$REPO_DIR/.copilot/config.json" "$HOME/.copilot/config.json"
 
 # --- AI skill library (from git submodules) ---
 SKILLS_REPOS="$REPO_DIR/ai-skills/.repos"
