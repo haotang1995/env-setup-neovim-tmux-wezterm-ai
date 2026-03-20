@@ -125,6 +125,10 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Location:** `scripts/` directory.
 - **Installation:** Run `./scripts/install.sh` to symlink scripts to `~/.local/bin/`
   and config files (`wezterm.lua`, `tmux.conf`, `nvim-config/`, `.gemini/`, `.claude/`, `.codex/`, `.copilot/`) to their home locations.
+  - **WSL note:** `wezterm.lua` is **copied** (not symlinked) to the Windows
+    user profile (`C:\Users\<user>\.wezterm.lua`) because Windows apps cannot
+    follow symlinks into `\\wsl$\...`. Re-run `install.sh` after editing
+    `wezterm.lua` to push changes to Windows.
   - Use `./scripts/install.sh -u` (or `--update`) to pull the latest repo changes,
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.

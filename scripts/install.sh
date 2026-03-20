@@ -362,9 +362,22 @@ fi
 if grep -qEi "(Microsoft|WSL)" /proc/version &>/dev/null; then
   echo ""
   log "WSL" "Detected WSL environment."
-  distro="${WSL_DISTRO_NAME:-Ubuntu}"
-  log "WSL" "Since WezTerm runs on Windows, you must link the config manually:"
-  log "WSL" "  cmd.exe /c mklink %USERPROFILE%\\.wezterm.lua \"\\\\wsl\$\\$distro$REPO_DIR/wezterm.lua\""
+  # WezTerm runs on Windows and cannot follow symlinks into \\wsl$\...,
+  # so copy wezterm.lua to the Windows user profile instead.
+  WIN_USER="$(wslvar USERNAME 2>/dev/null || /mnt/c/Windows/System32/cmd.exe /C 'echo %USERNAME%' 2>/dev/null | tr -d '\r')"
+  if [ -n "$WIN_USER" ]; then
+    WIN_HOME_WSL="/mnt/c/Users/$WIN_USER"
+    if [ -d "$WIN_HOME_WSL" ]; then
+      WIN_DEST="$WIN_HOME_WSL/.wezterm.lua"
+      rm -f "$WIN_DEST"  # remove stale symlink if present
+      cp -f "$REPO_DIR/wezterm.lua" "$WIN_DEST"
+      log "COPY" "Copied wezterm.lua -> $WIN_DEST (Windows can't follow WSL symlinks)"
+    else
+      log "WARN" "Windows home not found at $WIN_HOME_WSL; copy wezterm.lua manually."
+    fi
+  else
+    log "WARN" "Could not determine Windows username; copy wezterm.lua manually."
+  fi
 fi
 
 echo "Done. Ensure $BIN_DIR is in your PATH."
