@@ -168,7 +168,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   auth/credential files (`.claude.json`, `.credentials.json`,
   `~/.config/claude{,-code}`) are **always overwritten** from the host so rotated
   tokens are picked up, while non-auth agent-home files use no-clobber seeding;
-  drops to non-root user via `setpriv` then launches with `--dangerously-skip-permissions`;
+  drops to non-root user matching the host UID/GID (`HOST_UID`/`HOST_GID` env vars,
+  defaults to 1000) via `setpriv` then launches with `--dangerously-skip-permissions`;
   **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
   `sandbox-exec` setting, disables auto-update, launches with `--sandbox false --yolo`;
   **codex** — selective `auth.json`/`config.toml` refresh, legacy `~/.codex/.codex/skills`

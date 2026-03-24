@@ -165,6 +165,8 @@ docker_args=(
   -e AGENT_CONTAINER="${AGENT_CONTAINER}"
   -e AGENT_NPM_PKG="${AGENT_NPM_PKG}"
   -e REPO_DIR="${REPO_DIR}"
+  -e HOST_UID="$(id -u)"
+  -e HOST_GID="$(id -g)"
 )
 
 # Worktree support: mount external git metadata paths when /workspace/.git
@@ -385,12 +387,31 @@ exec docker run "${docker_args[@]}" \
     case "${AGENT}" in
       claude)
         # Claude refuses --dangerously-skip-permissions as root;
-        # drop to the sandbox user (uid 1000, created in Dockerfile).
+        # drop to a non-root user matching the host UID so bind-mounted
+        # files keep their original ownership.
+        _UID="${HOST_UID:-1000}"
+        _GID="${HOST_GID:-1000}"
+
+        # Ensure a user/group exists matching the host UID/GID so that
+        # bind-mounted files keep their original ownership.
+        if ! getent group "${_GID}" >/dev/null 2>&1; then
+          groupadd -g "${_GID}" hostgroup 2>/dev/null || true
+        fi
+        _EXISTING_USER="$(getent passwd 1000 | cut -d: -f1)"
+        if [ "${_UID}" = "1000" ]; then
+          : # pre-built sandbox user already matches
+        elif [ -n "${_EXISTING_USER}" ]; then
+          # Remap the pre-built sandbox user to the host UID/GID
+          usermod -u "${_UID}" -g "${_GID}" -s /bin/bash "${_EXISTING_USER}" 2>/dev/null || true
+        else
+          useradd -M -u "${_UID}" -g "${_GID}" -s /bin/bash sandbox 2>/dev/null || true
+        fi
+
         chmod 755 /root 2>/dev/null || true
-        chown -R 1000:1000 "${AGENT_CONTAINER}" /workspace \
+        chown -R "${_UID}:${_GID}" "${AGENT_CONTAINER}" \
           /root/.config /root/.local 2>/dev/null || true
-        [ -f "${HOME}/.claude.json" ] && chown 1000:1000 "${HOME}/.claude.json" 2>/dev/null || true
-        exec setpriv --reuid=1000 --regid=1000 --init-groups -- \
+        [ -f "${HOME}/.claude.json" ] && chown "${_UID}:${_GID}" "${HOME}/.claude.json" 2>/dev/null || true
+        exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           claude --dangerously-skip-permissions "$@"
         ;;
       gemini)  exec gemini --sandbox false --yolo "$@" ;;
