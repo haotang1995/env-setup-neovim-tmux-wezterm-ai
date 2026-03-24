@@ -43,6 +43,10 @@ scripts/                         ← Utility scripts for global use
   init-ai.sh                     ← Unified AI context bootstrapper
   ai-sandbox.sh                  ← Unified Docker sandbox (claude/gemini/codex/copilot)
   ai-sandbox.Dockerfile          ← Shared sandbox image (ubuntu:24.04 + Node 22 + all four CLIs)
+  openclaw-sandbox.sh            ← Long-running OpenClaw dev sandbox (start/stop/exec/status/destroy)
+  openclaw-sandbox.Dockerfile    ← OpenClaw sandbox image (ubuntu:24.04 + Node 24 + sudo user)
+  checkpoint-openclaw.sh         ← Checkpoint openclaw-live (docker commit + volume backup)
+  restore-openclaw.sh            ← Restore openclaw-live from a checkpoint
   review_skills.py               ← Interactive keep/remove review for skills
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
@@ -182,6 +186,27 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   launches with `--yolo`.
   Bootstraps skills when missing/empty or only broken symlinks are present.
   Falls back to `npm i -g` only when the CLI binary is not found (custom Dockerfiles).
+- **`openclaw-sandbox`:** Long-running Docker sandbox for OpenClaw development.
+  Unlike `ai-sandbox` (ephemeral, per-session), this container persists for months.
+  Usage: `openclaw-sandbox <start|stop|exec|status|destroy> [--rebuild] [--gpu|--no-gpu]`.
+  Built from `scripts/openclaw-sandbox.Dockerfile` (ubuntu:24.04 + Node 24 +
+  build-essential + sudo user `claw`, no OpenClaw pre-installed — user builds
+  their own inside the container).
+  **Security:** the container can **only** see `~/agent-folder-check-security`
+  mounted at `/workspace` — no other host paths, no host auth mirroring.
+  Credentials are managed entirely inside the container.
+  State persists in a named Docker volume (`openclaw-home`) mounted at `/home/claw`.
+  Container name: `openclaw-live`, restart policy: `unless-stopped`.
+  GPU passthrough auto-detected (override with `--gpu`/`--no-gpu` or `SANDBOX_GPU`).
+  **Checkpointing:** `openclaw-sandbox start` auto-installs a host cron job that
+  runs `checkpoint-openclaw` every 6 hours. Each checkpoint performs a
+  `docker commit` (→ `openclaw-snap:<timestamp>` image) plus a volume tar backup
+  (→ `~/openclaw-checkpoints/volume-<timestamp>.tar.gz`) with a manifest file.
+  Snapshots older than 30 days are pruned (override with `CHECKPOINT_KEEP_DAYS`).
+  Manual checkpoint: `checkpoint-openclaw [custom-tag]`.
+  **Restore:** `restore-openclaw [--latest | <tag>] [--gpu|--no-gpu]` stops the
+  current container, restores the committed image + volume archive, and starts
+  a new container. Run `restore-openclaw` with no args to list available checkpoints.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.
