@@ -177,12 +177,14 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
   `sandbox-exec` setting, disables auto-update, launches with `--sandbox false --yolo`;
   **codex** — selective `auth.json`/`config.toml` refresh, legacy `~/.codex/.codex/skills`
-  migration, launches with `--sandbox danger-full-access`;
+  migration; drops to non-root user matching host UID/GID via `setpriv`,
+  launches with `--sandbox danger-full-access`;
   **copilot** — no-clobber sync from host `~/.copilot`, merges host config keys
   into container `config.json` without clobbering auth tokens (no keychain in
   Docker), always refreshes `mcp-config.json`; resolves a GitHub token from
   `GITHUB_TOKEN`/`GH_TOKEN` env, macOS Keychain (`copilot-cli`), or
   `gh auth token` (GitHub CLI) and passes it as `GITHUB_TOKEN`;
+  drops to non-root user matching host UID/GID via `setpriv`,
   launches with `--yolo`.
   Bootstraps skills when missing/empty or only broken symlinks are present.
   Falls back to `npm i -g` only when the CLI binary is not found (custom Dockerfiles).

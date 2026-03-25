@@ -383,39 +383,50 @@ exec docker run "${docker_args[@]}" \
     # Allow Git operations in bind-mounted repositories with differing ownership.
     git config --global --add safe.directory /workspace 2>/dev/null || true
 
+    # ── Helper: create non-root user matching host UID/GID ──
+    _ensure_host_user() {
+      _UID="${HOST_UID:-1000}"
+      _GID="${HOST_GID:-1000}"
+
+      if ! getent group "${_GID}" >/dev/null 2>&1; then
+        groupadd -g "${_GID}" hostgroup 2>/dev/null || true
+      fi
+      _EXISTING_USER="$(getent passwd 1000 | cut -d: -f1)"
+      if [ "${_UID}" = "1000" ]; then
+        : # pre-built sandbox user already matches
+      elif [ -n "${_EXISTING_USER}" ]; then
+        # Remap the pre-built sandbox user to the host UID/GID
+        usermod -u "${_UID}" -g "${_GID}" -s /bin/bash "${_EXISTING_USER}" 2>/dev/null || true
+      else
+        useradd -M -u "${_UID}" -g "${_GID}" -s /bin/bash sandbox 2>/dev/null || true
+      fi
+
+      chmod 755 /root 2>/dev/null || true
+      chown -R "${_UID}:${_GID}" "${AGENT_CONTAINER}" 2>/dev/null || true
+    }
+
     # ── Launch ──
     case "${AGENT}" in
       claude)
-        # Claude refuses --dangerously-skip-permissions as root;
-        # drop to a non-root user matching the host UID so bind-mounted
-        # files keep their original ownership.
-        _UID="${HOST_UID:-1000}"
-        _GID="${HOST_GID:-1000}"
-
-        # Ensure a user/group exists matching the host UID/GID so that
-        # bind-mounted files keep their original ownership.
-        if ! getent group "${_GID}" >/dev/null 2>&1; then
-          groupadd -g "${_GID}" hostgroup 2>/dev/null || true
-        fi
-        _EXISTING_USER="$(getent passwd 1000 | cut -d: -f1)"
-        if [ "${_UID}" = "1000" ]; then
-          : # pre-built sandbox user already matches
-        elif [ -n "${_EXISTING_USER}" ]; then
-          # Remap the pre-built sandbox user to the host UID/GID
-          usermod -u "${_UID}" -g "${_GID}" -s /bin/bash "${_EXISTING_USER}" 2>/dev/null || true
-        else
-          useradd -M -u "${_UID}" -g "${_GID}" -s /bin/bash sandbox 2>/dev/null || true
-        fi
-
-        chmod 755 /root 2>/dev/null || true
-        chown -R "${_UID}:${_GID}" "${AGENT_CONTAINER}" \
-          /root/.config /root/.local 2>/dev/null || true
+        # Drop to a non-root user matching the host UID so bind-mounted
+        # files keep their original ownership (Claude also refuses
+        # --dangerously-skip-permissions as root).
+        _ensure_host_user
+        chown -R "${_UID}:${_GID}" /root/.config /root/.local 2>/dev/null || true
         [ -f "${HOME}/.claude.json" ] && chown "${_UID}:${_GID}" "${HOME}/.claude.json" 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           claude --dangerously-skip-permissions "$@"
         ;;
       gemini)  exec gemini --sandbox false --yolo "$@" ;;
-      codex)   exec codex --sandbox danger-full-access "$@" ;;
-      copilot) exec copilot --yolo "$@" ;;
+      codex)
+        _ensure_host_user
+        exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
+          codex --sandbox danger-full-access "$@"
+        ;;
+      copilot)
+        _ensure_host_user
+        exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
+          copilot --yolo "$@"
+        ;;
     esac
   ' _ "$@"
