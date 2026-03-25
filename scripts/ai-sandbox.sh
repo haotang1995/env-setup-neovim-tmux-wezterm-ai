@@ -3,14 +3,16 @@
 # inside a Docker container scoped to the current directory.
 #
 # Usage:
-#   ai-sandbox [--rebuild] [--gpu|--no-gpu] <agent> [agent args...]
-#   claude-sandbox [--rebuild] [--gpu|--no-gpu] [args...]   (via compat symlink)
-#   gemini-sandbox [--rebuild] [--gpu|--no-gpu] [args...]
-#   codex-sandbox  [--rebuild] [--gpu|--no-gpu] [args...]
-#   copilot-sandbox [--rebuild] [--gpu|--no-gpu] [args...]
+#   ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] <agent> [agent args...]
+#   claude-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]   (via compat symlink)
+#   gemini-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]
+#   codex-sandbox  [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]
+#   copilot-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]
 #
 # GPU: auto-detected by default (enabled when NVIDIA Container Toolkit is
 #      available). Override with --gpu / --no-gpu or SANDBOX_GPU=1|0.
+#      Use --gpu-device ID (or SANDBOX_GPU_DEVICE=ID) to pass through a
+#      specific GPU instead of all (e.g. --gpu-device 0). Implies --gpu.
 
 set -euo pipefail
 
@@ -27,15 +29,20 @@ REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
 # ── Flags ────────────────────────────────────────────────────────────────
 FORCE_REBUILD="${SANDBOX_REBUILD:-0}"
 USE_GPU="${SANDBOX_GPU:-auto}"
+GPU_DEVICE="${SANDBOX_GPU_DEVICE:-}"
 
 while [[ "${1:-}" = --* ]]; do
   case "$1" in
-    --rebuild) FORCE_REBUILD=1; shift ;;
-    --gpu)     USE_GPU=1; shift ;;
-    --no-gpu)  USE_GPU=0; shift ;;
+    --rebuild)    FORCE_REBUILD=1; shift ;;
+    --gpu)        USE_GPU=1; shift ;;
+    --no-gpu)     USE_GPU=0; shift ;;
+    --gpu-device) GPU_DEVICE="${2:?--gpu-device requires an ID (e.g. 0)}"; USE_GPU=1; shift 2 ;;
     *) break ;;
   esac
 done
+
+# GPU_DEVICE (from flag or env) implies --gpu
+[[ -n "${GPU_DEVICE}" ]] && USE_GPU=1
 
 # ── Agent selection ──────────────────────────────────────────────────────
 # Priority: explicit first arg > basename detection > error
@@ -53,7 +60,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] <claude|gemini|codex|copilot> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] <claude|gemini|codex|copilot> [args...]" >&2
       exit 1
       ;;
   esac
@@ -273,8 +280,13 @@ if [[ "${USE_GPU}" = "auto" ]]; then
 fi
 
 if [[ "${USE_GPU}" = "1" ]]; then
-  docker_args+=(--gpus all)
-  echo "GPU passthrough enabled (--gpus all)" >&2
+  if [[ -n "${GPU_DEVICE}" ]]; then
+    docker_args+=(--gpus "device=${GPU_DEVICE}")
+    echo "GPU passthrough enabled (--gpus device=${GPU_DEVICE})" >&2
+  else
+    docker_args+=(--gpus all)
+    echo "GPU passthrough enabled (--gpus all)" >&2
+  fi
 fi
 
 # ── Run container ────────────────────────────────────────────────────────
