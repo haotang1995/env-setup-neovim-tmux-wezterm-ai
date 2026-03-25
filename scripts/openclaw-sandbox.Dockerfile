@@ -1,5 +1,8 @@
 FROM ubuntu:24.04
 
+# UTF-8 locale so tmux and Neovim draw box-drawing characters correctly
+ENV LANG=C.UTF-8
+
 # Build tools, common utilities, and agent dependencies
 RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
   build-essential \
