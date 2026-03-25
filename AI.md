@@ -200,6 +200,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   State persists in a named Docker volume (`openclaw-home`) mounted at `/home/claw`.
   Container name: `openclaw-live`, restart policy: `unless-stopped`.
   GPU passthrough auto-detected (override with `--gpu`/`--no-gpu` or `SANDBOX_GPU`).
+  On start (and restore), the `claw` user is remapped to the host UID/GID via
+  `usermod`/`groupmod` so files in `/workspace` keep host ownership; the
+  container runs as root for the remapping then drops to `claw` via `setpriv`.
   **Checkpointing:** `openclaw-sandbox start` auto-installs a host cron job that
   runs `checkpoint-openclaw` every 6 hours. Each checkpoint performs a
   `docker commit` (→ `openclaw-snap:<timestamp>` image) plus a volume tar backup

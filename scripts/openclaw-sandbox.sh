@@ -113,6 +113,7 @@ do_start() {
 
   local docker_args=(
     -d
+    -u root
     --name "${CONTAINER_NAME}"
     --hostname openclaw
     -v "${VOLUME_NAME}:/home/claw"
@@ -120,6 +121,8 @@ do_start() {
     -w "${WORKSPACE_CONTAINER}"
     -e TERM="${TERM:-xterm-256color}"
     -e COLORTERM="${COLORTERM:-truecolor}"
+    -e HOST_UID="$(id -u)"
+    -e HOST_GID="$(id -g)"
     --restart unless-stopped
   )
 
@@ -129,7 +132,17 @@ do_start() {
   fi
 
   docker run "${docker_args[@]}" "${IMAGE_NAME}" \
-    bash -c 'git config --global --add safe.directory /workspace 2>/dev/null; exec sleep infinity'
+    bash -c '
+      _UID="${HOST_UID:-1000}"
+      _GID="${HOST_GID:-1000}"
+      if [ "${_UID}" != "1000" ] || [ "${_GID}" != "1000" ]; then
+        groupmod -g "${_GID}" claw 2>/dev/null || true
+        usermod -u "${_UID}" -g "${_GID}" claw 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /home/claw 2>/dev/null || true
+      fi
+      git config --global --add safe.directory /workspace 2>/dev/null || true
+      exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- sleep infinity
+    '
 
   install_checkpoint_cron
 
@@ -158,9 +171,9 @@ do_exec() {
     return 1
   fi
   if [[ $# -gt 0 ]]; then
-    exec docker exec -it "${CONTAINER_NAME}" "$@"
+    exec docker exec -it -u claw "${CONTAINER_NAME}" "$@"
   else
-    exec docker exec -it "${CONTAINER_NAME}" bash
+    exec docker exec -it -u claw "${CONTAINER_NAME}" bash
   fi
 }
 

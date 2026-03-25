@@ -141,6 +141,7 @@ mkdir -p "${WORKSPACE_HOST}"
 
 docker_args=(
   -d
+  -u root
   --name "${CONTAINER_NAME}"
   --hostname openclaw
   -v "${VOLUME_NAME}:/home/claw"
@@ -148,6 +149,8 @@ docker_args=(
   -w "${WORKSPACE_CONTAINER}"
   -e TERM="${TERM:-xterm-256color}"
   -e COLORTERM="${COLORTERM:-truecolor}"
+  -e HOST_UID="$(id -u)"
+  -e HOST_GID="$(id -g)"
   --restart unless-stopped
 )
 
@@ -157,7 +160,17 @@ if [[ "${USE_GPU}" = "1" ]]; then
 fi
 
 docker run "${docker_args[@]}" "${IMAGE_TAG}" \
-  bash -c 'git config --global --add safe.directory /workspace 2>/dev/null; exec sleep infinity'
+  bash -c '
+    _UID="${HOST_UID:-1000}"
+    _GID="${HOST_GID:-1000}"
+    if [ "${_UID}" != "1000" ] || [ "${_GID}" != "1000" ]; then
+      groupmod -g "${_GID}" claw 2>/dev/null || true
+      usermod -u "${_UID}" -g "${_GID}" claw 2>/dev/null || true
+      chown -R "${_UID}:${_GID}" /home/claw 2>/dev/null || true
+    fi
+    git config --global --add safe.directory /workspace 2>/dev/null || true
+    exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- sleep infinity
+  '
 
 echo "[restore] Container '${CONTAINER_NAME}' restored and running." >&2
 echo "Use 'openclaw-sandbox exec' to attach." >&2
