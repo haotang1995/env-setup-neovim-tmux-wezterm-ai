@@ -110,8 +110,10 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   `Shift+Ctrl+Click` (or `Shift+Cmd+Click` on macOS) to open in browser.
   Shift bypasses tmux mouse capture.
 - **Status bar:** top, minimal, Catppuccin-ish colors.
-- **Automatic AI windows:** new sessions automatically open `gemini`, `claude`,
-  `codex`, and `copilot` in windows 2, 3, 4, and 5, then focus back to window 1.
+- **AI agent windows:** `gemini`, `claude`, `codex`, `copilot` in windows 2-5.
+  Opt-in (not automatic):
+  - **On session creation:** `TMUX_AI=1 tmux new -s work`
+  - **On demand:** `prefix + A` (WIP — binding needs quoting fix)
 
 ### WezTerm
 

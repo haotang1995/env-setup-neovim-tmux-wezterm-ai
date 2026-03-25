@@ -5,3 +5,4 @@
 - Got an online always running agent, especially regarding privacy, it should be able to run local models for parsing and private tasks, etc.
 - ~~Docker image outdated issue~~ — solved: biweekly rotating tags (`w0`/`w1`) + `--rebuild` flag
 - ~~Dockerfile add python3, rg~~ — already in base image
+- Fix `prefix + A` tmux binding — `$S` shell variable gets expanded by tmux's format engine before the shell sees it; use `#{session_name}` inline instead
