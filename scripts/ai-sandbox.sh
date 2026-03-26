@@ -424,7 +424,7 @@ exec docker run "${docker_args[@]}" \
         # files keep their original ownership (Claude also refuses
         # --dangerously-skip-permissions as root).
         _ensure_host_user
-        chown -R "${_UID}:${_GID}" /root/.config /root/.local 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /root/.config /root/.local /root/.cache 2>/dev/null || true
         [ -f "${HOME}/.claude.json" ] && chown "${_UID}:${_GID}" "${HOME}/.claude.json" 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           claude --dangerously-skip-permissions "$@"
@@ -432,11 +432,15 @@ exec docker run "${docker_args[@]}" \
       gemini)  exec gemini --sandbox false --yolo "$@" ;;
       codex)
         _ensure_host_user
+        mkdir -p /root/.cache 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /root/.cache 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           codex --sandbox danger-full-access "$@"
         ;;
       copilot)
         _ensure_host_user
+        mkdir -p /root/.cache 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /root/.cache 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           copilot --yolo "$@"
         ;;
