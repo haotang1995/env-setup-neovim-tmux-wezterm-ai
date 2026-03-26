@@ -30,6 +30,9 @@ __pycache__/
 # Windows-side WezTerm copy (produced by install.sh on WSL)
 .wezterm.lua
 
+# Git worktrees
+.worktrees/
+
 # Editor / IDE
 .vscode/
 .idea/
