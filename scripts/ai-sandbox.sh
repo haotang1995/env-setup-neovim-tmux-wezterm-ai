@@ -287,6 +287,8 @@ if [[ "${USE_GPU}" = "1" ]]; then
     docker_args+=(--gpus all)
     echo "GPU passthrough enabled (--gpus all)" >&2
   fi
+  # NVIDIA recommends these for PyTorch: shared memory, locked memory, stack size
+  docker_args+=(--ipc=host --ulimit memlock=-1 --ulimit stack=67108864)
 fi
 
 # ── Run container ────────────────────────────────────────────────────────
