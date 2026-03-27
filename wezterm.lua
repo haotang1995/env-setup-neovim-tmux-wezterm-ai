@@ -171,6 +171,16 @@ config.keys = {
 	{ key = "w", mods = "CTRL|SHIFT", action = act.CloseCurrentTab({ confirm = true }) },
 	{ key = "[", mods = is_mac and "CMD|SHIFT" or "CTRL|SHIFT", action = act.ActivateTabRelative(-1) },
 	{ key = "]", mods = is_mac and "CMD|SHIFT" or "CTRL|SHIFT", action = act.ActivateTabRelative(1) },
+	-- Move tab left/right
+	{ key = "LeftArrow", mods = is_mac and "CMD|SHIFT" or "CTRL|SHIFT", action = act.MoveTabRelative(-1) },
+	{ key = "RightArrow", mods = is_mac and "CMD|SHIFT" or "CTRL|SHIFT", action = act.MoveTabRelative(1) },
+	-- Rename tab
+	{ key = "e", mods = is_mac and "CMD|SHIFT" or "CTRL|SHIFT", action = act.PromptInputLine({
+		description = "Set tab title",
+		action = wezterm.action_callback(function(window, _pane, line)
+			if line then window:active_tab():set_title(line) end
+		end),
+	}) },
 
 	-------------------------------------------------
 	-- Quick split (WezTerm-native, use when not in tmux)

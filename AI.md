@@ -126,6 +126,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   Sizes: 17pt Mac, 14pt Windows, 15pt Linux.
 - **Colors:** ported from iTerm2 "G33" profile (black bg, gray fg, classic ANSI).
 - **New tab:** `Cmd+Shift+T` (macOS) / `Ctrl+Shift+T` (Windows/Linux).
+- **Move tab left/right:** `Cmd+Shift+Left/Right` (macOS) / `Ctrl+Shift+Left/Right` (Windows/Linux).
+- **Rename tab:** `Cmd+Shift+E` (macOS) / `Ctrl+Shift+E` (Windows/Linux).
 - **Fullscreen:** `Cmd+Shift+F` (macOS) / `Ctrl+Shift+F` (Windows/Linux).
 - **Kitty graphics protocol** enabled for in-terminal images/PDF.
 - **Ctrl+hjkl** explicitly passed through (never intercepted by WezTerm).
