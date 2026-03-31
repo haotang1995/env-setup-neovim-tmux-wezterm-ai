@@ -106,6 +106,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   (via `is_vim` detection in tmux + vim-tmux-navigator in Neovim).
 - **Splits:** `prefix + |` or `\` (vertical), `prefix + -` (horizontal), in cwd.
 - **Vi copy mode:** `v` to select, `y` to yank, `Ctrl+V` for block select.
+  Copy uses explicit OSC 52 via `#{pane_tty}` (not tmux's built-in
+  `set-clipboard`) for reliable clipboard through multi-hop SSH
+  (WezTerm → WSL → SSH → tmux). Mouse drag-release also copies.
 - **Hyperlinks:** OSC 8 passthrough enabled so clickable URLs work inside tmux.
   `Shift+Ctrl+Click` (or `Shift+Cmd+Click` on macOS) to open in browser.
   Shift bypasses tmux mouse capture.
