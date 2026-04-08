@@ -25,7 +25,7 @@ WezTerm (terminal emulator, cross-platform)
  └─ tmux (session/window/pane persistence, SSH detach/reattach)
      ├─ Neovim  (LazyVim distribution)
      │   ├─ LSP          (language intelligence)
-     │   ├─ avante.nvim  (Cursor-like AI agent, Claude API)
+     │   ├─ avante.nvim  (disabled — Cursor-like AI agent, Claude API)
      │   ├─ copilot.lua  (inline ghost-text completions)
      │   └─ VimTeX       (LaTeX compilation + forward search)
      ├─ Terminal pane     (shell, git, builds)
@@ -64,7 +64,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     keymaps.lua                  ← custom key mappings
     autocmds.lua                 ← autocommands (reload, filetype, trim whitespace)
   lua/plugins/
-    ai.lua                       ← avante.nvim + copilot.lua + CopilotChat
+    ai.lua                       ← copilot.lua + CopilotChat (avante.nvim disabled)
     vimtex.lua                   ← VimTeX overrides (lualatex engine, platform-detecting viewer)
     markdown.lua                 ← render-markdown.nvim + markdown-preview.nvim
     tmux-navigator.lua           ← vim-tmux-navigator (Ctrl+hjkl across panes)
@@ -233,7 +233,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   - `codex`: Codex CLI for AI-powered shell assistance and automation.
   - `copilot`: GitHub Copilot CLI for agentic coding with GitHub integration.
   - `aider`: Aider for AI pair programming (requires installation).
-- **avante.nvim:** Claude as provider (`claude-sonnet-4-20250514`), needs `ANTHROPIC_API_KEY` env var.
+- **avante.nvim:** disabled (config preserved in `ai.lua`; set `enabled = true` to re-activate).
 - **copilot.lua:** inline ghost-text, `<Tab>` to accept. Needs Node 22+ and `:Copilot auth`.
 - **CopilotChat.nvim:** quick Q&A via `<leader>ac`.
 - **Shared skill library (`ai-skills/`):** Cross-agent skills from
