@@ -243,6 +243,19 @@ if [[ "${AGENT}" = "claude" ]]; then
   done
 fi
 
+# ── Codex-specific extras ───────────────────────────────────────────────
+if [[ "${AGENT}" = "codex" ]]; then
+  # Sync chat history to host: sessions/ (transcripts) and history.jsonl
+  # (prompt history). Auth (auth.json) and settings (config.toml) stay
+  # read-only via /host-agent-home and are copied in at startup.
+  mkdir -p "${HOME}/.codex/sessions"
+  [[ -f "${HOME}/.codex/history.jsonl" ]] || : > "${HOME}/.codex/history.jsonl"
+  docker_args+=(
+    -v "${HOME}/.codex/sessions:${AGENT_CONTAINER}/sessions"
+    -v "${HOME}/.codex/history.jsonl:${AGENT_CONTAINER}/history.jsonl"
+  )
+fi
+
 # ── Copilot-specific extras ──────────────────────────────────────────────
 if [[ "${AGENT}" = "copilot" ]]; then
   # Resolve a GitHub token from available sources (first wins):

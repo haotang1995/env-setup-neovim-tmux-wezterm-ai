@@ -192,8 +192,10 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
   `sandbox-exec` setting, disables auto-update, launches with `--sandbox false --yolo`;
   **codex** — selective `auth.json`/`config.toml` refresh, legacy `~/.codex/.codex/skills`
-  migration; drops to non-root user matching host UID/GID via `setpriv`,
-  launches with `--sandbox danger-full-access`;
+  migration; bind-mounts host `~/.codex/sessions` and `~/.codex/history.jsonl`
+  read-write so chat transcripts and prompt history sync to the host (auth
+  and settings stay read-only); drops to non-root user matching host UID/GID
+  via `setpriv`, launches with `--sandbox danger-full-access`;
   **copilot** — no-clobber sync from host `~/.copilot`, merges host config keys
   into container `config.json` without clobbering auth tokens (no keychain in
   Docker), always refreshes `mcp-config.json`; resolves a GitHub token from
