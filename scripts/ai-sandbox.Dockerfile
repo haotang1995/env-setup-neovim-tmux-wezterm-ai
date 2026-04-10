@@ -36,3 +36,6 @@ RUN if getent passwd 1000 >/dev/null; then \
 
 RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex @github/copilot \
   && npm cache clean --force
+
+# W&B (Weights & Biases) — pre-install so training scripts can log metrics
+RUN pip install --no-cache-dir --break-system-packages wandb

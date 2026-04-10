@@ -268,6 +268,32 @@ if [[ "${AGENT}" = "copilot" ]]; then
   fi
 fi
 
+# ── W&B (Weights & Biases) passthrough (all agents) ─────────────────────
+# Resolve token: WANDB_KEY > WANDB_TOKEN > WANDB_API_KEY > ~/.bashrc extraction
+_WANDB_TOKEN="${WANDB_KEY:-${WANDB_TOKEN:-${WANDB_API_KEY:-}}}"
+
+if [[ -z "${_WANDB_TOKEN}" ]]; then
+  for _var in WANDB_KEY WANDB_TOKEN; do
+    _WANDB_TOKEN="$(grep -oP "^export ${_var}=\\K.*" "${HOME}/.bashrc" 2>/dev/null | tail -1 | tr -d "\"'" || true)"
+    [[ -n "${_WANDB_TOKEN}" ]] && break
+  done
+fi
+
+if [[ -n "${_WANDB_TOKEN}" ]]; then
+  # WANDB_API_KEY is what the wandb Python library reads; WANDB_KEY is the
+  # Microsoft Research convention. Pass both so either path works.
+  docker_args+=(-e "WANDB_API_KEY=${_WANDB_TOKEN}" -e "WANDB_KEY=${_WANDB_TOKEN}")
+fi
+
+# Default to Microsoft Research self-hosted instance
+docker_args+=(-e "WANDB_BASE_URL=${WANDB_BASE_URL:-https://microsoft-research.wandb.io}")
+
+for env_name in WANDB_PROJECT WANDB_ENTITY WANDB_RUN_GROUP WANDB_MODE; do
+  if [[ -n "${!env_name:-}" ]]; then
+    docker_args+=(-e "${env_name}")
+  fi
+done
+
 # ── GPU passthrough ──────────────────────────────────────────────────────
 # Auto-detect: enable GPU if nvidia-container-runtime or nvidia-smi is available.
 if [[ "${USE_GPU}" = "auto" ]]; then

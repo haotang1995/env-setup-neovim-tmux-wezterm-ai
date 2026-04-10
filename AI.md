@@ -156,8 +156,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   or via backward-compat symlinks (`claude-sandbox`, `gemini-sandbox`,
   `codex-sandbox`, `copilot-sandbox`).
   All agents share a single Docker image (built from `scripts/ai-sandbox.Dockerfile`,
-  based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, and all
-  four CLIs) pre-installed at build time for near-instant startup.
+  based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, all
+  four CLIs, and `wandb`) pre-installed at build time for near-instant startup.
   **Biweekly auto-rebuild:** the default image uses a rotating tag (`ai-sandbox:w0`
   / `ai-sandbox:w1`) based on ISO week number, so every other week the tag flips,
   the old image is unused, and a fresh build picks up the latest CLI versions.
@@ -170,6 +170,12 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   or `SANDBOX_GPU=1|0` env var. Passes `--gpus all` to `docker run`.
   Use `--gpu-device ID` (or `SANDBOX_GPU_DEVICE=ID`) to pass through a
   specific GPU instead of all (e.g. `--gpu-device 0`); implies `--gpu`.
+  **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
+  > `WANDB_API_KEY` env vars > `~/.bashrc` extraction, and passed into the
+  container as both `WANDB_API_KEY` (Python library) and `WANDB_KEY` (MS Research
+  convention). `WANDB_BASE_URL` defaults to `https://microsoft-research.wandb.io`.
+  Optional env vars `WANDB_PROJECT`, `WANDB_ENTITY`, `WANDB_RUN_GROUP`, and
+  `WANDB_MODE` are passed through when set.
   Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
   Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
   Mirrors host git config, marks `/workspace` as a Git `safe.directory`, and
