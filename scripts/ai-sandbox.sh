@@ -30,6 +30,13 @@ REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
 FORCE_REBUILD="${SANDBOX_REBUILD:-0}"
 USE_GPU="${SANDBOX_GPU:-auto}"
 GPU_DEVICE="${SANDBOX_GPU_DEVICE:-}"
+# claude only: --no-login seeds OAuth credentials from the host so the
+# container does not require /login. Side effect: container shares the host's
+# refresh-token chain, which Anthropic rotates ~every 11h; the container will
+# typically need re-auth within ~1 day (suitable for short jobs). Default
+# (no flag) skips the credential copy: the container holds its own
+# OAuth grant that survives multi-day sessions.
+NO_LOGIN="${SANDBOX_NO_LOGIN:-0}"
 
 while [[ "${1:-}" = --* ]]; do
   case "$1" in
@@ -37,6 +44,7 @@ while [[ "${1:-}" = --* ]]; do
     --gpu)        USE_GPU=1; shift ;;
     --no-gpu)     USE_GPU=0; shift ;;
     --gpu-device) GPU_DEVICE="${2:?--gpu-device requires an ID (e.g. 0)}"; USE_GPU=1; shift 2 ;;
+    --no-login)   NO_LOGIN=1; shift ;;
     *) break ;;
   esac
 done
@@ -60,7 +68,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] <claude|gemini|codex|copilot> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login] <claude|gemini|codex|copilot> [args...]" >&2
       exit 1
       ;;
   esac
@@ -174,6 +182,7 @@ docker_args=(
   -e REPO_DIR="${REPO_DIR}"
   -e HOST_UID="$(id -u)"
   -e HOST_GID="$(id -g)"
+  -e NO_LOGIN="${NO_LOGIN}"
 )
 
 # Worktree support: mount external git metadata paths when /workspace/.git
@@ -340,19 +349,42 @@ exec docker run "${docker_args[@]}" \
     case "${AGENT}" in
       claude)
         # -L dereferences symlinks (install.sh creates symlinks in host agent dirs)
-        # Seed non-auth files only when missing (no-clobber)
-        cp -anL /host-agent-home/. "${AGENT_CONTAINER}/" 2>/dev/null || true
-        # Always overwrite auth files so rotated tokens are picked up
-        cp -aL /host-claude-json "${HOME}/.claude.json" 2>/dev/null || true
-        for _f in .credentials.json credentials.json; do
-          [ -f "/host-agent-home/${_f}" ] && \
-            cp -aL "/host-agent-home/${_f}" "${AGENT_CONTAINER}/${_f}" 2>/dev/null || true
+        # Seed non-auth files only when missing (no-clobber). Credential
+        # files are excluded here so the default mode never accidentally
+        # bootstraps a shared OAuth grant; --no-login handles them below.
+        for _src in /host-agent-home/.[!.]* /host-agent-home/*; do
+          [ -e "$_src" ] || continue
+          case "$(basename "$_src")" in
+            .credentials.json|credentials.json) continue ;;
+          esac
+          cp -anL "$_src" "${AGENT_CONTAINER}/" 2>/dev/null || true
         done
 
-        # Write Keychain-extracted credentials (overrides file-based copy above)
-        if [ -n "${_CLAUDE_CREDS_JSON:-}" ]; then
-          printf "%s" "${_CLAUDE_CREDS_JSON}" > "${AGENT_CONTAINER}/.credentials.json"
-          chmod 600 "${AGENT_CONTAINER}/.credentials.json"
+        if [ "${NO_LOGIN:-0}" = "1" ]; then
+          # --no-login: copy host OAuth credentials into the container so the
+          # user is not prompted for /login. Container will share the host'\''s
+          # refresh-token chain; Anthropic rotates these and the container
+          # typically loses auth within ~1 day. Suitable for short jobs.
+          cp -aL /host-claude-json "${HOME}/.claude.json" 2>/dev/null || true
+          for _f in .credentials.json credentials.json; do
+            [ -f "/host-agent-home/${_f}" ] && \
+              cp -aL "/host-agent-home/${_f}" "${AGENT_CONTAINER}/${_f}" 2>/dev/null || true
+          done
+
+          # Keychain-extracted credentials (macOS) override the file-based copy
+          if [ -n "${_CLAUDE_CREDS_JSON:-}" ]; then
+            printf "%s" "${_CLAUDE_CREDS_JSON}" > "${AGENT_CONTAINER}/.credentials.json"
+            chmod 600 "${AGENT_CONTAINER}/.credentials.json"
+            unset _CLAUDE_CREDS_JSON
+          fi
+        else
+          # Default: do not seed OAuth credentials. Container has its own
+          # OAuth grant living in the claude-home volume; first launch
+          # prompts /login (once per volume), subsequent launches reuse it.
+          # .claude.json is non-auth (user prefs + project index) — seed it
+          # only when /root has none yet so claude can start cleanly.
+          [ ! -f "${HOME}/.claude.json" ] && \
+            cp -aL /host-claude-json "${HOME}/.claude.json" 2>/dev/null || true
           unset _CLAUDE_CREDS_JSON
         fi
 

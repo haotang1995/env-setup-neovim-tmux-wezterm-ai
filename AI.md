@@ -183,10 +183,21 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   running inside linked worktrees. Agent-specific behavior:
   **claude** — extra named volumes for `/root/.config` and `/root/.local/share`,
   mounts `~/.claude.json` and `~/.config/claude{,-code}`, macOS Keychain credential
-  extraction (service `Claude Code-credentials`), Anthropic env var passthrough;
-  auth/credential files (`.claude.json`, `.credentials.json`,
-  `~/.config/claude{,-code}`) are **always overwritten** from the host so rotated
-  tokens are picked up, while non-auth agent-home files use no-clobber seeding;
+  extraction (service `Claude Code-credentials`), Anthropic env var passthrough.
+  Auth handling has two modes:
+  - **Default (no flag)** — credentials are **not** seeded from the host. The
+    container holds its own OAuth grant inside the `claude-home` volume; the
+    first launch on a fresh volume prompts `/login` once and subsequent
+    launches reuse it. This grant is independent of host token rotations, so
+    a single container can run for many days without re-auth.
+  - **`--no-login` (or `SANDBOX_NO_LOGIN=1`)** — copies `.claude.json` and
+    `.credentials.json` from the host on every start (and uses macOS
+    Keychain when present). The container shares the host's OAuth refresh
+    chain; Anthropic rotates these tokens roughly every 11h and the
+    container typically loses auth within ~1 day. Use this for short jobs
+    where you don't want to do an interactive `/login`.
+
+  Non-auth agent-home files use no-clobber seeding in both modes;
   drops to non-root user matching the host UID/GID (`HOST_UID`/`HOST_GID` env vars,
   defaults to 1000) via `setpriv` then launches with `--dangerously-skip-permissions`;
   **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
