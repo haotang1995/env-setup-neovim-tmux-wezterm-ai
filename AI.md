@@ -176,6 +176,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   convention). `WANDB_BASE_URL` defaults to `https://microsoft-research.wandb.io`.
   Optional env vars `WANDB_PROJECT`, `WANDB_ENTITY`, `WANDB_RUN_GROUP`, and
   `WANDB_MODE` are passed through when set.
+  **Hugging Face:** token is resolved from `HF_TOKEN` > `HUGGING_FACE_HUB_TOKEN`
+  > `HUGGINGFACE_TOKEN` env vars > `~/.bashrc` extraction, and passed into the
+  container as both `HF_TOKEN` (modern) and `HUGGING_FACE_HUB_TOKEN` (legacy).
+  Optional env vars `HF_HOME`, `HF_HUB_CACHE`, and `HF_ENDPOINT` are passed
+  through when set.
   Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
   Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
   Mirrors host git config, marks `/workspace` as a Git `safe.directory`, and

@@ -316,6 +316,29 @@ for env_name in WANDB_PROJECT WANDB_ENTITY WANDB_RUN_GROUP WANDB_MODE; do
   fi
 done
 
+# ── Hugging Face passthrough (all agents) ────────────────────────────────
+# Resolve token: HF_TOKEN > HUGGING_FACE_HUB_TOKEN > HUGGINGFACE_TOKEN > ~/.bashrc extraction
+_HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-${HUGGINGFACE_TOKEN:-}}}"
+
+if [[ -z "${_HF_TOKEN}" ]]; then
+  for _var in HF_TOKEN HUGGING_FACE_HUB_TOKEN HUGGINGFACE_TOKEN; do
+    _HF_TOKEN="$(grep -oP "^export ${_var}=\\K.*" "${HOME}/.bashrc" 2>/dev/null | tail -1 | tr -d "\"'" || true)"
+    [[ -n "${_HF_TOKEN}" ]] && break
+  done
+fi
+
+if [[ -n "${_HF_TOKEN}" ]]; then
+  # HF_TOKEN is the modern env var; HUGGING_FACE_HUB_TOKEN is the legacy name
+  # still read by huggingface_hub. Pass both so either path works.
+  docker_args+=(-e "HF_TOKEN=${_HF_TOKEN}" -e "HUGGING_FACE_HUB_TOKEN=${_HF_TOKEN}")
+fi
+
+for env_name in HF_HOME HF_HUB_CACHE HF_ENDPOINT; do
+  if [[ -n "${!env_name:-}" ]]; then
+    docker_args+=(-e "${env_name}")
+  fi
+done
+
 # ── GPU passthrough ──────────────────────────────────────────────────────
 # Auto-detect: enable GPU if nvidia-container-runtime or nvidia-smi is available.
 if [[ "${USE_GPU}" = "auto" ]]; then
