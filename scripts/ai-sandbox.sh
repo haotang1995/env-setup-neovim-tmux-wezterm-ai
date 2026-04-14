@@ -213,6 +213,16 @@ if [[ -d "${HOME}/.config/git" ]]; then
   docker_args+=(--mount "type=bind,src=${HOME}/.config/git,dst=/host-git-config,readonly")
 fi
 
+# Azure CLI profile (all agents) — bind-mount read-only so AzureCliCredential()
+# inside the container reuses the host's `az login` session (MSAL token cache,
+# active subscription). The entrypoint copies it into ${HOME}/.azure so `az`
+# refresh writes stay inside the container and never mutate the host profile.
+# Primarily needed for TRAPI (api://trapi/.default) and any other Azure AD
+# OAuth scope.
+if [[ -d "${HOME}/.azure" ]]; then
+  docker_args+=(--mount "type=bind,src=${HOME}/.azure,dst=/host-azure,readonly")
+fi
+
 # ── Claude-specific extras ───────────────────────────────────────────────
 if [[ "${AGENT}" = "claude" ]]; then
   docker_args+=(
@@ -472,6 +482,17 @@ exec docker run "${docker_args[@]}" \
     mkdir -p "${HOME}/.config/git"
     cp -R /host-git-config/. "${HOME}/.config/git/" 2>/dev/null || true
 
+    # ── Azure CLI profile (shared) ──
+    # Host ~/.azure is bind-mounted read-only at /host-azure; copy it into
+    # the container so `az` (and AzureCliCredential via Python) can refresh
+    # tokens in-place without mutating the host profile.
+    if [ -d /host-azure ]; then
+      mkdir -p "${HOME}/.azure"
+      cp -R /host-azure/. "${HOME}/.azure/" 2>/dev/null || true
+      chmod 700 "${HOME}/.azure" 2>/dev/null || true
+      find "${HOME}/.azure" -type f -name "*token*" -exec chmod 600 {} + 2>/dev/null || true
+    fi
+
     # ── Skill bootstrap (shared) ──
     if [ ! -d "${AGENT_CONTAINER}/skills" ] || \
        ! find "${AGENT_CONTAINER}/skills" -mindepth 1 -maxdepth 1 ! -name ".system" \
@@ -520,7 +541,7 @@ exec docker run "${docker_args[@]}" \
         # files keep their original ownership (Claude also refuses
         # --dangerously-skip-permissions as root).
         _ensure_host_user
-        chown -R "${_UID}:${_GID}" /root/.config /root/.local /root/.cache 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /root/.config /root/.local /root/.cache /root/.azure 2>/dev/null || true
         [ -f "${HOME}/.claude.json" ] && chown "${_UID}:${_GID}" "${HOME}/.claude.json" 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           claude --dangerously-skip-permissions "$@"
@@ -529,14 +550,14 @@ exec docker run "${docker_args[@]}" \
       codex)
         _ensure_host_user
         mkdir -p /root/.cache 2>/dev/null || true
-        chown -R "${_UID}:${_GID}" /root/.cache 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /root/.cache /root/.azure 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           codex --sandbox danger-full-access "$@"
         ;;
       copilot)
         _ensure_host_user
         mkdir -p /root/.cache 2>/dev/null || true
-        chown -R "${_UID}:${_GID}" /root/.cache 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /root/.cache /root/.azure 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           copilot --yolo "$@"
         ;;

@@ -26,6 +26,19 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && apt-get install -y -qq --no-install-recommends nodejs \
   && rm -rf /var/lib/apt/lists/*
 
+# Azure CLI — lets AzureCliCredential() work inside the container when the
+# host's ~/.azure is bind-mounted in (see ai-sandbox.sh). Required for TRAPI
+# (MSR's OAuth-gated Azure OpenAI gateway, api://trapi/.default).
+RUN install -m 0755 -d /etc/apt/keyrings \
+  && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+       | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg \
+  && chmod a+r /etc/apt/keyrings/microsoft.gpg \
+  && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $(. /etc/os-release && echo $VERSION_CODENAME) main" \
+       > /etc/apt/sources.list.d/azure-cli.list \
+  && apt-get update -qq \
+  && apt-get install -y -qq --no-install-recommends azure-cli \
+  && rm -rf /var/lib/apt/lists/*
+
 # Non-root user (uid 1000) for Claude's --dangerously-skip-permissions
 # ubuntu:24.04 ships with a 'ubuntu' user at uid 1000; reuse it or create fresh.
 RUN if getent passwd 1000 >/dev/null; then \

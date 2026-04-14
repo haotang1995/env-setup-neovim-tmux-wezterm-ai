@@ -181,6 +181,13 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   container as both `HF_TOKEN` (modern) and `HUGGING_FACE_HUB_TOKEN` (legacy).
   Optional env vars `HF_HOME`, `HF_HUB_CACHE`, and `HF_ENDPOINT` are passed
   through when set.
+  **Azure CLI / TRAPI:** host `~/.azure` is bind-mounted read-only at
+  `/host-azure` and copied into the container's `~/.azure` at startup, so
+  `AzureCliCredential()` (and any other `az` subcommand) inside the container
+  reuses the host's `az login` session. `azure-cli` is pre-installed in the
+  default image. Refresh tokens written during the container session stay
+  inside the container and never mutate the host profile. Enables TRAPI
+  (`api://trapi/.default`) and any other Azure AD OAuth scope.
   Supports Dockerfile selection: `SANDBOX_DOCKERFILE` > `./Dockerfile` > default.
   Mounts `/workspace`, agent home (named volume), repo (read-only), npm cache.
   Mirrors host git config, marks `/workspace` as a Git `safe.directory`, and
