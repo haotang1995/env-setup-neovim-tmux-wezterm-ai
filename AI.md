@@ -196,9 +196,18 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **claude** — extra named volumes for `/root/.config` and `/root/.local/share`,
   mounts `~/.claude.json` and `~/.config/claude{,-code}`, macOS Keychain credential
   extraction (service `Claude Code-credentials`), Anthropic env var passthrough.
+  **Per-workspace agent-home volume**: the volume name is
+  `claude-home-<workspace>` where `<workspace>` defaults to the sanitized
+  basename of the launch directory (lowercased, non-alphanumerics collapsed
+  to `-`, with `default` as the fallback). Override with `--workspace NAME`
+  or `SANDBOX_WORKSPACE=NAME`. This keeps two concurrent claude sandboxes
+  (e.g. in different projects) from sharing one OAuth grant and racing on
+  refresh-token rotation. Launch logs the resolved workspace + volume name
+  so you can see where your state lives. Only claude uses this scheme; the
+  other agents keep the single shared `*-home` volume.
   Auth handling has two modes:
   - **Default (no flag)** — credentials are **not** seeded from the host. The
-    container holds its own OAuth grant inside the `claude-home` volume; the
+    container holds its own OAuth grant inside the per-workspace volume; the
     first launch on a fresh volume prompts `/login` once and subsequent
     launches reuse it. This grant is independent of host token rotations, so
     a single container can run for many days without re-auth.

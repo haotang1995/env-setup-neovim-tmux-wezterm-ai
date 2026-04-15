@@ -37,6 +37,12 @@ GPU_DEVICE="${SANDBOX_GPU_DEVICE:-}"
 # (no flag) skips the credential copy: the container holds its own
 # OAuth grant that survives multi-day sessions.
 NO_LOGIN="${SANDBOX_NO_LOGIN:-0}"
+# claude only: per-workspace volume name. Defaults to the sanitized basename
+# of PWD so two sandboxes in different projects get independent OAuth grants
+# (avoids two containers racing on the same refresh-token chain inside a
+# shared claude-home volume). Override with --workspace NAME when two
+# projects have the same basename or you want to force shared state.
+WORKSPACE_NAME="${SANDBOX_WORKSPACE:-}"
 
 while [[ "${1:-}" = --* ]]; do
   case "$1" in
@@ -45,9 +51,18 @@ while [[ "${1:-}" = --* ]]; do
     --no-gpu)     USE_GPU=0; shift ;;
     --gpu-device) GPU_DEVICE="${2:?--gpu-device requires an ID (e.g. 0)}"; USE_GPU=1; shift 2 ;;
     --no-login)   NO_LOGIN=1; shift ;;
+    --workspace)  WORKSPACE_NAME="${2:?--workspace requires a name}"; shift 2 ;;
     *) break ;;
   esac
 done
+
+# Default workspace = sanitized basename of PWD (Docker volume names: [a-zA-Z0-9_.-])
+if [[ -z "${WORKSPACE_NAME}" ]]; then
+  _wsbase="$(basename "${PWD}")"
+  _wsbase="$(printf '%s' "${_wsbase}" | tr '[:upper:]' '[:lower:]' \
+    | sed 's/[^a-z0-9_.-]/-/g; s/--*/-/g; s/^[-.]*//; s/-*$//')"
+  WORKSPACE_NAME="${_wsbase:-default}"
+fi
 
 # GPU_DEVICE (from flag or env) implies --gpu
 [[ -n "${GPU_DEVICE}" ]] && USE_GPU=1
@@ -68,7 +83,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login] <claude|gemini|codex|copilot> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login] [--workspace NAME] <claude|gemini|codex|copilot> [args...]" >&2
       exit 1
       ;;
   esac
@@ -85,7 +100,10 @@ case "${AGENT}" in
   claude)
     AGENT_HOST="${HOME}/.claude"
     AGENT_CONTAINER="/root/.claude"
-    AGENT_HOME_VOL="claude-home"
+    # Per-workspace volume: prevents two claude sandboxes in different
+    # projects from sharing one OAuth grant and racing on refresh-token
+    # rotation. One /login per workspace volume, independent thereafter.
+    AGENT_HOME_VOL="claude-home-${WORKSPACE_NAME}"
     AGENT_CMD="claude"
     AGENT_NPM_PKG="@anthropic-ai/claude-code"
     ;;
@@ -157,6 +175,9 @@ else
 fi
 
 echo "Using sandbox image: ${SANDBOX_IMAGE}" >&2
+if [[ "${AGENT}" = "claude" ]]; then
+  echo "Using workspace: ${WORKSPACE_NAME} (volume: ${AGENT_HOME_VOL})" >&2
+fi
 
 if [[ "${FORCE_REBUILD}" = "1" ]] || ! docker image inspect "${SANDBOX_IMAGE}" >/dev/null 2>&1; then
   build_flags=(-q -t "${SANDBOX_IMAGE}" -f "${DOCKERFILE_PATH}")
