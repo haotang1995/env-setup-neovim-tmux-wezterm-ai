@@ -196,6 +196,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **claude** — extra named volumes for `/root/.config` and `/root/.local/share`,
   mounts `~/.claude.json` and `~/.config/claude{,-code}`, macOS Keychain credential
   extraction (service `Claude Code-credentials`), Anthropic env var passthrough.
+  Bind-mounts host `~/.claude/projects/` read-write over the agent-home volume
+  so chat transcripts (used by `/resume`) persist on host disk regardless of
+  the per-workspace volume name.
   **Per-workspace agent-home volume**: the volume name is
   `claude-home-<workspace>` where `<workspace>` defaults to the sanitized
   basename of the launch directory (lowercased, non-alphanumerics collapsed

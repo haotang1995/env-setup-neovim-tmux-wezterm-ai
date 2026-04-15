@@ -246,9 +246,14 @@ fi
 
 # ── Claude-specific extras ───────────────────────────────────────────────
 if [[ "${AGENT}" = "claude" ]]; then
+  # Sync chat transcripts to host: projects/<encoded-cwd>/<session>.jsonl.
+  # Bind-mount shadows the claude-home volume subpath, so history persists on
+  # host disk regardless of volume name (enables /resume across workspaces).
+  mkdir -p "${HOME}/.claude/projects"
   docker_args+=(
     -v claude-config:/root/.config
     -v claude-local-share:/root/.local/share
+    -v "${HOME}/.claude/projects:${AGENT_CONTAINER}/projects"
   )
 
   if [[ -f "${HOME}/.claude.json" ]]; then
