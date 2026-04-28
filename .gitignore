@@ -37,3 +37,6 @@ __pycache__/
 .vscode/
 .idea/
 *.code-workspace
+
+# Claude Code runtime state
+.claude/scheduled_tasks.lock

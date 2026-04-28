@@ -448,8 +448,17 @@ exec docker run "${docker_args[@]}" \
         fi
 
         mkdir -p "${HOME}/.config/claude" "${HOME}/.config/claude-code"
-        cp -aL /host-claude-config/. "${HOME}/.config/claude/" 2>/dev/null || true
-        cp -aL /host-claude-code-config/. "${HOME}/.config/claude-code/" 2>/dev/null || true
+        if [ "${NO_LOGIN:-0}" = "1" ]; then
+          # --no-login: always overwrite from host (shares host token chain)
+          cp -aL /host-claude-config/. "${HOME}/.config/claude/" 2>/dev/null || true
+          cp -aL /host-claude-code-config/. "${HOME}/.config/claude-code/" 2>/dev/null || true
+        else
+          # Default: no-clobber — seed on first launch only, so the container'\''s
+          # own OAuth grant (stored here by newer Claude Code versions) survives
+          # restarts and token-rotation cycles without requiring /login again.
+          cp -anL /host-claude-config/. "${HOME}/.config/claude/" 2>/dev/null || true
+          cp -anL /host-claude-code-config/. "${HOME}/.config/claude-code/" 2>/dev/null || true
+        fi
         ;;
       gemini)
         # Keep Gemini auth/config in sync with host, including nested files

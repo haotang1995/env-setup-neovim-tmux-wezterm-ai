@@ -47,8 +47,14 @@ RUN if getent passwd 1000 >/dev/null; then \
       groupadd -g 1000 sandbox && useradd -m -u 1000 -g sandbox sandbox; \
     fi
 
-RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex @github/copilot \
+RUN npm install -g @google/gemini-cli @openai/codex @github/copilot \
   && npm cache clean --force
+
+# Claude Code — install via official script to a world-readable prefix so the
+# non-root sandbox user can execute it (the default /root prefix is mode 700).
+RUN HOME=/opt/claude-cli curl -fsSL https://claude.ai/install.sh | HOME=/opt/claude-cli bash \
+  && chmod -R a+rX /opt/claude-cli \
+  && ln -sf /opt/claude-cli/.local/bin/claude /usr/local/bin/claude
 
 # W&B (Weights & Biases) — pre-install so training scripts can log metrics
 RUN pip install --no-cache-dir --break-system-packages wandb

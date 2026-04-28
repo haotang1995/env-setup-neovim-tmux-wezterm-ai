@@ -221,7 +221,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     container typically loses auth within ~1 day. Use this for short jobs
     where you don't want to do an interactive `/login`.
 
-  Non-auth agent-home files use no-clobber seeding in both modes;
+  Non-auth agent-home files and `~/.config/claude{,-code}/` use no-clobber seeding in both modes;
   drops to non-root user matching the host UID/GID (`HOST_UID`/`HOST_GID` env vars,
   defaults to 1000) via `setpriv` then launches with `--dangerously-skip-permissions`;
   **gemini** — full `cp -aL` sync from host `~/.gemini`, strips macOS-only
