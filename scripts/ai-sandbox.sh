@@ -376,10 +376,15 @@ for env_name in HF_HOME HF_HUB_CACHE HF_ENDPOINT; do
 done
 
 # ── GPU passthrough ──────────────────────────────────────────────────────
-# Auto-detect: enable GPU if nvidia-container-runtime or nvidia-smi is available.
+# Auto-detect: enable GPU only when nvidia-smi is present AND lists at least
+# one adapter. Docker's nvidia runtime alone is not sufficient — on WSL hosts
+# where the NVIDIA Container Toolkit is installed but no GPU is currently
+# exposed (e.g. ARM laptop, paravirt unavailable), `--gpus all` triggers
+# `nvidia-container-cli: WSL environment detected but no adapters were found`
+# and the container fails to start.
 if [[ "${USE_GPU}" = "auto" ]]; then
-  if docker info --format '{{.Runtimes}}' 2>/dev/null | grep -q nvidia \
-     || command -v nvidia-smi &>/dev/null; then
+  if command -v nvidia-smi &>/dev/null \
+     && [[ -n "$(nvidia-smi -L 2>/dev/null)" ]]; then
     USE_GPU=1
   else
     USE_GPU=0

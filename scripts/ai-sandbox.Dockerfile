@@ -9,6 +9,7 @@ RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
   ca-certificates \
   curl \
   git \
+  gnupg \
   jq \
   less \
   openssh-client \
@@ -29,15 +30,22 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 # Azure CLI — lets AzureCliCredential() work inside the container when the
 # host's ~/.azure is bind-mounted in (see ai-sandbox.sh). Required for TRAPI
 # (MSR's OAuth-gated Azure OpenAI gateway, api://trapi/.default).
-RUN install -m 0755 -d /etc/apt/keyrings \
-  && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-       | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg \
-  && chmod a+r /etc/apt/keyrings/microsoft.gpg \
-  && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $(. /etc/os-release && echo $VERSION_CODENAME) main" \
-       > /etc/apt/sources.list.d/azure-cli.list \
-  && apt-get update -qq \
-  && apt-get install -y -qq --no-install-recommends azure-cli \
-  && rm -rf /var/lib/apt/lists/*
+# Microsoft's apt repo only ships amd64; on arm64 (e.g. M-series Macs, Win-on-ARM
+# WSL) fall back to pip per Microsoft's official ARM64 install guidance.
+RUN ARCH="$(dpkg --print-architecture)" \
+  && if [ "$ARCH" = "amd64" ]; then \
+       install -m 0755 -d /etc/apt/keyrings \
+       && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+            | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg \
+       && chmod a+r /etc/apt/keyrings/microsoft.gpg \
+       && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ $(. /etc/os-release && echo $VERSION_CODENAME) main" \
+            > /etc/apt/sources.list.d/azure-cli.list \
+       && apt-get update -qq \
+       && apt-get install -y -qq --no-install-recommends azure-cli \
+       && rm -rf /var/lib/apt/lists/*; \
+     else \
+       pip install --no-cache-dir --break-system-packages azure-cli; \
+     fi
 
 # Non-root user (uid 1000) for Claude's --dangerously-skip-permissions
 # ubuntu:24.04 ships with a 'ubuntu' user at uid 1000; reuse it or create fresh.

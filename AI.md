@@ -165,9 +165,12 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **Force rebuild:** pass `--rebuild` (or set `SANDBOX_REBUILD=1`) to force a
   `docker build --no-cache` even when the image already exists — useful for
   mid-week CLI updates.
-  **GPU passthrough:** auto-detected by default — enabled when the NVIDIA
-  Container Toolkit is available. Override with `--gpu` / `--no-gpu` flags
-  or `SANDBOX_GPU=1|0` env var. Passes `--gpus all` to `docker run`.
+  **GPU passthrough:** auto-detected by default — enabled only when
+  `nvidia-smi -L` runs successfully and lists at least one adapter (the
+  presence of Docker's nvidia runtime alone is not enough, since on WSL
+  hosts with the toolkit installed but no GPU exposed `--gpus all` errors
+  out with "no adapters were found"). Override with `--gpu` / `--no-gpu`
+  flags or `SANDBOX_GPU=1|0` env var. Passes `--gpus all` to `docker run`.
   Use `--gpu-device ID` (or `SANDBOX_GPU_DEVICE=ID`) to pass through a
   specific GPU instead of all (e.g. `--gpu-device 0`); implies `--gpu`.
   **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
