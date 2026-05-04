@@ -7,5 +7,6 @@
       "Fetch(http**)"
     ]
   },
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "remoteControlAtStartup": true
 }
