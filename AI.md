@@ -212,17 +212,16 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   so you can see where your state lives. Only claude uses this scheme; the
   other agents keep the single shared `*-home` volume.
   Auth handling has two modes:
-  - **Default (no flag)** — credentials are **not** seeded from the host. The
-    container holds its own OAuth grant inside the per-workspace volume; the
-    first launch on a fresh volume prompts `/login` once and subsequent
-    launches reuse it. This grant is independent of host token rotations, so
-    a single container can run for many days without re-auth.
-  - **`--no-login` (or `SANDBOX_NO_LOGIN=1`)** — copies `.claude.json` and
-    `.credentials.json` from the host on every start (and uses macOS
+  - **Default (`--no-login` / `SANDBOX_NO_LOGIN=1`)** — copies `.claude.json`
+    and `.credentials.json` from the host on every start (and uses macOS
     Keychain when present). The container shares the host's OAuth refresh
     chain; Anthropic rotates these tokens roughly every 11h and the
-    container typically loses auth within ~1 day. Use this for short jobs
-    where you don't want to do an interactive `/login`.
+    container typically loses auth within ~1 day. Suitable for most jobs.
+  - **`--login` (or `SANDBOX_NO_LOGIN=0`)** — credentials are **not** seeded
+    from the host. The container holds its own OAuth grant inside the
+    `claude-home` volume; the first launch on a fresh volume prompts `/login`
+    once and subsequent launches reuse it. This grant is independent of host
+    token rotations, so a single container can run for many days without re-auth.
 
   Non-auth agent-home files and `~/.config/claude{,-code}/` use no-clobber seeding in both modes;
   drops to non-root user matching the host UID/GID (`HOST_UID`/`HOST_GID` env vars,

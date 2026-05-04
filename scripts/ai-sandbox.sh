@@ -30,13 +30,14 @@ REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
 FORCE_REBUILD="${SANDBOX_REBUILD:-0}"
 USE_GPU="${SANDBOX_GPU:-auto}"
 GPU_DEVICE="${SANDBOX_GPU_DEVICE:-}"
-# claude only: --no-login seeds OAuth credentials from the host so the
-# container does not require /login. Side effect: container shares the host's
-# refresh-token chain, which Anthropic rotates ~every 11h; the container will
-# typically need re-auth within ~1 day (suitable for short jobs). Default
-# (no flag) skips the credential copy: the container holds its own
-# OAuth grant that survives multi-day sessions.
-NO_LOGIN="${SANDBOX_NO_LOGIN:-0}"
+# claude only: by default (--no-login / SANDBOX_NO_LOGIN=1), OAuth credentials
+# are seeded from the host so the container never needs /login. Side effect:
+# container shares the host's refresh-token chain, which Anthropic rotates
+# ~every 11h; re-auth may be needed within ~1 day (suitable for most jobs).
+# Pass --login (or SANDBOX_NO_LOGIN=0) to use an independent grant inside the
+# container that survives multi-day sessions — requires one interactive /login
+# on first launch of a fresh volume.
+NO_LOGIN="${SANDBOX_NO_LOGIN:-1}"
 # claude only: per-workspace volume name. Defaults to the sanitized basename
 # of PWD so two sandboxes in different projects get independent OAuth grants
 # (avoids two containers racing on the same refresh-token chain inside a
@@ -51,6 +52,7 @@ while [[ "${1:-}" = --* ]]; do
     --no-gpu)     USE_GPU=0; shift ;;
     --gpu-device) GPU_DEVICE="${2:?--gpu-device requires an ID (e.g. 0)}"; USE_GPU=1; shift 2 ;;
     --no-login)   NO_LOGIN=1; shift ;;
+    --login)      NO_LOGIN=0; shift ;;
     --workspace)  WORKSPACE_NAME="${2:?--workspace requires a name}"; shift 2 ;;
     *) break ;;
   esac
@@ -83,7 +85,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login] [--workspace NAME] <claude|gemini|codex|copilot> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login|--login] [--workspace NAME] <claude|gemini|codex|copilot> [args...]" >&2
       exit 1
       ;;
   esac
