@@ -47,6 +47,19 @@ RUN ARCH="$(dpkg --print-architecture)" \
        pip install --no-cache-dir --break-system-packages azure-cli; \
      fi
 
+# Docker CLI — for sibling-container workflows (--docker-sock / SANDBOX_DOCKER_SOCK=1).
+# Installs only docker-ce-cli (no daemon); the host socket is bind-mounted at runtime.
+# Docker's apt repo supports both amd64 and arm64.
+RUN install -m 0755 -d /etc/apt/keyrings \
+  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+       | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+  && chmod a+r /etc/apt/keyrings/docker.gpg \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" \
+       > /etc/apt/sources.list.d/docker.list \
+  && apt-get update -qq \
+  && apt-get install -y -qq --no-install-recommends docker-ce-cli \
+  && rm -rf /var/lib/apt/lists/*
+
 # Non-root user (uid 1000) for Claude's --dangerously-skip-permissions
 # ubuntu:24.04 ships with a 'ubuntu' user at uid 1000; reuse it or create fresh.
 RUN if getent passwd 1000 >/dev/null; then \
