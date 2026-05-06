@@ -3,11 +3,17 @@
 # inside a Docker container scoped to the current directory.
 #
 # Usage:
-#   ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] <agent> [agent args...]
-#   claude-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]   (via compat symlink)
-#   gemini-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]
-#   codex-sandbox  [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]
-#   copilot-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [args...]
+#   ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] <agent> [agent args...]
+#   claude-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]   (via compat symlink)
+#   gemini-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]
+#   codex-sandbox  [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]
+#   copilot-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]
+#
+# Sibling containers (--docker-sock / SANDBOX_DOCKER_SOCK=1):
+#   Mounts /var/run/docker.sock into the sandbox so the agent can start
+#   containers on the host daemon ("sibling" containers, not DinD).
+#   Grants root-equivalent access to the host Docker daemon — only use on
+#   machines you control.
 #
 # GPU: auto-detected by default (enabled when NVIDIA Container Toolkit is
 #      available). Override with --gpu / --no-gpu or SANDBOX_GPU=1|0.
@@ -30,6 +36,7 @@ REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
 FORCE_REBUILD="${SANDBOX_REBUILD:-0}"
 USE_GPU="${SANDBOX_GPU:-auto}"
 GPU_DEVICE="${SANDBOX_GPU_DEVICE:-}"
+DOCKER_SOCK="${SANDBOX_DOCKER_SOCK:-0}"
 # claude only: by default (--no-login / SANDBOX_NO_LOGIN=1), OAuth credentials
 # are seeded from the host so the container never needs /login. Side effect:
 # container shares the host's refresh-token chain, which Anthropic rotates
@@ -47,13 +54,15 @@ WORKSPACE_NAME="${SANDBOX_WORKSPACE:-}"
 
 while [[ "${1:-}" = --* ]]; do
   case "$1" in
-    --rebuild)    FORCE_REBUILD=1; shift ;;
-    --gpu)        USE_GPU=1; shift ;;
-    --no-gpu)     USE_GPU=0; shift ;;
-    --gpu-device) GPU_DEVICE="${2:?--gpu-device requires an ID (e.g. 0)}"; USE_GPU=1; shift 2 ;;
-    --no-login)   NO_LOGIN=1; shift ;;
-    --login)      NO_LOGIN=0; shift ;;
-    --workspace)  WORKSPACE_NAME="${2:?--workspace requires a name}"; shift 2 ;;
+    --rebuild)      FORCE_REBUILD=1; shift ;;
+    --gpu)          USE_GPU=1; shift ;;
+    --no-gpu)       USE_GPU=0; shift ;;
+    --gpu-device)   GPU_DEVICE="${2:?--gpu-device requires an ID (e.g. 0)}"; USE_GPU=1; shift 2 ;;
+    --no-login)     NO_LOGIN=1; shift ;;
+    --login)        NO_LOGIN=0; shift ;;
+    --workspace)    WORKSPACE_NAME="${2:?--workspace requires a name}"; shift 2 ;;
+    --docker-sock)  DOCKER_SOCK=1; shift ;;
+    --no-docker-sock) DOCKER_SOCK=0; shift ;;
     *) break ;;
   esac
 done
@@ -85,7 +94,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login|--login] [--workspace NAME] <claude|gemini|codex|copilot> [args...]" >&2
+      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login|--login] [--workspace NAME] [--docker-sock] <claude|gemini|codex|copilot> [args...]" >&2
       exit 1
       ;;
   esac
@@ -403,6 +412,19 @@ if [[ "${USE_GPU}" = "1" ]]; then
   fi
   # NVIDIA recommends these for PyTorch: shared memory, locked memory, stack size
   docker_args+=(--ipc=host --ulimit memlock=-1 --ulimit stack=67108864)
+fi
+
+# ── Sibling Docker socket passthrough ───────────────────────────────────
+# Mount the host Docker socket so the agent can start sibling containers on
+# the host daemon (not DinD). Only enabled when --docker-sock / SANDBOX_DOCKER_SOCK=1.
+# Warning: grants root-equivalent access to the host Docker daemon.
+if [[ "${DOCKER_SOCK}" = "1" ]]; then
+  if [[ -S /var/run/docker.sock ]]; then
+    docker_args+=(-v /var/run/docker.sock:/var/run/docker.sock)
+    echo "Docker socket passthrough enabled (/var/run/docker.sock)" >&2
+  else
+    echo "Warning: --docker-sock requested but /var/run/docker.sock not found; skipping." >&2
+  fi
 fi
 
 # ── Run container ────────────────────────────────────────────────────────

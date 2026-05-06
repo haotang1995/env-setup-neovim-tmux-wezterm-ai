@@ -173,6 +173,12 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   flags or `SANDBOX_GPU=1|0` env var. Passes `--gpus all` to `docker run`.
   Use `--gpu-device ID` (or `SANDBOX_GPU_DEVICE=ID`) to pass through a
   specific GPU instead of all (e.g. `--gpu-device 0`); implies `--gpu`.
+  **Sibling containers:** pass `--docker-sock` (or `SANDBOX_DOCKER_SOCK=1`) to
+  mount `/var/run/docker.sock` into the sandbox. Any `docker run` calls inside
+  the agent then start on the host daemon alongside (not inside) the sandbox —
+  shared image cache, no nested storage drivers. Skipped with a warning when
+  the socket is absent. Warning: grants root-equivalent access to the host
+  Docker daemon — only use on machines you control.
   **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
   > `WANDB_API_KEY` env vars > `~/.bashrc` extraction, and passed into the
   container as both `WANDB_API_KEY` (Python library) and `WANDB_KEY` (MS Research
