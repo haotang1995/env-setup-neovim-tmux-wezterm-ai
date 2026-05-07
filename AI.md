@@ -176,9 +176,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **Sibling containers:** pass `--docker-sock` (or `SANDBOX_DOCKER_SOCK=1`) to
   mount `/var/run/docker.sock` into the sandbox. Any `docker run` calls inside
   the agent then start on the host daemon alongside (not inside) the sandbox —
-  shared image cache, no nested storage drivers. Skipped with a warning when
-  the socket is absent. Warning: grants root-equivalent access to the host
-  Docker daemon — only use on machines you control.
+  shared image cache, no nested storage drivers. The `docker` CLI
+  (`docker-ce-cli`) is pre-installed in the default image so agents can use it
+  immediately. Skipped with a warning when the socket is absent. Warning:
+  grants root-equivalent access to the host Docker daemon — only use on
+  machines you control.
   **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
   > `WANDB_API_KEY` env vars > `~/.bashrc` extraction, and passed into the
   container as both `WANDB_API_KEY` (Python library) and `WANDB_KEY` (MS Research
