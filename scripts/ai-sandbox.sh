@@ -32,6 +32,80 @@ while [[ -L "$_source" ]]; do
 done
 REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
 
+# ── Help ─────────────────────────────────────────────────────────────────
+usage() {
+  cat <<'EOF'
+ai-sandbox — Unified Docker sandbox for Claude Code, Gemini CLI, Codex, and Copilot CLI.
+
+Usage:
+  ai-sandbox       [OPTIONS] <claude|gemini|codex|copilot> [agent args...]
+  claude-sandbox   [OPTIONS] [agent args...]   (compat symlinks)
+  gemini-sandbox   [OPTIONS] [agent args...]
+  codex-sandbox    [OPTIONS] [agent args...]
+  copilot-sandbox  [OPTIONS] [agent args...]
+
+Options:
+  -h, --help              Show this help and exit
+      --rebuild           Force `docker build --no-cache` even when the image
+                          already exists (env: SANDBOX_REBUILD=1)
+      --gpu               Force NVIDIA GPU passthrough (--gpus all)
+      --no-gpu            Disable GPU passthrough
+      --gpu-device ID     Pass through a specific GPU; implies --gpu
+                          (env: SANDBOX_GPU_DEVICE=ID)
+      --docker-sock       Mount /var/run/docker.sock so the agent can start
+                          sibling containers on the host Docker daemon.
+                          Grants root-equivalent access — host-only.
+                          (env: SANDBOX_DOCKER_SOCK=1)
+      --no-docker-sock    Do not mount the host Docker socket (default)
+      --no-login          [claude only, DEFAULT] Seed OAuth credentials from
+                          the host on every launch. Shares the host refresh-
+                          token chain; container typically loses auth within
+                          ~1 day after Anthropic rotates the token.
+                          (env: SANDBOX_NO_LOGIN=1)
+      --login             [claude only] Container holds its own OAuth grant in
+                          the claude-home volume; first launch on a fresh
+                          volume prompts /login once. Survives multi-day
+                          sessions. (env: SANDBOX_NO_LOGIN=0)
+      --workspace NAME    [claude only] Per-workspace volume name. Defaults to
+                          the sanitized basename of PWD, so two claude
+                          sandboxes in different projects get independent
+                          OAuth grants. (env: SANDBOX_WORKSPACE=NAME)
+
+GPU auto-detect:
+  When --gpu/--no-gpu is not given (and SANDBOX_GPU is unset or "auto"), GPU
+  passthrough is enabled only if `nvidia-smi -L` succeeds and lists at least
+  one adapter.
+
+Image / Dockerfile selection (highest to lowest priority):
+  SANDBOX_IMAGE=tag               Use this image tag verbatim
+  SANDBOX_DOCKERFILE=path         Custom Dockerfile (build context defaults
+                                  to its directory; override with
+                                  SANDBOX_DOCKER_CONTEXT=path)
+  ./Dockerfile                    Used when present in the launch directory
+  scripts/ai-sandbox.Dockerfile   Default; image tag rotates biweekly
+                                  (ai-sandbox:w0 / ai-sandbox:w1)
+
+Other environment passthrough (all agents):
+  WANDB_KEY / WANDB_TOKEN / WANDB_API_KEY   Resolved + injected
+  WANDB_BASE_URL                            Default: microsoft-research.wandb.io
+  WANDB_PROJECT / WANDB_ENTITY / WANDB_RUN_GROUP / WANDB_MODE
+  HF_TOKEN / HUGGING_FACE_HUB_TOKEN / HUGGINGFACE_TOKEN
+  HF_HOME / HF_HUB_CACHE / HF_ENDPOINT
+  ~/.azure (read-only bind-mount → copied into container for AzureCliCredential)
+
+Claude-specific env passthrough:
+  ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN, CLAUDE_CODE_OAUTH_TOKEN,
+  ANTHROPIC_BASE_URL, ANTHROPIC_MODEL
+
+Examples:
+  codex-sandbox --rebuild
+  ai-sandbox --gpu-device 0 claude
+  SANDBOX_REBUILD=1 gemini-sandbox
+  claude-sandbox --login --workspace myproj
+  copilot-sandbox --docker-sock
+EOF
+}
+
 # ── Flags ────────────────────────────────────────────────────────────────
 FORCE_REBUILD="${SANDBOX_REBUILD:-0}"
 USE_GPU="${SANDBOX_GPU:-auto}"
@@ -52,8 +126,9 @@ NO_LOGIN="${SANDBOX_NO_LOGIN:-1}"
 # projects have the same basename or you want to force shared state.
 WORKSPACE_NAME="${SANDBOX_WORKSPACE:-}"
 
-while [[ "${1:-}" = --* ]]; do
+while [[ "${1:-}" = --* || "${1:-}" = "-h" ]]; do
   case "$1" in
+    -h|--help)      usage; exit 0 ;;
     --rebuild)      FORCE_REBUILD=1; shift ;;
     --gpu)          USE_GPU=1; shift ;;
     --no-gpu)       USE_GPU=0; shift ;;
@@ -94,7 +169,7 @@ if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
     claude|gemini|codex|copilot) AGENT="$1"; shift ;;
     *)
-      echo "Usage: ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--no-login|--login] [--workspace NAME] [--docker-sock] <claude|gemini|codex|copilot> [args...]" >&2
+      echo "ai-sandbox: missing agent (claude|gemini|codex|copilot). Run with --help for usage." >&2
       exit 1
       ;;
   esac

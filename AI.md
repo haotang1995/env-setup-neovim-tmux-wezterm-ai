@@ -154,7 +154,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **`ai-sandbox`:** Unified Docker sandbox for all four AI CLI agents. Usage:
   `ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] <claude|gemini|codex|copilot> [args...]`,
   or via backward-compat symlinks (`claude-sandbox`, `gemini-sandbox`,
-  `codex-sandbox`, `copilot-sandbox`).
+  `codex-sandbox`, `copilot-sandbox`). Run `ai-sandbox --help` (or `-h`) for
+  the full list of flags, env vars, and image-selection rules.
   All agents share a single Docker image (built from `scripts/ai-sandbox.Dockerfile`,
   based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, all
   four CLIs, and `wandb`) pre-installed at build time for near-instant startup.
