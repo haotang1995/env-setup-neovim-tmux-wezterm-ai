@@ -287,7 +287,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   - `codex`: Codex CLI for AI-powered shell assistance and automation.
   - `copilot`: GitHub Copilot CLI for agentic coding with GitHub integration.
   - `aider`: Aider for AI pair programming (requires installation).
-- **avante.nvim:** disabled (config preserved in `ai.lua`; set `enabled = true` to re-activate).
+- **avante.nvim:** disabled (config preserved in `ai.lua`; flip the
+  `avante_enabled` local at the top of the file to re-activate — it gates
+  both the avante spec and the blink.cmp compat sources together, since the
+  compat sources require `blink.compat.source`, which only ships as an
+  avante dependency).
 - **copilot.lua:** inline ghost-text, `<Tab>` to accept. Needs Node 22+ and `:Copilot auth`.
 - **CopilotChat.nvim:** quick Q&A via `<leader>ac`.
 - **Shared skill library (`ai-skills/`):** Cross-agent skills from

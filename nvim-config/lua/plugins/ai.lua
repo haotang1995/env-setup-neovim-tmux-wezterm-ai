@@ -1,13 +1,18 @@
 -- ~/.config/nvim/lua/plugins/ai.lua
 -- AI integration: avante.nvim (Cursor-like) + GitHub Copilot (inline completions)
 
+-- Flip this to re-activate avante.nvim and its blink.cmp compat sources.
+-- Both must move together: the compat sources reference `blink.compat.source`,
+-- which only ships as an avante dependency.
+local avante_enabled = false
+
 return {
   ---------------------------------------------------------------------------
   -- avante.nvim — Cursor-like AI agent inside Neovim
   ---------------------------------------------------------------------------
   {
     "yetone/avante.nvim",
-    enabled = false,
+    enabled = avante_enabled,
     event = "VeryLazy",
     lazy = false,
     version = false,
@@ -76,6 +81,12 @@ return {
     "saghen/blink.cmp",
     optional = true,
     opts = function(_, opts)
+      -- Only register the avante compat sources when avante itself is active,
+      -- otherwise blink.cmp tries to require `blink.compat.source` (shipped as
+      -- an avante dependency) on every keystroke and throws.
+      if not avante_enabled then
+        return
+      end
       opts.sources = opts.sources or {}
       opts.sources.compat = opts.sources.compat or {}
 
