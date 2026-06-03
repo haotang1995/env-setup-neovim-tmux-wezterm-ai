@@ -9,5 +9,6 @@
   },
   "model": "opus[1m]",
   "effortLevel": "xhigh",
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true
 }
