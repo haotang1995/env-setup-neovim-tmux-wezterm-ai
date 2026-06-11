@@ -24,6 +24,12 @@ __pycache__/
 .env
 .env.*
 
+# Machine-local shell secrets / per-host env (sourced by zshrc + bashrc).
+# Defensive: this file lives at ~/.shellrc.local, not in the repo, but if
+# anyone ever drops one here by mistake it must not be committed.
+.shellrc.local
+.shellrc.local.*
+
 # Agent auth tokens (may contain OAuth credentials)
 .copilot/config.json
 

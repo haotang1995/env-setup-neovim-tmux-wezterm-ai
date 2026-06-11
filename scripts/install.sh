@@ -130,6 +130,113 @@ done
 echo ""
 echo "Installing config symlinks..."
 
+# --- Shell config (zsh/bash) ---------------------------------------------
+# Migrate secrets out of any pre-existing ~/.zshrc / ~/.bashrc into
+# ~/.shellrc.local BEFORE safe_link backs the old files away. The new rc
+# files source ~/.shellrc.local at the end.
+
+migrate_shell_secrets() {
+  local local_rc="$HOME/.shellrc.local"
+  local sources=()
+
+  for src in "$HOME/.zshrc" "$HOME/.bashrc"; do
+    [ -f "$src" ] && [ ! -L "$src" ] && sources+=("$src")
+  done
+
+  [ ${#sources[@]} -gt 0 ] || return 0
+
+  # Match common secret-bearing exports and the krew PATH line. Anchored to
+  # line start, tolerates optional leading whitespace.
+  local pattern='^[[:space:]]*export[[:space:]]+([A-Z][A-Z0-9_]*_)?(KEY|TOKEN|SECRET|API_KEY|PASSWORD)[[:space:]]*=|^[[:space:]]*export[[:space:]]+PATH=.*KREW'
+  local migrated=()
+
+  for src in "${sources[@]}"; do
+    while IFS= read -r line; do
+      # Skip if this exact line is already in ~/.shellrc.local
+      if [ -f "$local_rc" ] && grep -Fxq "$line" "$local_rc"; then
+        continue
+      fi
+      migrated+=("$line")
+    done < <(grep -E "$pattern" "$src" 2>/dev/null || true)
+  done
+
+  if [ ${#migrated[@]} -eq 0 ]; then
+    # Still ensure the file exists (empty placeholder)
+    if [ ! -e "$local_rc" ]; then
+      touch "$local_rc"
+      chmod 600 "$local_rc"
+      log "INIT" "Created empty $local_rc"
+    fi
+    return 0
+  fi
+
+  if [ ! -e "$local_rc" ]; then
+    cat > "$local_rc" <<'HDR'
+# ~/.shellrc.local — machine-local secrets and per-host env (gitignored).
+# Sourced by ~/.zshrc and ~/.bashrc.
+HDR
+    chmod 600 "$local_rc"
+  fi
+
+  # Dedupe migrated lines and append.
+  local tmp
+  tmp="$(mktemp)"
+  printf '%s\n' "${migrated[@]}" | awk '!seen[$0]++' >"$tmp"
+
+  {
+    echo ""
+    echo "# --- migrated by install.sh on $(date '+%Y-%m-%d %H:%M:%S') ---"
+    cat "$tmp"
+  } >>"$local_rc"
+  chmod 600 "$local_rc"
+  rm -f "$tmp"
+
+  log "MIGRATE" "Moved ${#migrated[@]} secret-bearing line(s) into $local_rc"
+}
+
+setup_oh_my_zsh() {
+  if ! command -v zsh >/dev/null 2>&1; then
+    log "WARN" "zsh not installed; skipping oh-my-zsh + plugin bootstrap."
+    log "WARN" "Install zsh (apt/brew) and re-run install.sh to enable autosuggestions."
+    return 0
+  fi
+
+  local zsh_root="$HOME/.oh-my-zsh"
+  if [ ! -d "$zsh_root" ]; then
+    log "INFO" "Cloning oh-my-zsh into $zsh_root..."
+    git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$zsh_root" \
+      || { log "WARN" "oh-my-zsh clone failed; skipping plugin bootstrap."; return 0; }
+  else
+    log "SKIP" "oh-my-zsh already present at $zsh_root"
+  fi
+
+  local custom_plugins="$zsh_root/custom/plugins"
+  mkdir -p "$custom_plugins"
+
+  local plugin_repo
+  for plugin in zsh-autosuggestions zsh-syntax-highlighting; do
+    case "$plugin" in
+      zsh-autosuggestions)     plugin_repo="https://github.com/zsh-users/zsh-autosuggestions" ;;
+      zsh-syntax-highlighting) plugin_repo="https://github.com/zsh-users/zsh-syntax-highlighting" ;;
+    esac
+    if [ ! -d "$custom_plugins/$plugin" ]; then
+      log "INFO" "Cloning $plugin..."
+      git clone --depth=1 "$plugin_repo" "$custom_plugins/$plugin" \
+        || log "WARN" "Failed to clone $plugin; tab/autocomplete will be degraded."
+    else
+      log "SKIP" "$plugin already installed"
+    fi
+  done
+}
+
+migrate_shell_secrets
+setup_oh_my_zsh
+
+safe_link "$REPO_DIR/zshrc"          "$HOME/.zshrc"
+safe_link "$REPO_DIR/bashrc"         "$HOME/.bashrc"
+safe_link "$REPO_DIR/k_shortcuts.sh" "$HOME/.k_shortcuts.sh"
+# -------------------------------------------------------------------------
+
 # WezTerm config
 safe_link "$REPO_DIR/wezterm.lua" "$HOME/.wezterm.lua"
 

@@ -38,6 +38,10 @@ WezTerm (terminal emulator, cross-platform)
 AI.md                            ← you are here
 wezterm.lua                      ← WezTerm config (→ ~/.wezterm.lua)
 tmux.conf                        ← tmux config    (→ ~/.tmux.conf)
+zshrc                            ← zsh config     (→ ~/.zshrc)
+bashrc                           ← bash config    (→ ~/.bashrc; auto-execs zsh if available)
+k_shortcuts.sh                   ← kubectl/helm shortcuts (→ ~/.k_shortcuts.sh; sourced by zsh+bash)
+shellrc.local.example            ← Template for ~/.shellrc.local (machine-local, gitignored)
 scripts/                         ← Utility scripts for global use
   install.sh                     ← Installer (symlinks scripts + configs + skills)
   init-ai.sh                     ← Unified AI context bootstrapper
@@ -134,6 +138,43 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Fullscreen:** `Cmd+Shift+F` (macOS) / `Ctrl+Shift+F` (Windows/Linux).
 - **Kitty graphics protocol** enabled for in-terminal images/PDF.
 - **Ctrl+hjkl** explicitly passed through (never intercepted by WezTerm).
+
+### Shell (zsh / bash)
+
+- **Primary shell:** zsh via oh-my-zsh. `bashrc` auto-`exec`s `/usr/bin/zsh`
+  when present, so a fresh login lands you in zsh even when the system default
+  is bash.
+- **The "autocomplete" experience** comes from three sources, all configured in
+  `zshrc`:
+  - `zsh-autosuggestions` — gray ghost-text from history, `→` to accept.
+  - `zsh-syntax-highlighting` — live command coloring as you type.
+  - oh-my-zsh per-tool tab-completion (`git`, `docker`, `python`, `node`,
+    `npm`, `nvm`).
+- **Theme:** `robbyrussell` (oh-my-zsh default).
+- **Aliases:** `gs/gd/gds/gp/gl/glog`, `ll/la/l`, `..`/`...`, `dc/dps`,
+  `py/serve/ports`, `reload`, `myip`, `weather`. See `zshrc` for the full list;
+  `bashrc` mirrors them for the rare bash-only session.
+- **Machine-local secrets / per-host env** live in `~/.shellrc.local`
+  (gitignored, mode 0600). Both rc files source it at the end. Use this for
+  `WANDB_KEY`, `HF_TOKEN`, conda PATH, etc. Template:
+  `shellrc.local.example` in the repo.
+- **First-run migration:** when `install.sh` replaces an existing `~/.zshrc`
+  or `~/.bashrc`, it scans for lines matching common secret patterns
+  (`*_KEY`, `*_TOKEN`, `*_SECRET`, `*_API_KEY`, `*_PASSWORD`, krew `PATH`)
+  and appends them to `~/.shellrc.local` **before** backing up the old files.
+  Anything else lives in the timestamped `dotfiles_backup_*` dir for manual
+  review.
+- **oh-my-zsh bootstrap:** `install.sh` clones oh-my-zsh and the two plugins
+  (`zsh-autosuggestions`, `zsh-syntax-highlighting`) into
+  `$ZSH/custom/plugins/` if missing. Skipped with a warning when `zsh` isn't
+  installed (e.g. very stripped HPC nodes) — bash still gets the alias set
+  and `~/.shellrc.local` sourcing.
+- **kubectl/helm shortcuts (`k_shortcuts.sh`):** symlinked to `~/.k_shortcuts.sh`
+  and sourced by both `zshrc` and `bashrc`. Provides `kpods`, `klogs`, `ksh`,
+  `krun`, `kev`, `kpf`, `kgpu`, `knodes`, `kh`, `khrm`, `khclean`. Defaults
+  to namespace `bonete51` and user `$(whoami | cut -d@ -f1)`; override via
+  `KNS=otherns KUSER=somebody <cmd>` or by setting them in `~/.shellrc.local`
+  (sourced after `k_shortcuts.sh`, so those overrides win).
 
 ### Scripts
 

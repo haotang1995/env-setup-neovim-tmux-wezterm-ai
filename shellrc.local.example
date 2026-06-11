@@ -1,0 +1,21 @@
+# ~/.shellrc.local — machine-local shell config (GITIGNORED, NOT IN REPO).
+# Sourced by both ~/.zshrc and ~/.bashrc at the very end.
+#
+# Put here:
+#   - API tokens / credentials       (WANDB_KEY, HF_TOKEN, OPENAI_API_KEY, ...)
+#   - Per-host PATH adjustments      (HPC module dirs, ~/.krew/bin, conda, ...)
+#   - Work-only or project-specific  env vars
+#   - Anything you do NOT want committed to the dotfiles repo
+#
+# Permissions should be 600 (chmod 600 ~/.shellrc.local).
+# install.sh auto-creates this file and migrates known secret-ish exports
+# (WANDB_KEY, HF_TOKEN, KREW PATH, etc.) from any pre-existing ~/.zshrc / ~/.bashrc
+# on first run.
+
+# --- examples ---
+# export WANDB_KEY=...
+# export HF_TOKEN=...
+# export OPENAI_API_KEY=...
+# export ANTHROPIC_API_KEY=...
+# export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+# export PATH="$HOME/miniconda3/bin:$PATH"
