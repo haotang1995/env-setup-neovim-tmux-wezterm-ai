@@ -17,9 +17,6 @@
   "effortLevel": "xhigh",
   "tui": "default",
   "remoteControlAtStartup": true,
-  "skipAutoPermissionPrompt": true
-  "remoteControlAtStartup": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
   "theme": "dark",
-  "remoteControlAtStartup": true
 }
