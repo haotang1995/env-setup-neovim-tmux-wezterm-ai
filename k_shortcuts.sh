@@ -157,6 +157,17 @@ for k,v in out.items(): print(f"{k} {v}")
         -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.capacity.nvidia\.com/gpu}{"\n"}{end}')
 }
 
+# kgpumon [sample|report|idle|install-cron|uninstall-cron|status] [args]
+#   Long-horizon GPU-utilization tracking (see scripts/gpu-util-monitor.sh).
+#   Passes the current $KNS as the namespace. Typical use:
+#     kgpumon install-cron          # sample every 2h into a per-ns CSV log
+#     kgpumon report                # rank pods worst->best by avg GPU util
+#     kgpumon idle                  # node-first list of continuous idle streaks
+kgpumon() {
+    local sub="${1:-status}"; shift || true
+    gpu-util-monitor "$sub" -n "$KNS" "$@"
+}
+
 # --- Helm shortcuts --------------------------------------------------------
 
 # kh                    -> helm releases in namespace

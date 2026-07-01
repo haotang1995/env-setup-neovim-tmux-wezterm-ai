@@ -52,6 +52,7 @@ scripts/                         ← Utility scripts for global use
   checkpoint-openclaw.sh         ← Checkpoint openclaw-live (docker commit + volume backup)
   restore-openclaw.sh            ← Restore openclaw-live from a checkpoint
   review_skills.py               ← Interactive keep/remove review for skills
+  gpu-util-monitor.sh            ← Cheap long-horizon GPU-util tracking (cron sample + report)
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
   .repos/superpowers/            ← git submodule: obra/superpowers
@@ -171,7 +172,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   and `~/.shellrc.local` sourcing.
 - **kubectl/helm shortcuts (`k_shortcuts.sh`):** symlinked to `~/.k_shortcuts.sh`
   and sourced by both `zshrc` and `bashrc`. Provides `kpods`, `klogs`, `ksh`,
-  `krun`, `kev`, `kpf`, `kgpu`, `knodes`, `kh`, `khrm`, `khclean`. Defaults
+  `krun`, `kev`, `kpf`, `kgpu`, `knodes`, `kgpumon`, `kh`, `khrm`, `khclean`. Defaults
   to namespace `bonete51` and user `$(whoami | cut -d@ -f1)`; override via
   `KNS=otherns KUSER=somebody <cmd>` or by setting them in `~/.shellrc.local`
   (sourced after `k_shortcuts.sh`, so those overrides win).
@@ -319,6 +320,33 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.
+- **`gpu-util-monitor`:** Cheap, long-horizon GPU **utilization** tracking for a
+  namespace (complements `kgpu`/`knodes`, which show GPU *allocation*, not live
+  busy-ness — the K8s API has no GPU-util data, so this reads it via `nvidia-smi`
+  exec). Each `sample` logs one CSV row per GPU pod incl. the pod's **node**
+  (`.spec.nodeName`) to `~/gpu-util-logs/<ns>.csv`. Subcommands:
+  - `sample` — exec `nvidia-smi` once in every Running pod (skips CPU-only pods);
+    self-migrates an older-schema log out of the way if the header changed.
+  - `report` — boxed, colour-graded scorecard ranking pods worst→best by mean
+    GPU-compute util (chronic under-users at top); `IDLE%` column = share of
+    samples under 5% util (flags bursty pods that look OK on average but idle most
+    of the time); `--top N` to trim.
+  - `idle` — node-first list of continuous idle **streaks** (longest per pod) in
+    the form `NODE  POD  N GPU  idle 4h 21m  (start → end)  ●now`, sorted by
+    duration, with a total `GPU·h wasted` summary; `--min-idle MIN` (default 60)
+    filters short streaks. This mirrors the "idle pods" view other teams get from
+    a cluster DCGM/Prometheus pipeline — which we confirmed is **not reachable at
+    our RBAC level** (only metrics-server CPU/mem is exposed) — the difference is
+    our window granularity equals the sample interval (≈2h), not minute-precise.
+  - `install-cron` / `uninstall-cron` — self-installing crontab entry, default
+    every 2h (`--every H` to change); `status` — cron state + log summary.
+
+  Deliberately stateless-per-run: cron supplies the time spacing, so nothing
+  depends on a week-long `sleep` that dies on SSH/laptop sleep. Namespace resolves
+  from `-n`/`--namespace` > `$KNS` > `bonete51`; log path overridable via
+  `$GPU_MON_LOG`. All reports auto-disable colour when not a TTY (clean pipes).
+  Also exposed as `kgpumon <sub>` in `k_shortcuts.sh` (forwards the current
+  `$KNS`).
 
 ### AI integration
 
