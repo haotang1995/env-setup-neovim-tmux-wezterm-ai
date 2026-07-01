@@ -8,7 +8,11 @@
     ]
   },
   "model": "opus[1m]",
+  "worktree": {
+    "baseRef": "fresh"
+  },
   "effortLevel": "xhigh",
+  "tui": "default",
   "remoteControlAtStartup": true,
   "skipAutoPermissionPrompt": true
 }
