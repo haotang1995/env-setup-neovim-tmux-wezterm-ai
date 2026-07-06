@@ -7,7 +7,7 @@
       "Fetch(http**)"
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "worktree": {
     "baseRef": "fresh"
   },
@@ -16,7 +16,7 @@
   },
   "effortLevel": "xhigh",
   "tui": "default",
-  "remoteControlAtStartup": true,
-  "skipAutoPermissionPrompt": true,
   "theme": "dark",
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true
 }
