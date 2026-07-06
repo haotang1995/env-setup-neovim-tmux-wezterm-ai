@@ -172,10 +172,32 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   and `~/.shellrc.local` sourcing.
 - **kubectl/helm shortcuts (`k_shortcuts.sh`):** symlinked to `~/.k_shortcuts.sh`
   and sourced by both `zshrc` and `bashrc`. Provides `kpods`, `klogs`, `ksh`,
-  `krun`, `kev`, `kpf`, `kgpu`, `knodes`, `kgpumon`, `kh`, `khrm`, `khclean`. Defaults
+  `krun`, `kev`, `kpf`, `kgpu`, `knodes`, `kgpumon`, `kduc`, `kducs`, `kduci`,
+  `kduc-install`, `kh`, `khrm`, `khclean`. Defaults
   to namespace `bonete51` and user `$(whoami | cut -d@ -f1)`; override via
   `KNS=otherns KUSER=somebody <cmd>` or by setting them in `~/.shellrc.local`
   (sourced after `k_shortcuts.sh`, so those overrides win).
+  - **PVC disk usage (`kduc`):** wraps the GCR `kubectl duc` plugin (PVC Storage
+    Viewer / gcr-duc), injecting `-n $KNS` unless the caller passes
+    `-n/--namespace`. Bare `kduc` opens the interactive disk-usage UI; `-p NAME`
+    targets a specific PVC and `-l` prints the UI navigation legend. `kducs`
+    (indexer status) and `kduci` (launch a one-off index job) are shorthands for
+    `kduc status` / `kduc index`; `help` and `version` subcommands pass through
+    without a namespace. Note the DUC tree is rooted at the **PVC root** (the
+    indexer mounts the PVC at `/bonete51-pvc`), not at the `/data` mount your
+    pods see — so `/data/users/<you>` appears in the viewer as `users/<you>`
+    under the root.
+  - **Installing the plugin (`kduc-install`):** the `duc` plugin is **not** in
+    the public krew index — it ships as gated artifacts on the GCR "PVC Storage
+    Viewer" Azure DevOps wiki page. Download both `kubectl-duc_linux.tar.gz` and
+    `kubectl-duc-krew-manifest-linux.yaml` (Linux/WSL), drop them in
+    `./kubectl-dev/` (gitignored — internal MSR tooling, not redistributed via
+    this repo), `~/kubectl-dev/`, or `~/Downloads/`, then run `kduc-install`
+    (or `kduc-install <dir>` / `KDUC_ARTIFACT_DIR=<dir> kduc-install`). It
+    resolves the artifact pair, checks `kubectl` + `krew`, runs
+    `kubectl krew install --manifest=… --archive=…`, and is idempotent (reports
+    the installed version if `duc` is already present, listed by krew as
+    `detached/duc`). Requires krew (installed during GCR SSO setup).
 
 ### Scripts
 

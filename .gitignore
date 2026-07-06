@@ -46,3 +46,8 @@ __pycache__/
 
 # Claude Code runtime state
 .claude/scheduled_tasks.lock
+
+# GCR kubectl-duc plugin artifacts (internal MSR tooling from the ADO wiki).
+# Download per-machine; not redistributed via this repo. Installed with
+# `kduc-install` (see k_shortcuts.sh).
+kubectl-dev/

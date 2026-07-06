@@ -168,6 +168,81 @@ kgpumon() {
     gpu-util-monitor "$sub" -n "$KNS" "$@"
 }
 
+# --- PVC disk usage (gcr-duc) ----------------------------------------------
+
+# kduc [viewer|status|index|help|version] [args]
+#   Wraps the `kubectl duc` plugin (GCR PVC Storage Viewer), defaulting the
+#   namespace to $KNS. A bare `kduc` opens the interactive disk-usage viewer.
+#   Target a specific PVC with -p/--pvc NAME; override the namespace with
+#   -n/--namespace (then $KNS is not injected). `help`/`version` take no ns.
+#     kduc                       # interactive viewer for $KNS
+#     kduc -p vast-pvc-bonete51  # viewer for a specific PVC
+#     kduc -l                    # show the UI navigation legend
+#     kduc status                # indexer status (last / running)
+#     kduc index                 # launch a one-off index job
+kduc() {
+    local sub="viewer"
+    case "${1:-}" in
+        viewer|status|index|help|version) sub="$1"; shift ;;
+    esac
+    # help/version are namespace-agnostic; pass through untouched.
+    if [[ "$sub" == "help" || "$sub" == "version" ]]; then
+        kubectl duc "$sub" "$@"
+        return
+    fi
+    # Inject -n $KNS only when the caller didn't supply a namespace.
+    local a
+    for a in "$@"; do
+        case "$a" in -n|--namespace) kubectl duc "$sub" "$@"; return ;; esac
+    done
+    kubectl duc "$sub" -n "$KNS" "$@"
+}
+
+# kducs [args]   -> DUC indexer status in $KNS
+kducs() { kduc status "$@"; }
+
+# kduci [args]   -> launch a one-off DUC index job in $KNS
+kduci() { kduc index "$@"; }
+
+# kduc-install [DIR]
+#   Install the GCR `duc` krew plugin from locally-downloaded artifacts.
+#   The plugin isn't in the public krew index — download both files from the
+#   GCR "PVC Storage Viewer" Azure DevOps wiki page first:
+#       kubectl-duc_linux.tar.gz
+#       kubectl-duc-krew-manifest-linux.yaml
+#   Searches DIR, else $KDUC_ARTIFACT_DIR, ./kubectl-dev, ~/kubectl-dev,
+#   ~/Downloads for the pair. Requires kubectl + krew.
+kduc-install() {
+    local arch="kubectl-duc_linux.tar.gz"
+    local manifest="kubectl-duc-krew-manifest-linux.yaml"
+    local dir="${1:-${KDUC_ARTIFACT_DIR:-}}" d
+    if [[ -n "$dir" ]]; then
+        [[ -f "$dir/$arch" && -f "$dir/$manifest" ]] || {
+            echo "kduc-install: $arch + $manifest not found in '$dir'" >&2; return 1; }
+    else
+        for d in "$PWD/kubectl-dev" "$HOME/kubectl-dev" "$HOME/Downloads"; do
+            [[ -f "$d/$arch" && -f "$d/$manifest" ]] && { dir="$d"; break; }
+        done
+        [[ -n "$dir" ]] || {
+            echo "kduc-install: could not find $arch + $manifest." >&2
+            echo "  Download both from the GCR 'PVC Storage Viewer' ADO wiki page," >&2
+            echo "  drop them in ./kubectl-dev (or ~/Downloads), then re-run." >&2
+            return 1; }
+    fi
+    command -v kubectl >/dev/null 2>&1 || { echo "kduc-install: kubectl not found" >&2; return 1; }
+    kubectl krew version >/dev/null 2>&1 || {
+        echo "kduc-install: krew not installed — see https://krew.sigs.k8s.io/docs/user-guide/setup/install/" >&2
+        return 1; }
+    if kubectl krew list 2>/dev/null | sed 's#.*/##' | grep -qx duc; then
+        echo "duc plugin already installed: $(kubectl duc version 2>/dev/null)"
+        echo "To reinstall from '$dir': kubectl krew uninstall duc && kduc-install '$dir'"
+        return 0
+    fi
+    echo "Installing duc plugin from '$dir' ..."
+    kubectl krew install --manifest="$dir/$manifest" --archive="$dir/$arch" \
+        && kubectl duc version
+}
+
 # --- Helm shortcuts --------------------------------------------------------
 
 # kh                    -> helm releases in namespace
