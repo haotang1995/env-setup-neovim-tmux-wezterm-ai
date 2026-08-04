@@ -306,6 +306,9 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   read-write so chat transcripts and prompt history sync to the host (auth
   and settings stay read-only); drops to non-root user matching host UID/GID
   via `setpriv`, launches with `--sandbox danger-full-access`;
+  marks `/workspace` as `trust_level = "trusted"` in the container's
+  `config.toml` so the "Do you trust this directory?" prompt doesn't reappear
+  every session (the sandbox already runs with full access anyway);
   **copilot** — no-clobber sync from host `~/.copilot`, merges host config keys
   into container `config.json` without clobbering auth tokens (no keychain in
   Docker), always refreshes `mcp-config.json`; resolves a GitHub token from
@@ -315,6 +318,14 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   launches with `--yolo`.
   Bootstraps skills when missing/empty or only broken symlinks are present.
   Falls back to `npm i -g` only when the CLI binary is not found (custom Dockerfiles).
+  **Writable agent config:** the repo is bind-mounted read-only at its host
+  path, and `install.sh` (run inside the container for the skill bootstrap)
+  symlinks `~/.codex/config.toml` and `~/.<agent>/settings.json` back into it.
+  Agents that persist settings then fail (`failed to persist config.toml`).
+  The launcher therefore de-symlinks those two files — before seeding and
+  again after the skill bootstrap — replacing any link into the repo with a
+  real copy in the agent-home volume. This also repairs volumes where an
+  earlier run already left a symlink behind.
 - **`openclaw-sandbox`:** Long-running Docker sandbox for OpenClaw development.
   Unlike `ai-sandbox` (ephemeral, per-session), this container persists for months.
   Usage: `openclaw-sandbox <start|stop|exec|status|destroy> [--rebuild] [--gpu|--no-gpu]`.

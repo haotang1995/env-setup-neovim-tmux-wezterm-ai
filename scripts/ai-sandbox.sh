@@ -508,6 +508,34 @@ exec docker run "${docker_args[@]}" \
   bash -c '
     mkdir -p "${AGENT_CONTAINER}"
 
+    # ── Helper: replace agent-config symlinks pointing into the repo ──
+    # install.sh links config files back into ${REPO_DIR}, which is
+    # bind-mounted read-only here. Agents that persist settings (codex
+    # writing a trust decision to config.toml, claude writing settings.json)
+    # then die with "failed to persist config". Swap such links for real
+    # copies so writes land in the agent-home volume instead. Also repairs
+    # volumes where an earlier run already left a symlink behind.
+    _desymlink_repo_config() {
+      for _cfg in "$@"; do
+        [ -L "${_cfg}" ] || continue
+        case "$(readlink -f "${_cfg}" 2>/dev/null)" in
+          "${REPO_DIR}"/*) ;;
+          *) continue ;;
+        esac
+        if cp -L "${_cfg}" "${_cfg}.real" 2>/dev/null; then
+          mv -f "${_cfg}.real" "${_cfg}"
+        else
+          # dangling link — drop it and let the agent recreate the file
+          rm -f "${_cfg}.real" "${_cfg}"
+        fi
+      done
+    }
+
+    # Run before seeding: a symlinked destination would make the cp below
+    # write *through* the link into the read-only mount and silently fail.
+    _desymlink_repo_config "${AGENT_CONTAINER}/config.toml" \
+                           "${AGENT_CONTAINER}/settings.json"
+
     # ── Per-agent auth/config sync ──
     case "${AGENT}" in
       claude)
@@ -641,6 +669,23 @@ exec docker run "${docker_args[@]}" \
         echo "Warning: skill bootstrap failed. Showing install output:" >&2
         cat /tmp/install.log >&2 || true
       fi
+    fi
+
+    # ── Re-normalize agent config after the skill bootstrap ──
+    # install.sh (run above) re-links config files into the read-only repo
+    # mount, so undo that again before the agent starts.
+    _desymlink_repo_config "${AGENT_CONTAINER}/config.toml" \
+                           "${AGENT_CONTAINER}/settings.json"
+
+    # Pre-trust /workspace for codex. The trust answer is persisted to
+    # config.toml, which is re-seeded from the host on every launch, so
+    # without this the prompt reappears each session. Consistent with the
+    # sandbox already launching codex with --sandbox danger-full-access.
+    if [ "${AGENT}" = "codex" ] && \
+       ! grep -q "^\[projects\.\"/workspace\"\]" \
+           "${AGENT_CONTAINER}/config.toml" 2>/dev/null; then
+      printf "\n[projects.\"/workspace\"]\ntrust_level = \"trusted\"\n" \
+        >> "${AGENT_CONTAINER}/config.toml"
     fi
 
     # ── Fallback npm install (custom Dockerfiles without pre-installed CLIs) ──
