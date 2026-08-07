@@ -4,3 +4,31 @@ model = "gpt-5.3-codex"
 
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
+
+# ── GitHub Copilot via the local proxy ────────────────────────────────────
+# Definition only — inert until a profile selects it, so plain `codex` is
+# unaffected. Activated by `codex-copilot`, which runs `codex --profile copilot`
+# (see .codex/copilot.config.toml).
+#
+# `model_providers` cannot be set in project-level config; this file is
+# user-level via the ~/.codex/config.toml symlink, so it belongs here.
+#
+# wire_api MUST be "responses" — Codex removed the chat/completions wire API in
+# Feb 2026. Proxies that only serve /v1/chat/completions cannot drive Codex.
+[model_providers.copilot_proxy]
+name     = "GitHub Copilot (local proxy)"
+base_url = "http://127.0.0.1:6868/v1"
+env_key  = "COPILOT_PROXY_KEY"
+wire_api = "responses"
+
+# Profile selected by `codex --profile copilot` (what `codex-copilot` runs).
+# NOTE: this Codex (0.116.0) reads profiles from `[profiles.<name>]` in THIS
+# file. Newer Codex docs describe standalone `~/.codex/<name>.config.toml`
+# profile files — that mechanism does NOT exist here, and an unmatched
+# --profile silently falls back to the default provider (i.e. straight to
+# OpenAI). Re-verify with `codex --profile copilot exec ...` after upgrading:
+# the banner must read `provider: copilot_proxy`.
+[profiles.copilot]
+model_provider = "copilot_proxy"
+model = "gpt-5.3-codex"
+model_reasoning_effort = "high"

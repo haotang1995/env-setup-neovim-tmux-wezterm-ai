@@ -127,6 +127,12 @@ for compat_name in claude-sandbox gemini-sandbox codex-sandbox copilot-sandbox; 
   safe_link "$SCRIPT_DIR/ai-sandbox.sh" "$BIN_DIR/$compat_name"
 done
 
+# argv[0]-dispatched wrappers: harness routed through the local Copilot proxy.
+# Plain `claude` / `codex` stay on native auth.
+for route_name in claude-copilot codex-copilot; do
+  safe_link "$SCRIPT_DIR/copilot-route.sh" "$BIN_DIR/$route_name"
+done
+
 echo ""
 echo "Installing config symlinks..."
 
@@ -258,6 +264,9 @@ safe_link "$REPO_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
 # Codex config
 mkdir -p "$HOME/.codex"
 safe_link "$REPO_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
+# Codex profile for Copilot-proxy routing (`codex --profile copilot`).
+# Profile files must be user-level, hence a symlink rather than project config.
+safe_link "$REPO_DIR/.codex/copilot.config.toml" "$HOME/.codex/copilot.config.toml"
 
 # Copilot — config.json is managed by Copilot itself (contains auth tokens);
 # we only need the skills directory (handled below).

@@ -1,0 +1,21 @@
+# Codex profile: route through the local GitHub Copilot proxy.
+#
+# Selected by `codex --profile copilot` (what `codex-copilot` runs).
+# Profile files are user-level standalone TOML using TOP-LEVEL keys — they are
+# NOT nested under [profiles.copilot]. Lives at ~/.codex/copilot.config.toml
+# via a symlink created by scripts/install.sh.
+#
+# The provider itself is defined in .codex/config.toml as
+# [model_providers.copilot_proxy]; it reads the proxy API key from
+# $COPILOT_PROXY_KEY, which copilot-route.sh exports.
+#
+# ⚠️  Routes a corporate Copilot seat through a third-party client. See AI.md.
+
+model_provider = "copilot_proxy"
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+
+# The proxy already fronts everything; keep Codex's own sandboxing as-is so
+# this profile differs from the default only in where tokens come from.
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"

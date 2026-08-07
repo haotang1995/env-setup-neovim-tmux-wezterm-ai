@@ -53,6 +53,8 @@ scripts/                         ← Utility scripts for global use
   restore-openclaw.sh            ← Restore openclaw-live from a checkpoint
   review_skills.py               ← Interactive keep/remove review for skills
   gpu-util-monitor.sh            ← Cheap long-horizon GPU-util tracking (cron sample + report)
+  copilot-proxy.sh               ← Local GitHub Copilot → OpenAI/Anthropic bridge (start/stop/status/env)
+  copilot-route.sh               ← claude-copilot / codex-copilot wrappers (harness → Copilot proxy)
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
   .repos/superpowers/            ← git submodule: obra/superpowers
@@ -246,6 +248,15 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   immediately. Skipped with a warning when the socket is absent. Warning:
   grants root-equivalent access to the host Docker daemon — only use on
   machines you control.
+  **Copilot routing:** pass `--copilot-route` (or `SANDBOX_COPILOT_ROUTE=1`) with
+  `claude` or `codex` to back the sandboxed agent with the host's `copilot-proxy`
+  instead of its native auth. The proxy binds host loopback, which is the
+  *container itself* from inside, so the launcher maps
+  `host.docker.internal:host-gateway` and rewrites the URL — a bare `-e` passthrough
+  of `ANTHROPIC_BASE_URL` would leak `127.0.0.1` into the container. For codex there
+  is no env passthrough for provider config at all, so the container's `config.toml`
+  `base_url` is rewritten at startup and `copilot.config.toml` is copied in from
+  `/host-agent-home`. Fails fast if the proxy isn't running or the key is missing.
   **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
   > `WANDB_API_KEY` env vars > `~/.bashrc` extraction, and passed into the
   container as both `WANDB_API_KEY` (Python library) and `WANDB_KEY` (MS Research
@@ -350,6 +361,64 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   **Restore:** `restore-openclaw [--latest | <tag>] [--gpu|--no-gpu]` stops the
   current container, restores the committed image + volume archive, and starts
   a new container. Run `restore-openclaw` with no args to list available checkpoints.
+- **`copilot-proxy`:** Local bridge that backs Claude Code, Codex, and direct API
+  calls with the **GitHub Copilot** entitlement instead of Anthropic/OpenAI keys.
+  Runs [`caozhiyuan/copilot-api`](https://github.com/caozhiyuan/copilot-api)
+  (npm `@jeffreycao/copilot-api`, **pinned** in the script) as a loopback service
+  on `127.0.0.1:6868` (override with `COPILOT_PROXY_PORT`), exposing
+  `/v1/messages` (Anthropic), `/v1/responses` and
+  `/v1/chat/completions` (OpenAI), `/v1/models`, `/v1/embeddings`.
+  Subcommands: `start|stop|restart|status|auth|models|usage|logs|key|env|upgrade`.
+  - **First run:** `copilot-proxy auth` (GitHub device flow — its own OAuth grant,
+    stored at `~/.local/share/copilot-api/`, independent of the Copilot CLI's and
+    separately revocable). Then `copilot-proxy start`.
+  - **Direct API use:** `eval "$(copilot-proxy env --openai)"` sets
+    `OPENAI_BASE_URL`/`OPENAI_API_KEY` for the current shell;
+    `--anthropic` does the same for `ANTHROPIC_*`; bare `env` emits the neutral
+    `COPILOT_PROXY_URL`/`COPILOT_PROXY_KEY`, which is what `~/.shellrc.local`
+    holds. Prefer the neutral vars globally — exporting `OPENAI_BASE_URL`
+    machine-wide would silently redirect every other OpenAI client.
+  - **⚠️ Two upstream defaults are unsafe and are corrected by this script.**
+    (1) There is **no `--api-key` flag** — unknown flags are silently ignored and
+    the server then runs with **no auth at all**; auth works only via
+    `auth.apiKeys` in `~/.local/share/copilot-api/config.json`.
+    (2) `serve()` is called without a hostname, so it binds `*:<port>` and is
+    reachable from the LAN; `HOST=127.0.0.1` fixes it. `start` refuses to run if
+    an anonymous `/v1/models` request does not return 401.
+  - **Model IDs differ by family:** Claude uses dashes (`claude-opus-5`,
+    `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5`), GPT uses dots
+    (`gpt-5.5`, `gpt-5.3-codex`). `copilot-proxy models [--claude|--gpt]` lists
+    what the seat actually exposes — this varies and can change silently.
+  - **Cost model:** Copilot performs **no prompt-cache writes**, and since
+    Jun 2026 bills by token against a monthly AI-credits allowance. An agentic
+    harness re-sends a growing conversation every turn, so this burns the
+    allowance much faster than request-based intuition suggests.
+  - **⚠️ Policy:** this routes a **corporate** Copilot seat through a third-party
+    client that presents itself as VS Code (`copilot-integration-id: vscode-chat`
+    plus a synthetic persistent device ID). GitHub's Copilot-restriction notice
+    names *"proxy usage"* as a revocation trigger, and on Business/Enterprise the
+    contracting party is the employer. Sanctioned alternatives that need no proxy:
+    OpenCode on Copilot, the Copilot CLI, or `CLAUDE_CODE_USE_FOUNDRY=1` for
+    Claude Code on Microsoft Foundry.
+- **`copilot-route`** (`claude-copilot`, `codex-copilot`): argv[0]-dispatched
+  wrappers — same idiom as the `*-sandbox` symlinks — that start the proxy if
+  needed and launch the harness against it. **Plain `claude` and `codex` are
+  untouched and keep native auth.** This split is deliberate:
+  `~/.claude/settings.json` and `~/.codex/config.toml` are symlinks *into this
+  repo*, so putting proxy env in them would route every session through Copilot
+  and hard-fail whenever the proxy is down.
+  - claude: sets `ANTHROPIC_BASE_URL` + `ANTHROPIC_AUTH_TOKEN` (Bearer — not
+    `ANTHROPIC_API_KEY`, which triggers an interactive approval prompt), the
+    three `ANTHROPIC_DEFAULT_*_MODEL` tiers, and disables non-essential traffic
+    and experimental betas (Copilot rejects beta headers it doesn't know).
+    Override models via `CLAUDE_COPILOT_{OPUS,SONNET,HAIKU}`.
+  - codex: runs `codex --profile copilot`. The provider is defined once in
+    `.codex/config.toml` as `[model_providers.copilot_proxy]` (**inert** until a
+    profile selects it) with `wire_api = "responses"` — mandatory, since Codex
+    removed the chat/completions wire API in Feb 2026. The profile itself lives
+    in `.codex/copilot.config.toml` → `~/.codex/copilot.config.toml`, because
+    `model_providers` cannot be set from project-level config. Override the model
+    via `CODEX_COPILOT_MODEL`.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.

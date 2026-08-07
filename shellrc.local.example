@@ -19,3 +19,16 @@
 # export ANTHROPIC_API_KEY=...
 # export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 # export PATH="$HOME/miniconda3/bin:$PATH"
+
+# --- local Copilot proxy (copilot-proxy) ---
+# Auto-generated on first `copilot-proxy start`; you normally don't set these
+# by hand. COPILOT_PROXY_KEY gates the local endpoint — without it the proxy
+# would serve anyone who can reach the port.
+# export COPILOT_PROXY_KEY=ck-...
+# export COPILOT_PROXY_URL=http://127.0.0.1:6868
+#
+# For direct SDK use against the proxy's /v1 surface, prefer scoping the
+# override to the call site rather than exporting OPENAI_BASE_URL globally
+# (that would silently redirect every other OpenAI client on the machine):
+#   eval "$(copilot-proxy env --openai)"      # this shell only
+#   eval "$(copilot-proxy env --anthropic)"   # this shell only

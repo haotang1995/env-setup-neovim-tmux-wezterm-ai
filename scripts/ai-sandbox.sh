@@ -57,6 +57,12 @@ Options:
                           Grants root-equivalent access — host-only.
                           (env: SANDBOX_DOCKER_SOCK=1)
       --no-docker-sock    Do not mount the host Docker socket (default)
+      --copilot-route     [claude|codex] Route the agent through the host's
+                          local Copilot proxy instead of its native auth.
+                          Requires `copilot-proxy start` on the host; maps
+                          host.docker.internal and rewrites 127.0.0.1.
+                          (env: SANDBOX_COPILOT_ROUTE=1)
+      --no-copilot-route  Use the agent's native provider auth (default)
       --no-login          [claude only, DEFAULT] Seed OAuth credentials from
                           the host on every launch. Shares the host refresh-
                           token chain; container typically loses auth within
@@ -125,10 +131,18 @@ NO_LOGIN="${SANDBOX_NO_LOGIN:-1}"
 # shared claude-home volume). Override with --workspace NAME when two
 # projects have the same basename or you want to force shared state.
 WORKSPACE_NAME="${SANDBOX_WORKSPACE:-}"
+# claude/codex only: route the agent through the host's local Copilot proxy
+# (see scripts/copilot-proxy.sh) instead of its native provider auth. The
+# container reaches the host via host.docker.internal, so 127.0.0.1 in the
+# host-side config must be rewritten — a bare -e passthrough would leak the
+# host loopback address into the container and fail to connect.
+COPILOT_ROUTE="${SANDBOX_COPILOT_ROUTE:-0}"
 
 while [[ "${1:-}" = --* || "${1:-}" = "-h" ]]; do
   case "$1" in
     -h|--help)      usage; exit 0 ;;
+    --copilot-route)    COPILOT_ROUTE=1; shift ;;
+    --no-copilot-route) COPILOT_ROUTE=0; shift ;;
     --rebuild)      FORCE_REBUILD=1; shift ;;
     --gpu)          USE_GPU=1; shift ;;
     --no-gpu)       USE_GPU=0; shift ;;
@@ -291,6 +305,56 @@ docker_args=(
   -e HOST_GID="$(id -g)"
   -e NO_LOGIN="${NO_LOGIN}"
 )
+
+# ── Copilot-proxy routing ────────────────────────────────────────────────
+# The proxy binds 127.0.0.1 on the host, which is unreachable from inside the
+# container. Map host.docker.internal to the gateway and rewrite the URL.
+COPILOT_PROXY_CONTAINER_URL=""
+if [[ "${COPILOT_ROUTE}" = "1" ]]; then
+  if [[ "${AGENT}" != "claude" && "${AGENT}" != "codex" ]]; then
+    echo "ai-sandbox: --copilot-route only applies to claude and codex (got ${AGENT})" >&2
+    exit 1
+  fi
+
+  _proxy_port="${COPILOT_PROXY_PORT:-6868}"
+  _proxy_key="${COPILOT_PROXY_KEY:-}"
+  if [[ -z "${_proxy_key}" && -f "${HOME}/.shellrc.local" ]]; then
+    _proxy_key="$(sed -n 's/^[[:space:]]*export[[:space:]]\{1,\}COPILOT_PROXY_KEY=["'"'"']\{0,1\}\([^"'"'"']*\)["'"'"']\{0,1\}[[:space:]]*$/\1/p' \
+                  "${HOME}/.shellrc.local" | tail -1)"
+  fi
+  if [[ -z "${_proxy_key}" ]]; then
+    echo "ai-sandbox: --copilot-route needs COPILOT_PROXY_KEY (run: copilot-proxy start)" >&2
+    exit 1
+  fi
+  if ! curl -fsS -o /dev/null -m 3 "http://127.0.0.1:${_proxy_port}/" 2>/dev/null; then
+    echo "ai-sandbox: Copilot proxy not reachable on 127.0.0.1:${_proxy_port} — run: copilot-proxy start" >&2
+    exit 1
+  fi
+
+  COPILOT_PROXY_CONTAINER_URL="http://host.docker.internal:${_proxy_port}"
+  docker_args+=(--add-host "host.docker.internal:host-gateway")
+
+  if [[ "${AGENT}" = "claude" ]]; then
+    docker_args+=(
+      -e "ANTHROPIC_BASE_URL=${COPILOT_PROXY_CONTAINER_URL}/"
+      -e "ANTHROPIC_AUTH_TOKEN=${_proxy_key}"
+      -e "ANTHROPIC_DEFAULT_OPUS_MODEL=${CLAUDE_COPILOT_OPUS:-claude-opus-5}"
+      -e "ANTHROPIC_DEFAULT_SONNET_MODEL=${CLAUDE_COPILOT_SONNET:-claude-sonnet-5}"
+      -e "ANTHROPIC_DEFAULT_HAIKU_MODEL=${CLAUDE_COPILOT_HAIKU:-claude-haiku-4-5}"
+      -e "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"
+      -e "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1"
+    )
+  else
+    # codex has no env passthrough for provider config — the container's
+    # config.toml is seeded from the host copy, so the base_url is rewritten
+    # in the entrypoint (see COPILOT_PROXY_CONTAINER_URL below).
+    docker_args+=(
+      -e "COPILOT_PROXY_KEY=${_proxy_key}"
+      -e "COPILOT_PROXY_CONTAINER_URL=${COPILOT_PROXY_CONTAINER_URL}"
+      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.5}"
+    )
+  fi
+fi
 
 # Worktree support: mount external git metadata paths when /workspace/.git
 # points outside the current directory.
@@ -688,6 +752,19 @@ exec docker run "${docker_args[@]}" \
         >> "${AGENT_CONTAINER}/config.toml"
     fi
 
+    # Copilot-proxy routing for codex: the host config.toml points the provider
+    # at 127.0.0.1, which inside the container is the container itself. Rewrite
+    # it to host.docker.internal. Also seed the profile file, which lives
+    # outside config.toml and is not copied by the auth/settings sync above.
+    if [ "${AGENT}" = "codex" ] && [ -n "${COPILOT_PROXY_CONTAINER_URL:-}" ]; then
+      sed -i "s#base_url = \"http://127\.0\.0\.1:[0-9]*/v1\"#base_url = \"${COPILOT_PROXY_CONTAINER_URL}/v1\"#" \
+        "${AGENT_CONTAINER}/config.toml" 2>/dev/null || true
+      if [ -f /host-agent-home/copilot.config.toml ]; then
+        cp -L /host-agent-home/copilot.config.toml \
+          "${AGENT_CONTAINER}/copilot.config.toml" 2>/dev/null || true
+      fi
+    fi
+
     # ── Fallback npm install (custom Dockerfiles without pre-installed CLIs) ──
     if ! command -v "${AGENT}" >/dev/null 2>&1; then
       npm i -g "${AGENT_NPM_PKG}" >/dev/null 2>&1
@@ -735,6 +812,11 @@ exec docker run "${docker_args[@]}" \
         _ensure_host_user
         mkdir -p /root/.cache 2>/dev/null || true
         chown -R "${_UID}:${_GID}" /root/.cache /root/.azure 2>/dev/null || true
+        if [ -n "${COPILOT_PROXY_CONTAINER_URL:-}" ]; then
+          exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
+            codex --sandbox danger-full-access --profile copilot \
+              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.5}\"" "$@"
+        fi
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           codex --sandbox danger-full-access "$@"
         ;;
