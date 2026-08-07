@@ -59,8 +59,10 @@ Options:
       --no-docker-sock    Do not mount the host Docker socket (default)
       --copilot-route     [claude|codex] Route the agent through the host's
                           local Copilot proxy instead of its native auth.
-                          Requires `copilot-proxy start` on the host; maps
-                          host.docker.internal and rewrites 127.0.0.1.
+                          Requires `copilot-proxy start` on the host. On
+                          Linux/WSL this implies --network host (the proxy
+                          binds loopback, which a bridged container cannot
+                          reach); on macOS it uses host.docker.internal.
                           (env: SANDBOX_COPILOT_ROUTE=1)
       --no-copilot-route  Use the agent's native provider auth (default)
       --no-login          [claude only, DEFAULT] Seed OAuth credentials from
@@ -132,10 +134,11 @@ NO_LOGIN="${SANDBOX_NO_LOGIN:-1}"
 # projects have the same basename or you want to force shared state.
 WORKSPACE_NAME="${SANDBOX_WORKSPACE:-}"
 # claude/codex only: route the agent through the host's local Copilot proxy
-# (see scripts/copilot-proxy.sh) instead of its native provider auth. The
-# container reaches the host via host.docker.internal, so 127.0.0.1 in the
-# host-side config must be rewritten — a bare -e passthrough would leak the
-# host loopback address into the container and fail to connect.
+# (see scripts/copilot-proxy.sh) instead of its native provider auth. How the
+# container reaches a loopback-bound host process is platform-specific — see
+# the COPILOT_ROUTE block further down for the Linux vs macOS split. A bare
+# -e passthrough of ANTHROPIC_BASE_URL would leak the host's 127.0.0.1 into a
+# bridged container and silently fail to connect.
 COPILOT_ROUTE="${SANDBOX_COPILOT_ROUTE:-0}"
 
 while [[ "${1:-}" = --* || "${1:-}" = "-h" ]]; do
@@ -331,8 +334,25 @@ if [[ "${COPILOT_ROUTE}" = "1" ]]; then
     exit 1
   fi
 
-  COPILOT_PROXY_CONTAINER_URL="http://host.docker.internal:${_proxy_port}"
-  docker_args+=(--add-host "host.docker.internal:host-gateway")
+  # Reaching a host process bound to 127.0.0.1 differs by platform:
+  #   Linux/WSL — `--add-host host.docker.internal:host-gateway` maps to the
+  #     bridge gateway (172.17.0.1). Nothing listens there, because the proxy
+  #     deliberately binds loopback only, so the container gets connection
+  #     refused. Verified: host-gateway → 000, --network host → 200. Sharing the
+  #     host network namespace is the only way in without widening the bind.
+  #   macOS — Docker Desktop's host.docker.internal does reach host loopback
+  #     through the VM's networking proxy, and --network host is not reliably
+  #     supported, so keep the bridge + hostname mapping there.
+  # Note: --network host gives the container the host's network namespace, so
+  # any port the agent opens binds a host port. Acceptable here — this sandbox
+  # already runs the agent with permissions fully bypassed.
+  if [[ "$(uname -s)" = "Darwin" ]]; then
+    COPILOT_PROXY_CONTAINER_URL="http://host.docker.internal:${_proxy_port}"
+    docker_args+=(--add-host "host.docker.internal:host-gateway")
+  else
+    COPILOT_PROXY_CONTAINER_URL="http://127.0.0.1:${_proxy_port}"
+    docker_args+=(--network host)
+  fi
 
   if [[ "${AGENT}" = "claude" ]]; then
     docker_args+=(
@@ -351,7 +371,7 @@ if [[ "${COPILOT_ROUTE}" = "1" ]]; then
     docker_args+=(
       -e "COPILOT_PROXY_KEY=${_proxy_key}"
       -e "COPILOT_PROXY_CONTAINER_URL=${COPILOT_PROXY_CONTAINER_URL}"
-      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.3-codex}"
+      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.4}"
     )
   fi
 fi
@@ -752,14 +772,13 @@ exec docker run "${docker_args[@]}" \
         >> "${AGENT_CONTAINER}/config.toml"
     fi
 
-    # Copilot-proxy routing for codex: the host config.toml points the provider
-    # at 127.0.0.1, which inside the container is the container itself. Rewrite
-    # it to host.docker.internal. The [profiles.copilot] section rides along in
-    # the same config.toml, so nothing else needs seeding.
-    if [ "${AGENT}" = "codex" ] && [ -n "${COPILOT_PROXY_CONTAINER_URL:-}" ]; then
-      sed -i "s#base_url = \"http://127\.0\.0\.1:[0-9]*/v1\"#base_url = \"${COPILOT_PROXY_CONTAINER_URL}/v1\"#" \
-        "${AGENT_CONTAINER}/config.toml" 2>/dev/null || true
-    fi
+    # NOTE: the Copilot-proxy base_url for codex is NOT patched into config.toml
+    # here. It is passed at launch via
+    # `-c model_providers.copilot_proxy.base_url=…` (see the codex launch branch
+    # below), which honors a custom COPILOT_PROXY_PORT and avoids a regex that
+    # would drift if the config formatting changed.
+    # (Keep this comment quote-free: it lives inside the single-quoted
+    # container entrypoint string.)
 
     # ── Fallback npm install (custom Dockerfiles without pre-installed CLIs) ──
     if ! command -v "${AGENT}" >/dev/null 2>&1; then
@@ -809,15 +828,16 @@ exec docker run "${docker_args[@]}" \
         mkdir -p /root/.cache 2>/dev/null || true
         chown -R "${_UID}:${_GID}" /root/.cache /root/.azure 2>/dev/null || true
         if [ -n "${COPILOT_PROXY_CONTAINER_URL:-}" ]; then
-          # Use -c rather than --profile here: --profile is position-sensitive
-          # (must follow any subcommand) and would be silently ignored sitting
-          # next to --sandbox, falling through to the openai provider. -c
-          # propagates from either position. Values mirror [profiles.copilot]
-          # in .codex/config.toml — keep them in sync.
+          # -c, never --profile: Codex changed the profile mechanism between
+          # 0.116 and 0.147 (silently-ignored table vs hard error) and it
+          # auto-updates. -c works on both and is position-insensitive.
+          # base_url is overridden here rather than patched into config.toml, so
+          # a custom COPILOT_PROXY_PORT works and no regex can drift.
           exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
             codex --sandbox danger-full-access \
               -c "model_provider=\"copilot_proxy\"" \
-              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.3-codex}\"" \
+              -c "model_providers.copilot_proxy.base_url=\"${COPILOT_PROXY_CONTAINER_URL}/v1\"" \
+              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.4}\"" \
               -c "model_reasoning_effort=\"high\"" "$@"
         fi
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \

@@ -3,8 +3,8 @@
 Route the Claude Code and Codex harnesses (and direct API calls) through the
 company GitHub Copilot entitlement instead of Anthropic/OpenAI keys.
 
-**Status:** implemented, host-side verified end-to-end at the API layer.
-Harness-level and sandbox verification still pending (see below).
+**Status:** implemented and verified end-to-end — host wrappers, both sandboxes,
+and custom-port propagation. Remaining gap: a long multi-turn agentic run.
 
 ## Decisions
 
@@ -68,13 +68,17 @@ codex --profile copilot exec "…"   # ✗ banner: provider: openai   (silent)
 codex exec --profile copilot "…"   # ✓ banner: provider: copilot_proxy
 ```
 
-`-c` propagates from either position; `--profile` does not. The host wrapper now
-inserts `--profile` after any subcommand; the sandbox path uses
-`-c model_provider=…` to avoid disturbing `--sandbox` flag placement.
+`-c` propagates from either position; `--profile` does not.
+
+> **Superseded by round 2:** `--profile` was dropped entirely. Codex 0.147 then
+> *hard-errored* on the very `[profiles.copilot]` table 0.116 required. Both
+> wrappers now use `-c model_provider="copilot_proxy"`, which behaves identically
+> on both versions. Kept here because the silent-fallback failure mode is the one
+> to watch for.
 
 Also: profiles in **0.116** live as `[profiles.<name>]` inside `config.toml`.
 Newer Codex docs describe standalone `~/.codex/<name>.config.toml` files — that
-mechanism does **not** exist in this version, and was the first wrong turn.
+mechanism does **not** exist in that version, and was the first wrong turn.
 
 **Always verify from the banner: `provider: copilot_proxy`.**
 
@@ -97,14 +101,108 @@ through Copilot incidentally *fixes* it, since the proxy serves that model.
 Codex also floods stderr with `skills::loader` errors from ~dozens of broken
 symlinks in `~/.codex/skills` — also pre-existing; worth a separate cleanup.
 
+## Review round 2 (2026-08-07) — 4 issues raised, all reproduced, all fixed
+
+Codex **auto-updated 0.116.0 → 0.147.0 mid-session**, which broke the routing
+that had just been verified. Good illustration of why this needs version-proofing.
+
+1. **Codex profile mechanism churn (P1, real).** 0.147 hard-errors:
+   `--profile copilot cannot be used while …/config.toml contains legacy
+   [profiles.copilot]`. One week earlier, 0.116 *required* that exact table.
+   → Fix: dropped `--profile` entirely. Both wrappers now use
+   `-c model_provider="copilot_proxy"`, verified working on **both** versions and
+   position-insensitive. No `[profiles.copilot]`, no standalone profile file.
+2. **Sandbox could not reach the proxy on Linux/WSL (P1, real).**
+   `--add-host host.docker.internal:host-gateway` points at the bridge gateway,
+   but the proxy binds `127.0.0.1` only. Reproduced: host-gateway → HTTP 000,
+   `--network host` → HTTP 200. → Fix: `--network host` on Linux/WSL,
+   `host.docker.internal` kept for macOS Docker Desktop.
+3. **macOS portability (P1, real).** `ss` is Linux-only, `stat -c` is GNU-only,
+   and the M1 Mac is the primary dev machine. → Fix: `listen_addr` / `file_size`
+   / `file_mode` shims falling back to `netstat` and `stat -f`.
+4. **Destructive installer line (P1, real).** `rm -f ~/.codex/copilot.config.toml`
+   ran unconditionally and would have deleted a real user file. → Fix: removes it
+   only when it is a symlink whose target is exactly this repo's copy.
+
+## Verified end-to-end (2026-08-07, Codex 0.147.0)
+
+- [x] `codex-copilot exec …` → `provider: copilot_proxy`, `model: gpt-5.4`,
+      `reasoning effort: high`.
+- [x] `claude-copilot -p …` → OK.
+- [x] Regression: plain `codex` → `provider: openai`.
+- [x] `codex-sandbox --copilot-route exec …` → `provider: copilot_proxy`
+      reaching `http://127.0.0.1:6868` from inside the container.
+- [x] `claude-sandbox --copilot-route -p …` → OK.
+- [x] Container reaches proxy **with** auth (200 + model list); anonymous from
+      inside the container still → 401.
+
+Sandbox runs need a TTY (`ai-sandbox` uses `docker run -it`); test them under
+`script -qec "…" /dev/null` from a non-interactive shell.
+
+## Review round 3 (2026-08-07) — P2 custom-port propagation, real, fixed
+
+**Reported:** `.codex/config.toml` hardcodes `127.0.0.1:6868` and
+`copilot-route.sh` never overrode `model_providers.copilot_proxy.base_url`, so
+`COPILOT_PROXY_PORT` worked for Claude and the sandboxes but silently not for
+host Codex. **Reproduced and confirmed.**
+
+Fix: both wrappers now pass the *resolved* URL at launch —
+`-c model_providers.copilot_proxy.base_url="${PROXY_URL}/v1"` (host) and
+`"${COPILOT_PROXY_CONTAINER_URL}/v1"` (sandbox). The old `sed`-based rewrite of
+the container's `config.toml` was deleted rather than repaired: a `-c` override
+cannot drift with config formatting.
+
+### Second defect found while verifying it (not reported, fixed)
+
+State files were **not port-scoped** — one shared `proxy.pid` / `proxy.log` for
+every port. With two proxies up, `status` printed the *other* instance's pid and
+`stop` would kill the wrong process (it did, mid-test). Since
+`COPILOT_PROXY_PORT` is a supported override, coexistence has to work:
+`PID_FILE`/`LOG_FILE` are now `proxy-<port>.{pid,log}`, with one-time adoption of
+the legacy unsuffixed names on the default port.
+
+### Verified (2026-08-07)
+
+Port routing was proven by **observing the actual TCP destination** with
+`ss -tnp` during the run, not just by the banner — the banner cannot distinguish
+which port the provider resolved to.
+
+- [x] `COPILOT_PROXY_PORT=7373 codex-copilot exec …` → **5 connections to
+      `127.0.0.1:7373`, 0 to `:6868`**; `provider: copilot_proxy`,
+      `model: gpt-5.4`, `reasoning effort: high`; correct answer returned.
+- [x] `COPILOT_PROXY_PORT=7373 claude-copilot -p …` → connections to `:7373`,
+      correct answer returned.
+- [x] Default port unchanged: `codex-copilot` → `provider: copilot_proxy`.
+- [x] Regression: plain `codex` → `provider: openai`.
+- [x] A fresh login shell has **no** `ANTHROPIC_*` / `OPENAI_*` vars. (Checked
+      with `env -i bash -lc` — a shell spawned *inside* a `claude-copilot`
+      session legitimately inherits them, so that is not a valid leakage test.)
+- [x] Per-port state: `status` on `:6868` now reports the true `:6868` pid.
+- [x] `bash -n` clean on `ai-sandbox.sh`, `copilot-route.sh`, `copilot-proxy.sh`,
+      `install.sh`.
+
+> ⚠️ `ai-sandbox.sh` runs its container entrypoint as a **single-quoted**
+> `bash -c '…'` string starting at line ~592. An apostrophe in a comment inside
+> that block (`config's`, `there's`) silently terminates the quote and breaks the
+> whole script. Keep comments in that region quote-free.
+
 ## Remaining
 
-- [ ] `claude-sandbox --copilot-route` — confirms `host.docker.internal` reachability.
-- [ ] `codex-sandbox --copilot-route` — confirms the config.toml `base_url` rewrite.
 - [ ] Multi-turn agentic run to shake out tool-call translation and the 90s
-      stream watchdog (the failure mode that looks like "the model got dumb").
+      stream watchdog (the failure that looks like "the model got dumb").
+      **This is the last substantive verification gap.**
+- [ ] Benign but noisy: codex polls `/v1/models?client_version=…` and the proxy
+      answers `404 Provider 'codex' not found or disabled`. Completions are
+      unaffected; consider silencing.
+- [ ] In-sandbox warning: `Ignored unsupported project-local config keys in
+      /workspace/.codex/config.toml: model_providers` — harmless (the user-level
+      copy supplies it) but appears because this repo *is* the workspace. The
+      same warning shows on the host for the same reason.
 - [ ] Decide whether to auto-start the proxy from `~/.shellrc.local`, or leave it
       on-demand via the wrappers (current behavior).
+- [ ] Unrelated cleanup: ~30 broken symlinks in `~/.codex/skills` flood stderr
+      with `skills::loader` errors (~230 KB per invocation).
+
 
 ## Watch list
 

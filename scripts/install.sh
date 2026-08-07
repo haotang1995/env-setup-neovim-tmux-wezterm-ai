@@ -264,10 +264,20 @@ safe_link "$REPO_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
 # Codex config
 mkdir -p "$HOME/.codex"
 safe_link "$REPO_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
-# The Copilot-proxy provider + `[profiles.copilot]` live inside config.toml
-# above (this Codex reads profiles from config.toml, not standalone files).
-# Clean up the standalone profile symlink used by an earlier iteration.
-rm -f "$HOME/.codex/copilot.config.toml"
+# An earlier iteration symlinked a standalone Codex profile file here. Remove
+# it, but ONLY if it is still that exact symlink into this repo — never touch a
+# real file or a link the user created themselves.
+_stale_profile="$HOME/.codex/copilot.config.toml"
+if [ -L "$_stale_profile" ]; then
+  _stale_target="$(readlink "$_stale_profile")"
+  case "$_stale_target" in
+    "$REPO_DIR"/.codex/copilot.config.toml)
+      rm -f "$_stale_profile"
+      log "REMOVE" "Removed stale symlink: $_stale_profile -> $_stale_target"
+      ;;
+  esac
+fi
+unset _stale_profile _stale_target
 
 # Copilot — config.json is managed by Copilot itself (contains auth tokens);
 # we only need the skills directory (handled below).

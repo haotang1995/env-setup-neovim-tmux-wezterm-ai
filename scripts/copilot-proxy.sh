@@ -39,13 +39,27 @@ export COPILOT_API_HOME="${COPILOT_API_HOME:-${HOME}/.local/share/copilot-api}"
 CONFIG_JSON="${COPILOT_API_HOME}/config.json"
 TOKEN_FILE="${COPILOT_API_HOME}/github_token"
 
-RUN_DIR="${HOME}/.local/state/copilot-proxy"
-PID_FILE="${RUN_DIR}/proxy.pid"
-LOG_FILE="${RUN_DIR}/proxy.log"
-
 PROXY_HOST="127.0.0.1"                              # NEVER 0.0.0.0 — see header
-PROXY_PORT="${COPILOT_PROXY_PORT:-6868}"
+PROXY_PORT_DEFAULT="6868"
+PROXY_PORT="${COPILOT_PROXY_PORT:-${PROXY_PORT_DEFAULT}}"
 PROXY_URL="http://${PROXY_HOST}:${PROXY_PORT}"
+
+# State is per-port: COPILOT_PROXY_PORT is a supported override, so two proxies
+# can legitimately coexist. A shared pid file would make `stop`/`status` on one
+# port act on the other instance.
+RUN_DIR="${HOME}/.local/state/copilot-proxy"
+PID_FILE="${RUN_DIR}/proxy-${PROXY_PORT}.pid"
+LOG_FILE="${RUN_DIR}/proxy-${PROXY_PORT}.log"
+
+# Adopt the pre-port-scoped state files (default port only).
+if [[ "${PROXY_PORT}" == "${PROXY_PORT_DEFAULT}" ]]; then
+  if [[ -f "${RUN_DIR}/proxy.pid" && ! -f "${PID_FILE}" ]]; then
+    mv "${RUN_DIR}/proxy.pid" "${PID_FILE}"
+  fi
+  if [[ -f "${RUN_DIR}/proxy.log" && ! -f "${LOG_FILE}" ]]; then
+    mv "${RUN_DIR}/proxy.log" "${LOG_FILE}"
+  fi
+fi
 
 SHELLRC_LOCAL="${HOME}/.shellrc.local"
 
@@ -57,6 +71,33 @@ die()  { printf '  ✗ %s\n' "$*" >&2; exit 1; }
 need_node() {
   command -v node >/dev/null 2>&1 || die "node not found (need Node.js ≥ 22.13 for token-usage storage)"
   command -v npm  >/dev/null 2>&1 || die "npm not found"
+}
+
+# ── Portability shims (macOS is the primary dev machine) ──────────────────
+# `ss` is Linux-only and `stat -c` is GNU-only; macOS has netstat and `stat -f`.
+# Every caller tolerates an empty result, so these never abort under `set -e`.
+
+# Print the listen address for $1, or nothing if not listening.
+listen_addr() {
+  local port="$1"
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltn 2>/dev/null | awk -v p=":${port}$" '$4 ~ p {print $4; exit}'
+  elif command -v netstat >/dev/null 2>&1; then
+    # macOS/BSD netstat: "tcp4  0  0  127.0.0.1.6868  *.*  LISTEN"
+    netstat -an -p tcp 2>/dev/null \
+      | awk -v p="\\.${port}$" '$NF == "LISTEN" && $4 ~ p {print $4; exit}'
+  fi
+  return 0
+}
+
+port_in_use() { [[ -n "$(listen_addr "$1")" ]]; }
+
+# stat helpers: GNU `-c` vs BSD `-f`.
+file_size() {
+  stat -c %s "$1" 2>/dev/null || stat -f %z "$1" 2>/dev/null || echo "?"
+}
+file_mode() {
+  stat -c %a "$1" 2>/dev/null || stat -f %Lp "$1" 2>/dev/null || echo "?"
 }
 
 # Resolve the local API key that gates this proxy. Order:
@@ -177,7 +218,7 @@ do_start() {
     die "SECURITY: anonymous /v1/models returned HTTP ${anon} (expected 401). Refusing to run unauthenticated."
   fi
 
-  local bind; bind="$(ss -ltn 2>/dev/null | awk -v p=":${PROXY_PORT}" '$4 ~ p {print $4}' | head -1)"
+  local bind; bind="$(listen_addr "${PROXY_PORT}")"
   log "✓ listening on ${PROXY_URL} (bind: ${bind:-unknown}, auth: enforced)"
   log "  direct API base: ${PROXY_URL}/v1"
 }
@@ -207,14 +248,14 @@ do_status() {
   printf '  %-14s %s\n' "data dir" "${COPILOT_API_HOME}"
 
   if authed; then
-    printf '  %-14s %s\n' "github auth" "✓ token present ($(stat -c %s "${TOKEN_FILE}") bytes, mode $(stat -c %a "${TOKEN_FILE}"))"
+    printf '  %-14s %s\n' "github auth" "✓ token present ($(file_size "${TOKEN_FILE}") bytes, mode $(file_mode "${TOKEN_FILE}"))"
   else
     printf '  %-14s %s\n' "github auth" "✗ missing — run: copilot-proxy auth"
   fi
 
   if is_running && is_healthy; then
     local bind anon
-    bind="$(ss -ltn 2>/dev/null | awk -v p=":${PROXY_PORT}" '$4 ~ p {print $4}' | head -1)"
+    bind="$(listen_addr "${PROXY_PORT}")"
     anon="$(curl -s -o /dev/null -w '%{http_code}' -m 5 "${PROXY_URL}/v1/models" || echo 000)"
     printf '  %-14s %s\n' "state"  "✓ running (pid $(cat "${PID_FILE}"))"
     printf '  %-14s %s\n' "bind"   "${bind:-unknown}"

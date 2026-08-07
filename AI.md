@@ -250,15 +250,25 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   machines you control.
   **Copilot routing:** pass `--copilot-route` (or `SANDBOX_COPILOT_ROUTE=1`) with
   `claude` or `codex` to back the sandboxed agent with the host's `copilot-proxy`
-  instead of its native auth. The proxy binds host loopback, which is the
-  *container itself* from inside, so the launcher maps
-  `host.docker.internal:host-gateway` and rewrites the URL — a bare `-e` passthrough
-  of `ANTHROPIC_BASE_URL` would leak `127.0.0.1` into the container. For codex there
-  is no env passthrough for provider config at all, so the container's `config.toml`
-  `base_url` is rewritten at startup and the provider is selected with
-  `-c model_provider=…` rather than `--profile` (which is position-sensitive and
-  would be silently ignored next to `--sandbox`).
-  Fails fast if the proxy isn't running or the key is missing.
+  instead of its native auth. Reaching a loopback-bound host process from a
+  container is **platform-specific**:
+  - **Linux/WSL** — `--add-host host.docker.internal:host-gateway` maps to the
+    bridge gateway (`172.17.0.1`), where nothing listens because the proxy binds
+    `127.0.0.1` only; the container gets connection-refused. *Verified:
+    host-gateway → HTTP 000, `--network host` → HTTP 200.* So `--copilot-route`
+    implies **`--network host`** here. Consequence: the container shares the host
+    network namespace, so ports the agent opens bind host ports — acceptable given
+    the sandbox already runs the agent with permissions fully bypassed.
+  - **macOS** — Docker Desktop's `host.docker.internal` does reach host loopback,
+    and `--network host` is not reliably supported, so the bridge + host mapping
+    is kept there.
+
+  A bare `-e` passthrough of `ANTHROPIC_BASE_URL` would leak the host's
+  `127.0.0.1` into a bridged container, so the URL is rewritten per platform. For
+  codex there is no env passthrough for provider config at all, so the container's
+  `config.toml` `base_url` is rewritten at startup and the provider is selected
+  with `-c model_provider=…`. Fails fast if the proxy isn't running or the key is
+  missing.
   **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
   > `WANDB_API_KEY` env vars > `~/.bashrc` extraction, and passed into the
   container as both `WANDB_API_KEY` (Python library) and `WANDB_KEY` (MS Research
@@ -371,6 +381,12 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   `/v1/messages` (Anthropic), `/v1/responses` and
   `/v1/chat/completions` (OpenAI), `/v1/models`, `/v1/embeddings`.
   Subcommands: `start|stop|restart|status|auth|models|usage|logs|key|env|upgrade`.
+  - **`COPILOT_PROXY_PORT` propagates everywhere**, including host `codex-copilot`:
+    the wrapper overrides `model_providers.copilot_proxy.base_url` with the
+    *resolved* URL via `-c`, rather than relying on the literal in
+    `.codex/config.toml`. State files are **per-port**
+    (`~/.local/state/copilot-proxy/proxy-<port>.{pid,log}`) so two proxies on
+    different ports can coexist without `stop`/`status` acting on the wrong one.
   - **First run:** `copilot-proxy auth` (GitHub device flow — its own OAuth grant,
     stored at `~/.local/share/copilot-api/`, independent of the Copilot CLI's and
     separately revocable). Then `copilot-proxy start`.
@@ -414,25 +430,27 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     three `ANTHROPIC_DEFAULT_*_MODEL` tiers, and disables non-essential traffic
     and experimental betas (Copilot rejects beta headers it doesn't know).
     Override models via `CLAUDE_COPILOT_{OPUS,SONNET,HAIKU}`.
-  - codex: runs `codex --profile copilot`. Both the provider
-    (`[model_providers.copilot_proxy]`, **inert** until selected) and the
-    `[profiles.copilot]` section live in `.codex/config.toml`. `wire_api =
-    "responses"` is mandatory — Codex removed the chat/completions wire API in
-    Feb 2026. Override the model via `CODEX_COPILOT_MODEL`.
-    - **`--profile` is position-sensitive.** Every subcommand declares its own
-      `--profile`, so a global one placed *before* the subcommand is **silently
-      ignored** — codex then falls through to the `openai` provider with no
-      error at all. `codex --profile copilot exec …` does **not** work;
-      `codex exec --profile copilot …` does. The wrapper inserts it after any
-      subcommand. `-c` propagates from either position, which is why the
-      sandbox path uses `-c model_provider=…` instead.
-    - Always confirm routing from the startup banner: it must read
-      `provider: copilot_proxy`, not `provider: openai`.
-    - Codex 0.116 rejects newer model ids (`gpt-5.5`+) client-side with
-      "requires a newer version of Codex", even though the proxy serves them.
-      Default is `gpt-5.3-codex`.
-    - Profiles in this version live in `config.toml`; newer Codex docs describe
-      standalone `~/.codex/<name>.config.toml` files, which do **not** work here.
+  - codex: selects the provider with **`-c` overrides, never `--profile`**. The
+    provider is defined once in `.codex/config.toml` as
+    `[model_providers.copilot_proxy]` (**inert** until selected) with
+    `wire_api = "responses"` — mandatory, since Codex removed the
+    chat/completions wire API in Feb 2026. Override via `CODEX_COPILOT_MODEL`
+    (default `gpt-5.4`) and `CODEX_COPILOT_EFFORT`.
+    - **Why not `--profile`:** Codex changed the profile mechanism twice in one
+      week, and it auto-updates, so `--profile` is a moving target:
+      **0.116** required `[profiles.<name>]` in `config.toml` and *silently
+      ignored* a `--profile` placed before a subcommand — falling through to the
+      `openai` provider with no error at all;
+      **0.147** hard-errors on that same table (`--profile X cannot be used
+      while … contains legacy [profiles.X]`) and demands a standalone
+      `~/.codex/<name>.config.toml`.
+      `-c` behaves identically on both and is position-insensitive. There is
+      deliberately **no** `[profiles.copilot]` table and no standalone profile
+      file in this repo.
+    - **Always confirm routing from the startup banner: `provider: copilot_proxy`,
+      not `provider: openai`.** Silent fallback is the characteristic failure.
+    - Codex rejects model ids newer than its build client-side ("requires a
+      newer version of Codex") even when the proxy serves them fine.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.

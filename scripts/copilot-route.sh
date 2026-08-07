@@ -3,7 +3,7 @@
 #
 # Dispatched by argv[0] (same idiom as ai-sandbox.sh):
 #   claude-copilot [args...]   → claude, routed through Copilot
-#   codex-copilot  [args...]   → codex  --profile copilot
+#   codex-copilot  [args...]   → codex,  routed through Copilot
 #
 # Plain `claude` and `codex` are untouched and keep their native auth. This is
 # deliberate: ~/.claude/settings.json and ~/.codex/config.toml are symlinks into
@@ -16,7 +16,11 @@
 #   CLAUDE_COPILOT_OPUS   default claude-opus-5
 #   CLAUDE_COPILOT_SONNET default claude-sonnet-5
 #   CLAUDE_COPILOT_HAIKU  default claude-haiku-4-5
-#   CODEX_COPILOT_MODEL   default gpt-5.3-codex
+#   CODEX_COPILOT_MODEL   default gpt-5.4
+#   CODEX_COPILOT_EFFORT  default high
+#
+# COPILOT_PROXY_PORT is honored for both harnesses — the resolved URL is passed
+# through at launch, not read from the literal in .codex/config.toml.
 #
 # ⚠️  Routes a corporate Copilot seat through a third-party client. See AI.md.
 
@@ -82,28 +86,29 @@ case "${HARNESS}" in
 
   codex)
     # The provider block lives in ~/.codex/config.toml and reads the key from
-    # this env var (env_key = "COPILOT_PROXY_KEY"). The profile selects it.
+    # this env var (env_key = "COPILOT_PROXY_KEY").
     export COPILOT_PROXY_KEY="${PROXY_KEY}"
     command -v codex >/dev/null 2>&1 || { echo "copilot-route: codex not found in PATH" >&2; exit 1; }
 
-    # --profile is position-SENSITIVE: each subcommand declares its own
-    # --profile, and a global one placed before the subcommand is silently
-    # ignored — codex then falls straight through to the openai provider with
-    # no error. So insert it *after* any subcommand. (`-c` propagates from
-    # either position; --profile does not.)
-    codex_args=()
-    case "${1:-}" in
-      exec|e|review|login|logout|mcp|mcp-server|app-server|completion|sandbox|debug|apply|a)
-        codex_args+=("$1" --profile copilot); shift ;;
-      *)
-        codex_args+=(--profile copilot) ;;
-    esac
-
-    # Model comes from [profiles.copilot] unless explicitly overridden. Note
-    # 0.116 rejects newer ids (gpt-5.5+) client-side with "requires a newer
-    # version of Codex", even though the proxy serves them fine.
-    [[ -n "${CODEX_COPILOT_MODEL:-}" ]] && codex_args+=(-c "model=\"${CODEX_COPILOT_MODEL}\"")
-
-    exec codex "${codex_args[@]}" "$@"
+    # Select the provider with -c, NOT --profile. Codex changed the profile
+    # mechanism twice in one week:
+    #   0.116 — profiles must be [profiles.x] in config.toml, and a --profile
+    #           placed before a subcommand is SILENTLY ignored (falls through
+    #           to the openai provider with no error at all).
+    #   0.147 — hard-errors on a legacy [profiles.x] table and requires a
+    #           standalone ~/.codex/<name>.config.toml.
+    # Codex auto-updates, so --profile is a moving target. `-c` behaves the
+    # same on both and is position-insensitive.
+    # base_url must be overridden from the RESOLVED proxy URL, not left to the
+    # literal in config.toml — otherwise COPILOT_PROXY_PORT silently has no
+    # effect here (it works for claude via ANTHROPIC_BASE_URL and for the
+    # sandbox, so a custom port would break host codex only).
+    : "${CODEX_COPILOT_MODEL:=gpt-5.4}"
+    exec codex \
+      -c "model_provider=\"copilot_proxy\"" \
+      -c "model_providers.copilot_proxy.base_url=\"${PROXY_URL}/v1\"" \
+      -c "model=\"${CODEX_COPILOT_MODEL}\"" \
+      -c "model_reasoning_effort=\"${CODEX_COPILOT_EFFORT:-high}\"" \
+      "$@"
     ;;
 esac

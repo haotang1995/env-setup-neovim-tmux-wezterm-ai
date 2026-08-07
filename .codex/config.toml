@@ -24,16 +24,17 @@ env_key  = "COPILOT_PROXY_KEY"
 wire_api = "responses"
 
 # Profile selected by `codex --profile copilot` (what `codex-copilot` runs).
-# NOTE: this Codex (0.116.0) reads profiles from `[profiles.<name>]` in THIS
-# file. Newer Codex docs describe standalone `~/.codex/<name>.config.toml`
-# profile files — that mechanism does NOT exist here, and an unmatched
-# --profile silently falls back to the default provider (i.e. straight to
-# OpenAI). Re-verify with `codex --profile copilot exec ...` after upgrading:
-# the banner must read `provider: copilot_proxy`.
-[profiles.copilot]
-model_provider = "copilot_proxy"
-model = "gpt-5.4"
-model_reasoning_effort = "high"
+# DELIBERATELY NO `[profiles.copilot]` HERE, and codex-copilot does NOT use
+# --profile. Codex changed the profile mechanism twice in one week:
+#   0.116 — profiles must be `[profiles.<name>]` in THIS file; a --profile
+#           placed before a subcommand is SILENTLY ignored (falls back to the
+#           openai provider with no error).
+#   0.147 — hard-errors on a legacy `[profiles.x]` table and demands a
+#           standalone ~/.codex/<name>.config.toml instead.
+# Codex auto-updates, so anything built on --profile breaks without warning.
+# scripts/copilot-route.sh therefore selects the provider with `-c` overrides,
+# which work identically on both versions and survive the next change.
+# Verify routing from the startup banner: it must read `provider: copilot_proxy`.
 
 [projects."/home/tanghao/env-setup-neovim-tmux-wezterm-ai"]
 trust_level = "trusted"
