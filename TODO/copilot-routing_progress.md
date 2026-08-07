@@ -57,13 +57,48 @@ Harness-level and sandbox verification still pending (see below).
 
 Neither is discoverable from `--help`. **Re-check both on every version bump.**
 
+## 🔴 Codex gotcha: `--profile` is position-sensitive (cost two debug rounds)
+
+Every codex subcommand declares its **own** `--profile`, so a global one placed
+before the subcommand is **silently ignored** — no warning, no error. Codex just
+falls through to the `openai` provider:
+
+```
+codex --profile copilot exec "…"   # ✗ banner: provider: openai   (silent)
+codex exec --profile copilot "…"   # ✓ banner: provider: copilot_proxy
+```
+
+`-c` propagates from either position; `--profile` does not. The host wrapper now
+inserts `--profile` after any subcommand; the sandbox path uses
+`-c model_provider=…` to avoid disturbing `--sandbox` flag placement.
+
+Also: profiles in **0.116** live as `[profiles.<name>]` inside `config.toml`.
+Newer Codex docs describe standalone `~/.codex/<name>.config.toml` files — that
+mechanism does **not** exist in this version, and was the first wrong turn.
+
+**Always verify from the banner: `provider: copilot_proxy`.**
+
+## Verified end-to-end (2026-08-07)
+
+- [x] `copilot-proxy start` → `LISTEN 127.0.0.1:6868`, anonymous → 401.
+- [x] `claude-copilot -p …` → `CLAUDE_VIA_COPILOT_OK`.
+      (Emits an expected warning that claude.ai connectors are disabled while a
+      gateway credential is active.)
+- [x] `codex-copilot exec …` → `provider: copilot_proxy`,
+      `reasoning effort: high`, `CODEX_VIA_COPILOT_OK`.
+- [x] Regression: plain `codex` → `provider: openai`; no `ANTHROPIC_*` /
+      `OPENAI_*` leakage into the parent shell.
+
+### Pre-existing, unrelated to this work
+Plain `codex exec` fails with `The 'gpt-5.3-codex' model is not supported when
+using Codex with a ChatGPT account` — the top-level `model` in `config.toml`
+predates this change and isn't available on the current ChatGPT plan. Routing
+through Copilot incidentally *fixes* it, since the proxy serves that model.
+Codex also floods stderr with `skills::loader` errors from ~dozens of broken
+symlinks in `~/.codex/skills` — also pre-existing; worth a separate cleanup.
+
 ## Remaining
 
-- [ ] Run `copilot-proxy start` (blocked by the tool-permission classifier during
-      implementation — needs a manual first run).
-- [ ] `claude-copilot -p "reply OK"` end-to-end through the harness.
-- [ ] `codex-copilot exec "print hello"` — confirms the `--profile copilot` path.
-- [ ] Regression: plain `claude` / `codex` still on native auth.
 - [ ] `claude-sandbox --copilot-route` — confirms `host.docker.internal` reachability.
 - [ ] `codex-sandbox --copilot-route` — confirms the config.toml `base_url` rewrite.
 - [ ] Multi-turn agentic run to shake out tool-call translation and the 90s

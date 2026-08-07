@@ -264,9 +264,10 @@ safe_link "$REPO_DIR/.claude/settings.json" "$HOME/.claude/settings.json"
 # Codex config
 mkdir -p "$HOME/.codex"
 safe_link "$REPO_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
-# Codex profile for Copilot-proxy routing (`codex --profile copilot`).
-# Profile files must be user-level, hence a symlink rather than project config.
-safe_link "$REPO_DIR/.codex/copilot.config.toml" "$HOME/.codex/copilot.config.toml"
+# The Copilot-proxy provider + `[profiles.copilot]` live inside config.toml
+# above (this Codex reads profiles from config.toml, not standalone files).
+# Clean up the standalone profile symlink used by an earlier iteration.
+rm -f "$HOME/.codex/copilot.config.toml"
 
 # Copilot — config.json is managed by Copilot itself (contains auth tokens);
 # we only need the skills directory (handled below).

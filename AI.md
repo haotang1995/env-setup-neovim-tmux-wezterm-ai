@@ -255,8 +255,10 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   `host.docker.internal:host-gateway` and rewrites the URL — a bare `-e` passthrough
   of `ANTHROPIC_BASE_URL` would leak `127.0.0.1` into the container. For codex there
   is no env passthrough for provider config at all, so the container's `config.toml`
-  `base_url` is rewritten at startup and `copilot.config.toml` is copied in from
-  `/host-agent-home`. Fails fast if the proxy isn't running or the key is missing.
+  `base_url` is rewritten at startup and the provider is selected with
+  `-c model_provider=…` rather than `--profile` (which is position-sensitive and
+  would be silently ignored next to `--sandbox`).
+  Fails fast if the proxy isn't running or the key is missing.
   **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
   > `WANDB_API_KEY` env vars > `~/.bashrc` extraction, and passed into the
   container as both `WANDB_API_KEY` (Python library) and `WANDB_KEY` (MS Research
@@ -412,13 +414,25 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     three `ANTHROPIC_DEFAULT_*_MODEL` tiers, and disables non-essential traffic
     and experimental betas (Copilot rejects beta headers it doesn't know).
     Override models via `CLAUDE_COPILOT_{OPUS,SONNET,HAIKU}`.
-  - codex: runs `codex --profile copilot`. The provider is defined once in
-    `.codex/config.toml` as `[model_providers.copilot_proxy]` (**inert** until a
-    profile selects it) with `wire_api = "responses"` — mandatory, since Codex
-    removed the chat/completions wire API in Feb 2026. The profile itself lives
-    in `.codex/copilot.config.toml` → `~/.codex/copilot.config.toml`, because
-    `model_providers` cannot be set from project-level config. Override the model
-    via `CODEX_COPILOT_MODEL`.
+  - codex: runs `codex --profile copilot`. Both the provider
+    (`[model_providers.copilot_proxy]`, **inert** until selected) and the
+    `[profiles.copilot]` section live in `.codex/config.toml`. `wire_api =
+    "responses"` is mandatory — Codex removed the chat/completions wire API in
+    Feb 2026. Override the model via `CODEX_COPILOT_MODEL`.
+    - **`--profile` is position-sensitive.** Every subcommand declares its own
+      `--profile`, so a global one placed *before* the subcommand is **silently
+      ignored** — codex then falls through to the `openai` provider with no
+      error at all. `codex --profile copilot exec …` does **not** work;
+      `codex exec --profile copilot …` does. The wrapper inserts it after any
+      subcommand. `-c` propagates from either position, which is why the
+      sandbox path uses `-c model_provider=…` instead.
+    - Always confirm routing from the startup banner: it must read
+      `provider: copilot_proxy`, not `provider: openai`.
+    - Codex 0.116 rejects newer model ids (`gpt-5.5`+) client-side with
+      "requires a newer version of Codex", even though the proxy serves them.
+      Default is `gpt-5.3-codex`.
+    - Profiles in this version live in `config.toml`; newer Codex docs describe
+      standalone `~/.codex/<name>.config.toml` files, which do **not** work here.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.

@@ -351,7 +351,7 @@ if [[ "${COPILOT_ROUTE}" = "1" ]]; then
     docker_args+=(
       -e "COPILOT_PROXY_KEY=${_proxy_key}"
       -e "COPILOT_PROXY_CONTAINER_URL=${COPILOT_PROXY_CONTAINER_URL}"
-      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.5}"
+      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.3-codex}"
     )
   fi
 fi
@@ -754,15 +754,11 @@ exec docker run "${docker_args[@]}" \
 
     # Copilot-proxy routing for codex: the host config.toml points the provider
     # at 127.0.0.1, which inside the container is the container itself. Rewrite
-    # it to host.docker.internal. Also seed the profile file, which lives
-    # outside config.toml and is not copied by the auth/settings sync above.
+    # it to host.docker.internal. The [profiles.copilot] section rides along in
+    # the same config.toml, so nothing else needs seeding.
     if [ "${AGENT}" = "codex" ] && [ -n "${COPILOT_PROXY_CONTAINER_URL:-}" ]; then
       sed -i "s#base_url = \"http://127\.0\.0\.1:[0-9]*/v1\"#base_url = \"${COPILOT_PROXY_CONTAINER_URL}/v1\"#" \
         "${AGENT_CONTAINER}/config.toml" 2>/dev/null || true
-      if [ -f /host-agent-home/copilot.config.toml ]; then
-        cp -L /host-agent-home/copilot.config.toml \
-          "${AGENT_CONTAINER}/copilot.config.toml" 2>/dev/null || true
-      fi
     fi
 
     # ── Fallback npm install (custom Dockerfiles without pre-installed CLIs) ──
@@ -813,9 +809,16 @@ exec docker run "${docker_args[@]}" \
         mkdir -p /root/.cache 2>/dev/null || true
         chown -R "${_UID}:${_GID}" /root/.cache /root/.azure 2>/dev/null || true
         if [ -n "${COPILOT_PROXY_CONTAINER_URL:-}" ]; then
+          # Use -c rather than --profile here: --profile is position-sensitive
+          # (must follow any subcommand) and would be silently ignored sitting
+          # next to --sandbox, falling through to the openai provider. -c
+          # propagates from either position. Values mirror [profiles.copilot]
+          # in .codex/config.toml — keep them in sync.
           exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
-            codex --sandbox danger-full-access --profile copilot \
-              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.5}\"" "$@"
+            codex --sandbox danger-full-access \
+              -c "model_provider=\"copilot_proxy\"" \
+              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.3-codex}\"" \
+              -c "model_reasoning_effort=\"high\"" "$@"
         fi
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           codex --sandbox danger-full-access "$@"

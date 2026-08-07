@@ -1,14 +1,16 @@
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 model = "gpt-5.3-codex"
+personality = "pragmatic"
 
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
+"gpt-5.3-codex" = "gpt-5.4"
 
 # ── GitHub Copilot via the local proxy ────────────────────────────────────
 # Definition only — inert until a profile selects it, so plain `codex` is
-# unaffected. Activated by `codex-copilot`, which runs `codex --profile copilot`
-# (see .codex/copilot.config.toml).
+# unaffected. Activated by `codex-copilot`, which runs
+# `codex <subcommand> --profile copilot` (see [profiles.copilot] below).
 #
 # `model_providers` cannot be set in project-level config; this file is
 # user-level via the ~/.codex/config.toml symlink, so it belongs here.
@@ -30,5 +32,8 @@ wire_api = "responses"
 # the banner must read `provider: copilot_proxy`.
 [profiles.copilot]
 model_provider = "copilot_proxy"
-model = "gpt-5.3-codex"
+model = "gpt-5.4"
 model_reasoning_effort = "high"
+
+[projects."/home/tanghao/env-setup-neovim-tmux-wezterm-ai"]
+trust_level = "trusted"
