@@ -24,12 +24,13 @@ the viewer on headless, WezTerm detects the OS for font size and keybindings.
 WezTerm (terminal emulator, cross-platform)
  └─ tmux (session/window/pane persistence, SSH detach/reattach)
      ├─ Neovim  (LazyVim distribution)
-     │   ├─ LSP          (language intelligence)
-     │   ├─ avante.nvim  (disabled — Cursor-like AI agent, Claude API)
-     │   ├─ copilot.lua  (inline ghost-text completions)
-     │   └─ VimTeX       (LaTeX compilation + forward search)
+     │   ├─ LSP              (language intelligence)
+     │   ├─ copilot.lua      (FIM ghost text + NES next-edit suggestions)
+     │   ├─ CodeCompanion    (Copilot-backed T0.5 inline edits)
+     │   ├─ claudecode.nvim  (Claude subscription proposals + native diffs)
+     │   └─ VimTeX           (LaTeX compilation + forward search)
      ├─ Terminal pane     (shell, git, builds)
-     └─ AI Agent Popups   (gemini, claude, codex, copilot, aider)
+     └─ AI Agent Popups   (gemini, claude, codex, copilot)
 ```
 
 ## Repo layout
@@ -60,6 +61,8 @@ ai-skills/                       ← Shared AI skill library
   .repos/superpowers/            ← git submodule: obra/superpowers
   .repos/openai-skills/          ← git submodule: openai/skills
   .repos/tob-skills/             ← git submodule: trailofbits/skills
+  .repos/compound-engineering/  ← git submodule: EveryInc/compound-engineering-plugin
+  .repos/karpathy-skills/        ← git submodule: multica-ai/andrej-karpathy-skills
 nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   init.lua                       ← LazyVim entry point
   lazyvim.json                   ← LazyVim metadata
@@ -70,14 +73,19 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     options.lua                  ← editor options, clipboard, providers
     keymaps.lua                  ← custom key mappings
     autocmds.lua                 ← autocommands (reload, filetype, trim whitespace)
+    claude_proposals.lua         ← proposal freshness guard + tmux inbox marker
   lua/plugins/
-    ai.lua                       ← copilot.lua + CopilotChat (avante.nvim disabled)
+    ai.lua                       ← Copilot T0 + CodeCompanion T0.5 + Claude T1/T2
     vimtex.lua                   ← VimTeX overrides (lualatex engine, platform-detecting viewer)
     markdown.lua                 ← render-markdown.nvim + markdown-preview.nvim
     tmux-navigator.lua           ← vim-tmux-navigator (Ctrl+hjkl across panes)
+  tests/                         ← headless regression tests (see "Neovim tests")
+    ai_tiers_test.lua            ← AI tier routing: pins, adapters, keymap scopes
+    claude_proposals_test.lua    ← proposal freshness, accept guard, marker count
+    claude_tmux_marker_test.lua  ← tmux marker, via its own private tmux server
 .gemini/                         ← Gemini agent config  (→ ~/.gemini/settings.json)
 .claude/                         ← Claude agent config  (→ ~/.claude/settings.json)
-.codex/                          ← Codex agent config   (→ ~/.codex/config.toml)
+.codex/                          ← Codex agent config    (→ ~/.codex/config.toml)
 .github/copilot-instructions.md  ← Copilot instructions (symlink → AI.md)
 ```
 
@@ -100,6 +108,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - **Markdown math in-buffer:** `render-markdown.nvim` may rely on tools such as `utftex` or `latex2text` depending on your setup.
 - **Custom plugins** go in `lua/plugins/<name>.lua`, one file per logical group.
 - **Keymaps:** `jk` = exit insert, `\cc` = toggle comment, `Ctrl+d/u` = scroll centered.
+  AI lives under `<leader>a*`; `<Tab>` is AI-accept in both insert (FIM) and
+  normal (NES) mode, with passthrough to the native binding when idle.
 - **Leader key:** `<Space>` (LazyVim default).
 - **Conceal level 2** globally (shows α instead of \alpha in LaTeX).
 - **OSC 52 clipboard** auto-enabled when `SSH_TTY` is set (copy works over SSH).
@@ -435,7 +445,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     `[model_providers.copilot_proxy]` (**inert** until selected) with
     `wire_api = "responses"` — mandatory, since Codex removed the
     chat/completions wire API in Feb 2026. Override via `CODEX_COPILOT_MODEL`
-    (default `gpt-5.4`) and `CODEX_COPILOT_EFFORT`.
+    (default `gpt-5.4`), `CODEX_COPILOT_EFFORT`, and
+    `CODEX_COPILOT_APPROVALS_REVIEWER`.
     - **Why not `--profile`:** Codex changed the profile mechanism twice in one
       week, and it auto-updates, so `--profile` is a moving target:
       **0.116** required `[profiles.<name>]` in `config.toml` and *silently
@@ -451,6 +462,34 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
       not `provider: openai`.** Silent fallback is the characteristic failure.
     - Codex rejects model ids newer than its build client-side ("requires a
       newer version of Codex") even when the proxy serves them fine.
+    - Expect one benign `ERROR … failed to refresh available models … 404 …
+      Provider 'codex' not found` line at startup: the proxy 404s Codex's
+      model-catalog refresh (`/v1/models?client_version=…`; a plain `curl` of
+      the same URL returns 200). Only the `/model` picker list is affected;
+      completions go through.
+    - **`approvals_reviewer` must be `"user"` on this lane; the wrapper forces
+      it with `-c`.** `auto_review` (and `guardian_subagent`) makes codex issue
+      a *side* `POST /v1/responses` with `model: "codex-auto-review"` to grade
+      each escalation. No Copilot seat serves that model, so the proxy replies
+      400 *"This model does not support the responses endpoint"* and codex turns
+      the failed review into a hard denial — **every** command comes back
+      `the escalation request was rejected` / `Rejected … Automatic approval
+      review failed`. The host wrapper and sandbox force `user` with `-c`,
+      while plain native Codex keeps `auto_review`. Override with
+      `CODEX_COPILOT_APPROVALS_REVIEWER` if a seat ever serves the model.
+      Symptom check: a bare `--> POST /v1/responses 400` in the proxy log with
+      no preceding `<-- model:` line for your chat model.
+    - **`stream disconnected before completion: stream closed before
+      response.completed` is upstream and transient — not a config fault.**
+      The proxy accepts the request (`200` in ~10–20 ms), then logs
+      `WARN Copilot responses websocket stream error: { code: 'bad_request',
+      message: 'internal server error' }` and the SSE stream ends without
+      `response.completed`. Codex retries 6× and surfaces one error per turn.
+      Observed only as short bursts on one model (`gpt-5.6-sol`); replaying the
+      exact failing conversation afterwards succeeded, as did 200k-token
+      payloads, so it is not context size, reasoning effort, or payload shape.
+      Just retry the turn; if a model keeps failing, switch models
+      (`CODEX_COPILOT_MODEL`) rather than editing config.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.
@@ -482,24 +521,147 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   Also exposed as `kgpumon <sub>` in `k_shortcuts.sh` (forwards the current
   `$KNS`).
 
+### Local inference (GPU box)
+
+Deferred alternate backend experiment for the active CodeCompanion T0.5 lane.
+The default route is Copilot HTTP; local inference is not active.
+
+- **Hardware constraint: the A6000s are compute capability 8.6 (Ampere).**
+  There is **no FP8 compute path** — FP8 is storage-only for the KV cache.
+  Quantisation must therefore be **AWQ/GPTQ INT4** (Marlin kernels, native on
+  Ampere). An FP8-only checkpoint has to be requantised; it will not just work.
+- **Interconnect is pair-wise NVLink, not all-to-all.** `nvidia-smi topo -m`
+  shows `GPU0–GPU1 = NV4` and `GPU2–GPU3 = NV4`, but `0/1 ↔ 2/3 = NODE`
+  (host bridge). So `--tensor-parallel-size 2` **within a pair** is the sweet
+  spot; TP=4 crosses the slow hop. Two independent servers (one per pair) is a
+  better use of the box than one TP=4 server.
+- **These are research GPUs.** Prefer a model that fits on one or two cards and
+  leave the rest free. Do not hand the whole box to an inference server.
+- **Current candidate: `Qwen3.6-27B` AWQ-INT4** (~16 GB, dense, fits one card).
+  Dense rather than MoE because inline latency should be predictable
+  request-to-request. Verified working on Ampere via Marlin.
+- **Not defaulting to `Qwen3-Coder-Next` (80B-A3B)** despite the stronger
+  agentic numbers: it is trained for tool-use loops, which is the opposite of
+  the inline lane's single-shot bounded rewrite. Prefer it if you want the
+  **chat** lane driving tools. Note also a community report of its
+  `insert_edit_into_file` tool overwriting whole files under CodeCompanion.
+- **Do not pick this model from SWE-bench.** Inline is judged on TTFT,
+  edit-format compliance, and not touching anything outside the selection —
+  none of which SWE-bench measures. Race candidates on real tasks from this
+  repo.
+- vLLM notes for Ampere: `--block-size 16` (hybrid attention layers),
+  `--kv-cache-dtype fp8` (storage only), Marlin is selected automatically for
+  AWQ. `--disable-custom-all-reduce` is needed only for PCIe-linked pairs, not
+  for an NVLinked pair.
+
 ### AI integration
 
-- **CLI Agents (via tmux windows):**
-  - `gemini`: Google's Gemini CLI for quick codebase queries and tasks.
-  - `claude`: Claude Code for agentic coding and complex refactors.
-  - `codex`: Codex CLI for AI-powered shell assistance and automation.
-  - `copilot`: GitHub Copilot CLI for agentic coding with GitHub integration.
-  - `aider`: Aider for AI pair programming (requires installation).
-- **avante.nvim:** disabled (config preserved in `ai.lua`; flip the
-  `avante_enabled` local at the top of the file to re-activate — it gates
-  both the avante spec and the blink.cmp compat sources together, since the
-  compat sources require `blink.compat.source`, which only ships as an
-  avante dependency).
-- **copilot.lua:** inline ghost-text, `<Tab>` to accept. Needs Node 22+ and `:Copilot auth`.
-- **CopilotChat.nvim:** quick Q&A via `<leader>ac`.
+- **CLI agents:** `gemini`, `claude`, `codex`, and `copilot` remain
+  available for T3 investigation and implementation. Code-producing T3 tasks
+  belong in isolated worktrees; the main worktree remains human-owned.
+- **In-editor AI uses explicit autonomy tiers.**
+
+  | Tier | Plugin | Trigger | Authority |
+  |------|--------|---------|-----------|
+  | T0 FIM | `copilot.lua` | `<Tab>`, insert mode | insert suggestion |
+  | T0 NES | `copilot.lua` + `copilot-lsp` | `<Tab>`, normal mode | next-edit suggestion |
+  | T0.5 inline | `CodeCompanion` + Copilot HTTP | visual `<leader>ai` | selection-scoped inline diff |
+  | T1/T2 proposal | `claudecode.nvim` | visual `<leader>as` + Claude prompt | explicit diff accept/reject |
+
+- **copilot.lua (FIM):** inline ghost text, `<Tab>` to accept. Needs Node 22+
+  and `:Copilot auth`.
+- **copilot.lua (NES):** proposes the next edit anywhere in the buffer.
+  `<Tab>` accepts and jumps; `<Esc>` dismisses.
+  - `copilotlsp-nvim/copilot-lsp` is mandatory. Without it,
+    `nes.enabled = true` is silently downgraded to false.
+  - Insert-mode and normal-mode `<Tab>` do not collide. copilot.lua passes the
+    native key through when no suggestion is pending.
+- **CodeCompanion (T0.5 inline):** pinned to `v19.22.0` and configured only as
+  the fast local edit lane. Select code and press `<leader>ai`.
+  Review the inline diff with `ga` to accept or `gr` to reject. Keep requests
+  selection/buffer-local; repository search, shell work, and multi-file edits
+  belong in T1/T2 or T3. CodeCompanion chat is intentionally not mapped.
+  - **The Copilot inline model must stay an explicit id — never `"auto"`.**
+    `model = "auto"` deletes the model field from the request
+    (`adapters/http/copilot/init.lua:193`) so GitHub picks its own default,
+    which caps prompts at **12288 tokens** and returns HTTP 400 on anything
+    larger. The synthetic `auto` entry also carries no `endpoint`
+    (`copilot/get_models.lua`), so requests fall back to `/chat/completions`
+    instead of `/responses`. Currently `gpt-5.6-luna` (1.05M context, 922k
+    max prompt, `supported_endpoints: ["/responses", "ws:/responses"]`).
+    `ai_tiers_test.lua` asserts the id so `auto` cannot creep back.
+  - **Model availability is per-organisation and shifts.** The seat's raw
+    catalog (`GET https://api.githubcopilot.com/models`) marks most of the
+    frontier ids `policy: disabled`; `copilot-proxy models` does **not** filter
+    on that, so it lists models the seat cannot actually use. Check
+    `policy.state` in the raw catalog, or `:CodeCompanionModels`, before
+    pinning. CodeCompanion routes to `/responses` only when the catalog entry
+    advertises it (`adapters/utils/models/transform.lua:70`).
+    Re-verified Aug 2026 on the `tanghao_microsoft` seat: the whole 5.6 family
+    (`luna`, `sol`, `terra`) plus `gpt-5.4`/`gpt-5.5`, `claude-opus-5`,
+    `claude-sonnet-5` and the gemini tier are all `enabled`, so the earlier
+    "only enabled 5.6 model" note no longer holds. `gpt-5.3-codex`, `grok-4.*`
+    and the `gpt-4o` family carry **no** `policy` block at all.
+  - **CodeCompanion reads the Copilot OAuth token itself — not via copilot.lua.**
+    `adapters/http/copilot/token.lua` tries `github-copilot/hosts.json` then
+    `apps.json`, and only then falls back to
+    `SELECT token_ciphertext FROM oauth_tokens` in `github-copilot/auth.db`,
+    using that column **verbatim** as the token. Two consequences on this box:
+    `sqlite3` must be on `PATH` (the adapter hard-errors without it), and the
+    column is only usable because keytar can't load (`libsecret-1.so.0`
+    missing), so the server writes the `ghu_…` token in plaintext with
+    `token_schema_version = 0`. Installing libsecret would encrypt that column
+    and break the inline lane while `:Copilot auth` still reports healthy.
+    Re-running `:Copilot auth` is enough to re-point CodeCompanion at a new
+    account; the adapter caches the token in memory only, so just restart nvim.
+- **claudecode.nvim (T1/T2 proposals):**
+  - Uses the Claude Code CLI's normal subscription login. No Anthropic API key,
+    CodeCompanion adapter, or ACP bridge is involved.
+  - Pinned to commit
+    `2390c6e45c4789072c293ac69de051d169668b29`. The policy depends on that
+    commit's diff events and internal saved-diff function; do not bump it
+    without rerunning the lifecycle and freshness tests.
+  - Each Neovim creates its own WebSocket IDE endpoint and launches its own
+    Claude terminal with `:ClaudeCode`. The endpoint—not repository path—routes
+    proposals to the correct editor when several Neovims share one repository.
+  - Uses the native terminal provider. `:ClaudeCode` toggles it,
+    `<leader>af` focuses it, `<leader>ab` adds the current buffer, and visual
+    `<leader>as` sends a selection. Hiding the terminal preserves the process.
+  - Claude proposals open as native vertical diffs. On the proposed side use
+    `gda` or `:w` to accept and `gdr` or `:q` to reject. The mappings are
+    buffer-local.
+  - `ClaudeCodeDiffOpened` and `ClaudeCodeDiffClosed` maintain a counted tmux
+    window marker (`🤖`) and announce background arrivals with
+    `tmux display-message`. They never select a pane or window.
+  - **Freshness is fail-closed for documented accept paths.** The policy
+    captures file and buffer hashes on `ClaudeCodeSendComplete` when possible
+    (falling back to diff-open), replaces the proposal scratch buffer's
+    `BufWriteCmd`, and wraps `:ClaudeCodeDiffAccept`. If the disk file or
+    original buffer changes, acceptance is blocked and regeneration is required.
+  - The wrapper uses `claudecode.diff._resolve_diff_as_saved` from the pinned
+    commit because upstream has no public pre-accept hook.
+  - **Never `return true` from the `BufWriteCmd` guard.** In a Lua autocmd
+    callback that means *delete this autocmd*, not *handled*. Because the guard
+    replaces the plugin's own `BufWriteCmd`, deleting itself after a **blocked**
+    write leaves the proposal buffer with no write handler at all — `:w` then
+    fails `E676` and the documented accept path is dead for that proposal
+    (`gda` still works, and nothing is ever written, so it fails safe).
+    `buftype=acwrite` has no default write to suppress, so returning nothing is
+    correct. The plugin's own handler can return `true` only because it always
+    resolves the diff. `claude_proposals_test.lua` covers a second `:w` after a
+    blocked one, which is the case a fresh-proposal-only test misses.
+  - The hash wrapper is not a filesystem sandbox. Claude shell commands can
+    bypass IDE `openDiff`; do not auto-approve write-capable tools until the V0
+    normal-edit/new/delete/rename/shell bypass matrix passes. If it fails, use
+    the shadow-worktree broker.
+  - Keep at most one Neovim with unsaved edits to a given file. The existing
+    `FocusGained`/`BufEnter` `checktime` autocmd reloads saved external changes.
+- **avante.nvim and CopilotChat.nvim:** removed; their roles are covered by the
+  explicit proposal and T3 lanes.
 - **Shared skill library (`ai-skills/`):** Cross-agent skills from
   obra/superpowers, openai/skills, trailofbits/skills,
-  K-Dense-AI/claude-scientific-skills, and Orchestra-Research/AI-Research-SKILLs
+  K-Dense-AI/claude-scientific-skills, Orchestra-Research/AI-Research-SKILLs,
+  EveryInc/compound-engineering-plugin, and multica-ai/andrej-karpathy-skills
   added as git submodules. `install.sh` symlinks each skill into
   `~/.claude/skills/`, `~/.codex/skills/`, `~/.gemini/skills/`, and
   `~/.copilot/skills/`. Update
@@ -509,6 +671,118 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   Manage decisions with `python3 scripts/review_skills.py`:
   `--skill <name>` for one skill, `--redo` to revisit already-decided skills,
   and `--no-apply` for record-only mode.
+  - **Curation policy — general-purpose skills are deliberately denied.**
+    A skill costs a description line in every system prompt whether or not it
+    ever fires, so the bar is *non-obvious, environment-specific, or long-tail
+    API knowledge*. Skills that merely encode generic engineering **process**
+    (plan → implement → verify → review ceremony) or restate a widely-known CLI
+    were pruned in Aug 2026, in four passes that took the library 150 → 35:
+    - **Process ceremony (25).** The whole `superpowers` bucket except
+      `writing-skills` (which documents the SKILL.md format itself), plus
+      `ask-questions-if-underspecified`, `differential-review`, `git-cleanup`,
+      `second-opinion`, `using-gh-cli`, `gh-address-comments`, `gh-fix-ci`,
+      `jupyter-notebook`, `yeet`, `get-available-resources`,
+      `hypothesis-generation`, `scientific-brainstorming`,
+      `scientific-critical-thinking`.
+    - **Library documentation (40).** Skills that restate the docs of a
+      well-known tool: the plotting/dataframe/scientific-Python layer
+      (`matplotlib`, `seaborn`, `plotly`, `polars`, `scikit-learn`, `sympy`,
+      `networkx`, `dask`, `vaex`, `simpy`, `zarr-python`, `torch-geometric`,
+      `stable-baselines3`, `pymc-bayesian-modeling`, `transformers`,
+      `markitdown`), the vector-store / LLM-plumbing layer (`faiss`,
+      `pinecone`, `llamaindex`, `dspy`, `guidance`, `instructor`, `outlines`,
+      `sentence-transformers`, `sentencepiece`, `huggingface-tokenizers`),
+      the experiment-tracking layer (`mlflow`, `tensorboard`), single-model
+      explainers (`whisper`, `llava`, `nanogpt`, `mamba-architecture`,
+      `segment-anything-model`, `stable-diffusion-image-generation`), agent
+      frameworks (`autogpt-agents`, `crewai-multi-agent`), and cloud-GPU
+      vendors (`lambda-labs-gpu-cloud`, `modal`, `modal-serverless-gpu`).
+      Two were straight duplicates of skills already tuned to this setup:
+      `weights-and-biases` (vs `wandb-microsoft-research`) and `modal` (vs
+      `modal-serverless-gpu`).
+    - **Off-domain (8).** Skills bound to a product or system that is not part
+      of this setup: the four `notion-*` workspace integrations, `figma` and
+      `figma-implement-design` (both need a Figma MCP server plus design
+      files), `develop-web-game`, and `debug-buttercup` (a debugger for the
+      Buttercup CRS on Kubernetes).
+    - **Whole buckets (42).** `ai-research-skills` and `tob-skills` are now
+      denied in full — every remaining entry with those `source` values was
+      flipped, so nothing from either submodule installs even when new skills
+      land upstream. This retired the distributed-training / RL-post-training /
+      serving-and-quantisation layer (Megatron, FSDP2, DeepSpeed,
+      verl/slime/torchforge, TRL variants, vLLM, SGLang, TensorRT-LLM,
+      bitsandbytes) along with the security/systems skills
+      (`address-sanitizer`, `dwarf-expert`, `modern-python`,
+      `devcontainer-setup`). Consult upstream docs when a task actually needs
+      one; the submodules stay checked out, only the symlinks are gone.
+
+    What survives is the academic writing / figure / poster / literature
+    toolchain, a thin slice of OpenAI media-and-document skills, and this
+    machine's own MSR-specific skills (`trapi-llm`,
+    `azureml-singularity-jobs`, `wandb-microsoft-research`) plus the rest of
+    `my_skills`. Don't re-enable the pruned ones as a side effect of adding a
+    submodule; `keep: false` in `skill-decisions.json` is the record. Note the
+    `scripts` entry there is **synthetic** — that directory has no `SKILL.md`,
+    so `review_skills.py` never sees it and undecided defaults to *install*;
+    the hand-written entry is what keeps `install.sh`'s glob from linking it.
+  - **compound-engineering-plugin is installed at 3 of its 34 skills.**
+    The plugin ships a full `ce-*` workflow suite (brainstorm → plan → work →
+    review → commit → PR → babysit, plus `lfg`). That is precisely the *process
+    ceremony* the Aug 2026 pruning removed, and much of it duplicates lanes that
+    already exist here — `/code-review`, `/simplify`, `using-git-worktrees`,
+    `plan-execute`, `finish-feature`. A further ~16 skills are bound to products
+    this setup does not use (Every's Proof and Riffrec, Spiral, PostHog/Mixpanel/
+    Stripe, Slack, Xcode) or to web-app browser QA. Only three are installed:
+    - `ce-compound` — capture a solved problem as a durable repo learning.
+    - `ce-compound-refresh` — audit that store for stale, overlapping,
+      superseded, or drifted entries.
+    - `ce-simplify-code` — behavior-preserving cleanup of settled changes.
+
+    The other 31 carry `keep: false` in `skill-decisions.json`, which is what
+    stops `install.sh`'s `compound-engineering/skills/*/` glob from linking
+    them; **anything the plugin adds upstream arrives undecided and therefore
+    installs**, so re-check after `install.sh -u`. The plugin's six
+    `tests/fixtures/**/SKILL.md` files are deliberately **absent** from
+    `skill-decisions.json`: the deny table is keyed by skill *name* across every
+    source, and fixture names like `custom-skill` / `default-skill` /
+    `skill-one` would silently deny a real skill of that name from another repo.
+    Two operational notes if these skills are ever run in anger: `ce-compound`
+    writes to `docs/solutions/` by default, which cuts across this repo's
+    `TODO/<task>_progress.md` + `AI.md` convention (retarget with `docs_root` in
+    a repo-local `.compound-engineering/config.yaml`), and the plugin's
+    cross-model passes shell out to a second provider's CLI — set
+    `cross_model_review_mode: off` in that same file to keep diffs off the
+    Copilot lane.
+  - **`karpathy-guidelines` is kept as a behavioral corrector, not process.**
+    One 4 KB `SKILL.md`, MIT, no scripts — behavioral guidance derived from a
+    Karpathy tweet on LLM coding pitfalls (third-party; not authored by
+    Karpathy). It clears the curation bar on the "counters a demonstrated
+    default tendency" leg rather than the non-obvious-knowledge leg: think
+    before coding, minimum code, surgical diffs, verifiable success criteria.
+    Two caveats to weigh before trusting it:
+    - **Its trigger is very broad** ("writing, reviewing, or refactoring
+      code"), so it can fire on most coding turns across all four agents.
+    - **Section 1 tells the agent to stop and ask when unclear.** That is a
+      poor fit for the unattended lanes on this box — `ai-sandbox` runs claude
+      with `--dangerously-skip-permissions`, copilot/gemini with `--yolo`, and
+      codex with `--sandbox danger-full-access`, where nobody is watching to
+      answer. It also cuts against Claude Code's own "act when you have enough
+      information" baseline, where sections 2–3 are largely redundant already.
+      It has more headroom on the Codex/Gemini/Copilot lanes.
+
+    Because it lives in a submodule, narrowing the trigger or adding
+    `disable-model-invocation` is not possible without vendoring the file into
+    `my_skills` instead. Deny it in `skill-decisions.json` if it proves noisy.
+  - **Two known gaps in the tooling.** `review_skills.py`'s `detect_source()`
+    still has no case for the `my_skills` submodule, so those skills bucket as
+    `other` and are unreachable via `--source` (`compound-engineering` and
+    `karpathy-skills` were added Aug 2026); and undecided skills default to
+    *install* in both the script and `install.sh`. Separately, `install.sh`'s
+    globs link two directories that have no `SKILL.md` of their own —
+    `scientific-skills/document-skills/` (wraps `docx`/`pdf`/`pptx`/`xlsx`) and
+    `tob-skills/plugins/burpsuite-project-parser/skills/scripts/` (a shell
+    script). Agents scan only one level deep, so the four document skills are
+    not actually loadable today.
 
 ## Editing guidelines
 
@@ -521,6 +795,32 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
 - Test changes locally before committing. For Neovim: `:Lazy sync` then
   `:checkhealth`. For tmux: `prefix + r` reloads. For WezTerm: auto-reloads
   on save (or `Cmd+Shift+R`).
+- **Neovim tests** in `nvim-config/tests/` are headless and self-contained.
+  Run each from the repository root; each prints a single `*_OK` line and
+  `error()`s otherwise, so a non-zero exit is the failure signal:
+
+  ```sh
+  # Tier routing: reads lua/plugins/ai.lua via dofile, no plugins needed.
+  nvim --headless -u NONE -l nvim-config/tests/ai_tiers_test.lua
+
+  # Proposal policy: needs claudecode.nvim at the pinned commit on the rtp.
+  # git clone https://github.com/coder/claudecode.nvim /tmp/claudecode-nvim-2390c6e \
+  #   && git -C /tmp/claudecode-nvim-2390c6e checkout 2390c6e
+  nvim --headless -u NONE \
+    --cmd "set rtp^=/tmp/claudecode-nvim-2390c6e" \
+    --cmd "set rtp^=$PWD/nvim-config" \
+    -l nvim-config/tests/claude_proposals_test.lua
+
+  # tmux marker: starts its own private tmux server; skips without tmux.
+  nvim --headless -u NONE \
+    --cmd "set rtp^=$PWD/nvim-config" \
+    -l nvim-config/tests/claude_tmux_marker_test.lua
+  ```
+
+  Use `-u NONE` and an explicit `rtp`, **not** your real config — loading
+  LazyVim registers lazy.nvim's command stubs, which clobber the policy's
+  `ClaudeCodeDiffAccept` override and make the run fail spuriously.
+  Rerun all three after bumping either pinned AI plugin.
 - Treat each environment change as a **sync workflow**:
   1. implement the feature/fix in the relevant config/scripts;
   2. verify cross-platform behavior or graceful fallback (macOS / WSL / headless Linux);
@@ -532,6 +832,14 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   `vim.env.SSH_TTY`, `wezterm.target_triple`, etc. for platform detection.
 - `lazy-lock.json` is gitignored (machine-local). Each machine manages its own
   plugin versions via `:Lazy sync` / `:Lazy update`.
+- **Pin plugins whose config schema you depend on.** Because the lockfile is
+  gitignored *and* `lua/config/lazy.lua` sets `defaults = { version = false }`,
+  nothing holds two machines to the same plugin commit by default — an
+  `install.sh -u` on a rarely-touched box can silently pull a breaking rename.
+  For any plugin where this repo hard-codes option keys, set an explicit
+  `version = "vX.Y.Z"` on that spec and bump it deliberately.
+  Currently pinned: `CodeCompanion v19.22.0` and `claudecode.nvim` at
+  `2390c6e45c4789072c293ac69de051d169668b29`.
 
 ## Task tracking
 

@@ -16,3 +16,9 @@
 [submodule "ai-skills/.repos/my_skills"]
 	path = ai-skills/.repos/my_skills
 	url = git@github.com:haotang1995/my_skills.git
+[submodule "ai-skills/.repos/compound-engineering"]
+	path = ai-skills/.repos/compound-engineering
+	url = https://github.com/EveryInc/compound-engineering-plugin.git
+[submodule "ai-skills/.repos/karpathy-skills"]
+	path = ai-skills/.repos/karpathy-skills
+	url = https://github.com/multica-ai/andrej-karpathy-skills.git

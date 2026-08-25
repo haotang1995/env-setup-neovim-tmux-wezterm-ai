@@ -1,16 +1,17 @@
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
-model = "gpt-5.3-codex"
+model = "gpt-5.6-sol"
 personality = "pragmatic"
+model_reasoning_effort = "xhigh"
+approvals_reviewer = "auto_review"
 
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
 "gpt-5.3-codex" = "gpt-5.4"
 
 # ── GitHub Copilot via the local proxy ────────────────────────────────────
-# Definition only — inert until a profile selects it, so plain `codex` is
-# unaffected. Activated by `codex-copilot`, which runs
-# `codex <subcommand> --profile copilot` (see [profiles.copilot] below).
+# Definition only — inert until selected, so plain `codex` is unaffected.
+# `codex-copilot` activates it with command-line `-c` overrides.
 #
 # `model_providers` cannot be set in project-level config; this file is
 # user-level via the ~/.codex/config.toml symlink, so it belongs here.
@@ -23,7 +24,6 @@ base_url = "http://127.0.0.1:6868/v1"
 env_key  = "COPILOT_PROXY_KEY"
 wire_api = "responses"
 
-# Profile selected by `codex --profile copilot` (what `codex-copilot` runs).
 # DELIBERATELY NO `[profiles.copilot]` HERE, and codex-copilot does NOT use
 # --profile. Codex changed the profile mechanism twice in one week:
 #   0.116 — profiles must be `[profiles.<name>]` in THIS file; a --profile
@@ -37,4 +37,10 @@ wire_api = "responses"
 # Verify routing from the startup banner: it must read `provider: copilot_proxy`.
 
 [projects."/home/tanghao/env-setup-neovim-tmux-wezterm-ai"]
+trust_level = "trusted"
+
+[projects."/home/tanghao/nethack"]
+trust_level = "trusted"
+
+[projects."/home/tanghao"]
 trust_level = "trusted"

@@ -365,13 +365,13 @@ if [[ "${COPILOT_ROUTE}" = "1" ]]; then
       -e "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1"
     )
   else
-    # codex has no env passthrough for provider config — the container's
-    # config.toml is seeded from the host copy, so the base_url is rewritten
-    # in the entrypoint (see COPILOT_PROXY_CONTAINER_URL below).
+    # codex has no env passthrough for provider config, so the entrypoint
+    # selects the provider and resolved base URL with -c overrides.
     docker_args+=(
       -e "COPILOT_PROXY_KEY=${_proxy_key}"
       -e "COPILOT_PROXY_CONTAINER_URL=${COPILOT_PROXY_CONTAINER_URL}"
       -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.4}"
+      -e "CODEX_COPILOT_APPROVALS_REVIEWER=${CODEX_COPILOT_APPROVALS_REVIEWER:-user}"
     )
   fi
 fi
@@ -838,7 +838,9 @@ exec docker run "${docker_args[@]}" \
               -c "model_provider=\"copilot_proxy\"" \
               -c "model_providers.copilot_proxy.base_url=\"${COPILOT_PROXY_CONTAINER_URL}/v1\"" \
               -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.4}\"" \
-              -c "model_reasoning_effort=\"high\"" "$@"
+              -c "model_reasoning_effort=\"high\"" \
+              -c "approvals_reviewer=\"${CODEX_COPILOT_APPROVALS_REVIEWER:-user}\"" \
+              "$@"
         fi
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           codex --sandbox danger-full-access "$@"

@@ -7,7 +7,7 @@
       "Fetch(http**)"
     ]
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "worktree": {
     "baseRef": "fresh"
   },

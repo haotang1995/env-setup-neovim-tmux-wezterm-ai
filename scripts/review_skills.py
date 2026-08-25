@@ -90,6 +90,10 @@ def detect_source(path: Path) -> str:
         return "scientific-skills"
     if "/ai-research-skills/" in s:
         return "ai-research-skills"
+    if "/compound-engineering/" in s:
+        return "compound-engineering"
+    if "/karpathy-skills/" in s:
+        return "karpathy-skills"
     if "/.codex/skills/.system/" in s:
         return "codex-system"
     return "other"

@@ -465,6 +465,18 @@ if [ -d "$SKILLS_REPOS" ]; then
     install_skills_from "$d"
   done
 
+  # EveryInc/compound-engineering-plugin: skills/<name>/SKILL.md
+  # Only the three curated `ce-*` skills survive skill-decisions.json; the rest
+  # of the plugin (and anything added upstream) is denied there by default.
+  for d in "$SKILLS_REPOS"/compound-engineering/skills/*/; do
+    install_skills_from "$d"
+  done
+
+  # multica-ai/andrej-karpathy-skills: skills/<name>/SKILL.md (one skill)
+  for d in "$SKILLS_REPOS"/karpathy-skills/skills/*/; do
+    install_skills_from "$d"
+  done
+
   # Custom my_skills repo: <skill-name>/SKILL.md
   for d in "$SKILLS_REPOS"/my_skills/*/; do
     [ -f "$d/SKILL.md" ] && install_skills_from "$d"

@@ -18,6 +18,7 @@
 #   CLAUDE_COPILOT_HAIKU  default claude-haiku-4-5
 #   CODEX_COPILOT_MODEL   default gpt-5.4
 #   CODEX_COPILOT_EFFORT  default high
+#   CODEX_COPILOT_APPROVALS_REVIEWER default user
 #
 # COPILOT_PROXY_PORT is honored for both harnesses — the resolved URL is passed
 # through at launch, not read from the literal in .codex/config.toml.
@@ -103,12 +104,17 @@ case "${HARNESS}" in
     # literal in config.toml — otherwise COPILOT_PROXY_PORT silently has no
     # effect here (it works for claude via ANTHROPIC_BASE_URL and for the
     # sandbox, so a custom port would break host codex only).
+    #
+    # Force user approval review on the Copilot lane. auto_review and
+    # guardian_subagent call models that Copilot does not serve, turning every
+    # escalation into a hard denial.
     : "${CODEX_COPILOT_MODEL:=gpt-5.4}"
     exec codex \
       -c "model_provider=\"copilot_proxy\"" \
       -c "model_providers.copilot_proxy.base_url=\"${PROXY_URL}/v1\"" \
       -c "model=\"${CODEX_COPILOT_MODEL}\"" \
       -c "model_reasoning_effort=\"${CODEX_COPILOT_EFFORT:-high}\"" \
+      -c "approvals_reviewer=\"${CODEX_COPILOT_APPROVALS_REVIEWER:-user}\"" \
       "$@"
     ;;
 esac
