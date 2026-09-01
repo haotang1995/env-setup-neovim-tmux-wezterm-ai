@@ -63,6 +63,7 @@ ai-skills/                       ← Shared AI skill library
   .repos/tob-skills/             ← git submodule: trailofbits/skills
   .repos/compound-engineering/  ← git submodule: EveryInc/compound-engineering-plugin
   .repos/karpathy-skills/        ← git submodule: multica-ai/andrej-karpathy-skills
+  .repos/mattpocock-skills/      ← git submodule: mattpocock/skills
 nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   init.lua                       ← LazyVim entry point
   lazyvim.json                   ← LazyVim metadata
@@ -661,8 +662,9 @@ The default route is Copilot HTTP; local inference is not active.
 - **Shared skill library (`ai-skills/`):** Cross-agent skills from
   obra/superpowers, openai/skills, trailofbits/skills,
   K-Dense-AI/claude-scientific-skills, Orchestra-Research/AI-Research-SKILLs,
-  EveryInc/compound-engineering-plugin, and multica-ai/andrej-karpathy-skills
-  added as git submodules. `install.sh` symlinks each skill into
+  EveryInc/compound-engineering-plugin, multica-ai/andrej-karpathy-skills,
+  and mattpocock/skills added as git submodules. `install.sh` symlinks each
+  selected skill into
   `~/.claude/skills/`, `~/.codex/skills/`, `~/.gemini/skills/`, and
   `~/.copilot/skills/`. Update
   with `./scripts/install.sh -u` (or `git submodule update --remote`).
@@ -671,7 +673,7 @@ The default route is Copilot HTTP; local inference is not active.
   Manage decisions with `python3 scripts/review_skills.py`:
   `--skill <name>` for one skill, `--redo` to revisit already-decided skills,
   and `--no-apply` for record-only mode.
-  - **Curation policy — general-purpose skills are deliberately denied.**
+  - **Curation policy — general-purpose skills are normally denied.**
     A skill costs a description line in every system prompt whether or not it
     ever fires, so the bar is *non-obvious, environment-specific, or long-tail
     API knowledge*. Skills that merely encode generic engineering **process**
@@ -717,14 +719,19 @@ The default route is Copilot HTTP; local inference is not active.
       one; the submodules stay checked out, only the symlinks are gone.
 
     What survives is the academic writing / figure / poster / literature
-    toolchain, a thin slice of OpenAI media-and-document skills, and this
-    machine's own MSR-specific skills (`trapi-llm`,
-    `azureml-singularity-jobs`, `wandb-microsoft-research`) plus the rest of
-    `my_skills`. Don't re-enable the pruned ones as a side effect of adding a
-    submodule; `keep: false` in `skill-decisions.json` is the record. Note the
-    `scripts` entry there is **synthetic** — that directory has no `SKILL.md`,
-    so `review_skills.py` never sees it and undecided defaults to *install*;
-    the hand-written entry is what keeps `install.sh`'s glob from linking it.
+    toolchain, a thin slice of OpenAI media-and-document skills, this machine's
+    own MSR-specific skills (`trapi-llm`, `azureml-singularity-jobs`,
+    `wandb-microsoft-research`) plus the rest of `my_skills`, and the explicitly
+    added mattpocock/skills promoted set. Don't re-enable the pruned ones as a
+    side effect of adding a submodule; `keep: false` in
+    `skill-decisions.json` is the record. Note the `scripts` entry there is
+    **synthetic** — that directory has no `SKILL.md`, so `review_skills.py`
+    never sees it and undecided defaults to *install*; the hand-written entry
+    is what keeps `install.sh`'s glob from linking it.
+  - **mattpocock/skills installs only its promoted buckets.** `install.sh`
+    links `skills/engineering/*` and `skills/productivity/*`, matching the
+    upstream plugin's public set. The `misc`, `in-progress`, and `deprecated`
+    buckets remain checked out in the submodule but are not installed.
   - **compound-engineering-plugin is installed at 3 of its 34 skills.**
     The plugin ships a full `ce-*` workflow suite (brainstorm → plan → work →
     review → commit → PR → babysit, plus `lfg`). That is precisely the *process

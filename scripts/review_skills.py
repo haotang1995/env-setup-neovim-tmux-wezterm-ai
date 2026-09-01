@@ -94,6 +94,8 @@ def detect_source(path: Path) -> str:
         return "compound-engineering"
     if "/karpathy-skills/" in s:
         return "karpathy-skills"
+    if "/mattpocock-skills/" in s:
+        return "mattpocock-skills"
     if "/.codex/skills/.system/" in s:
         return "codex-system"
     return "other"
@@ -104,7 +106,17 @@ def collect_skills(repo_root: Path, include_system: bool) -> List[Skill]:
 
     repo_skills_root = repo_root / "ai-skills" / ".repos"
     if repo_skills_root.exists():
-        skill_files.extend(sorted(repo_skills_root.rglob("SKILL.md")))
+        for path in sorted(repo_skills_root.rglob("SKILL.md")):
+            rel_parts = path.relative_to(repo_skills_root).parts
+            if rel_parts[0] == "mattpocock-skills":
+                is_promoted = (
+                    len(rel_parts) == 5
+                    and rel_parts[1] == "skills"
+                    and rel_parts[2] in {"engineering", "productivity"}
+                )
+                if not is_promoted:
+                    continue
+            skill_files.append(path)
 
     if include_system:
         system_root = Path.home() / ".codex" / "skills" / ".system"
@@ -274,6 +286,7 @@ def main() -> None:
             "tob-skills",
             "scientific-skills",
             "ai-research-skills",
+            "mattpocock-skills",
             "codex-system",
             "other",
         ],

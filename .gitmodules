@@ -22,3 +22,6 @@
 [submodule "ai-skills/.repos/karpathy-skills"]
 	path = ai-skills/.repos/karpathy-skills
 	url = https://github.com/multica-ai/andrej-karpathy-skills.git
+[submodule "ai-skills/.repos/mattpocock-skills"]
+	path = ai-skills/.repos/mattpocock-skills
+	url = https://github.com/mattpocock/skills.git

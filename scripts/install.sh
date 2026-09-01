@@ -477,6 +477,14 @@ if [ -d "$SKILLS_REPOS" ]; then
     install_skills_from "$d"
   done
 
+  # mattpocock/skills: promoted skills live in engineering/ and productivity/.
+  # Exclude the upstream misc, in-progress, and deprecated buckets.
+  for bucket in engineering productivity; do
+    for d in "$SKILLS_REPOS"/mattpocock-skills/skills/"$bucket"/*/; do
+      install_skills_from "$d"
+    done
+  done
+
   # Custom my_skills repo: <skill-name>/SKILL.md
   for d in "$SKILLS_REPOS"/my_skills/*/; do
     [ -f "$d/SKILL.md" ] && install_skills_from "$d"

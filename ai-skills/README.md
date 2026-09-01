@@ -22,6 +22,7 @@ ai-skills/
     tob-skills/                      # trailofbits/skills
     scientific-skills/               # K-Dense-AI/claude-scientific-skills
     ai-research-skills/              # Orchestra-Research/AI-Research-SKILLs
+    mattpocock-skills/                # mattpocock/skills
 ```
 
 The installer (`scripts/install.sh`) symlinks each skill directory into every
@@ -47,6 +48,7 @@ If `ai-skills/skill-decisions.json` exists, `install.sh` enforces it:
 | [trailofbits/skills](https://github.com/trailofbits/skills) | Security analysis, Semgrep, property-based testing, modern Python |
 | [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) | Scientific writing, literature review, peer review, citation management, venue templates, bioinformatics |
 | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-research-SKILLs) | ML paper writing, model architecture, fine-tuning, evaluation, MLOps, distributed training |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | Engineering workflows, TDD, debugging, code review, domain modeling, and productivity |
 
 ## Managing Skills
 
