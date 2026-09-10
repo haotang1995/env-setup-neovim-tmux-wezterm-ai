@@ -1,13 +1,14 @@
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 personality = "pragmatic"
-model_reasoning_effort = "xhigh"
+model_reasoning_effort = "high"
 approvals_reviewer = "auto_review"
 
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
 "gpt-5.3-codex" = "gpt-5.4"
+"gpt-5.4" = "gpt-5.6-terra"
 
 # ── GitHub Copilot via the local proxy ────────────────────────────────────
 # Definition only — inert until selected, so plain `codex` is unaffected.
@@ -44,3 +45,6 @@ trust_level = "trusted"
 
 [projects."/home/tanghao"]
 trust_level = "trusted"
+
+[tui.model_availability_nux]
+gpt-6-astra = 1

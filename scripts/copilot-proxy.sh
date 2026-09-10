@@ -39,6 +39,13 @@ export COPILOT_API_HOME="${COPILOT_API_HOME:-${HOME}/.local/share/copilot-api}"
 CONFIG_JSON="${COPILOT_API_HOME}/config.json"
 TOKEN_FILE="${COPILOT_API_HOME}/github_token"
 
+# Codex's auto-review reviewer ("Approve for me") calls an OpenAI-internal
+# model id that no Copilot seat serves; the proxy answers 400 and codex turns
+# the failed review into a hard denial of EVERY escalation. modelMappings
+# rewrites the id before it goes upstream. Any /responses-capable model works;
+# the reviewer runs at low effort with the transcript as input.
+AUTO_REVIEW_TARGET="${COPILOT_PROXY_AUTO_REVIEW_MODEL:-gpt-5.6-luna}"
+
 PROXY_HOST="127.0.0.1"                              # NEVER 0.0.0.0 — see header
 PROXY_PORT_DEFAULT="6868"
 PROXY_PORT="${COPILOT_PROXY_PORT:-${PROXY_PORT_DEFAULT}}"
@@ -134,10 +141,13 @@ resolve_key() {
 
 # Ensure config.json enforces auth. Upstream skips auth entirely when
 # auth.apiKeys is empty (lib/request-auth.ts), so this is load-bearing.
+# Also seeds the codex-auto-review mapping (no-clobber: a hand-edited target
+# in config.json wins over AUTO_REVIEW_TARGET).
 ensure_config() {
   local key="$1"
   mkdir -p "${COPILOT_API_HOME}"
-  COPILOT_PROXY_WANT_KEY="${key}" CONFIG_JSON="${CONFIG_JSON}" node -e '
+  COPILOT_PROXY_WANT_KEY="${key}" CONFIG_JSON="${CONFIG_JSON}" \
+  COPILOT_PROXY_AUTO_REVIEW_TARGET="${AUTO_REVIEW_TARGET}" node -e '
     const fs = require("fs");
     const p = process.env.CONFIG_JSON;
     let cfg = {};
@@ -146,6 +156,9 @@ ensure_config() {
     const want = process.env.COPILOT_PROXY_WANT_KEY;
     const keys = Array.isArray(cfg.auth.apiKeys) ? cfg.auth.apiKeys : [];
     if (!keys.includes(want)) cfg.auth.apiKeys = [want, ...keys];
+    const maps = (cfg.modelMappings && typeof cfg.modelMappings === "object") ? cfg.modelMappings : {};
+    if (!maps["codex-auto-review"]) maps["codex-auto-review"] = process.env.COPILOT_PROXY_AUTO_REVIEW_TARGET;
+    cfg.modelMappings = maps;
     fs.writeFileSync(p, JSON.stringify(cfg, null, 2));
     fs.chmodSync(p, 0o600);
   '

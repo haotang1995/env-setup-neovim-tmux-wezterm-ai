@@ -418,6 +418,15 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5`), GPT uses dots
     (`gpt-5.5`, `gpt-5.3-codex`). `copilot-proxy models [--claude|--gpt]` lists
     what the seat actually exposes — this varies and can change silently.
+  - **Codex auto-review is mapped to a real model.** `ensure_config` seeds
+    `modelMappings["codex-auto-review"]` in `config.json` (default
+    `gpt-5.6-luna`; `COPILOT_PROXY_AUTO_REVIEW_MODEL` changes the seed, and a
+    hand-edited entry is never clobbered) so Codex's "Approve for me" reviewer
+    is answered by a `/responses`-capable Copilot model instead of a 400.
+    Upstream tracks the gap as caozhiyuan/copilot-api#321; PR #343 documents
+    the mapping. Each review re-sends the transcript, so on a box whose Linux
+    sandbox cannot start (Ubuntu 24.04 `apparmor_restrict_unprivileged_userns`
+    makes every command escalate) this is where the Copilot credits go.
   - **Cost model:** Copilot performs **no prompt-cache writes**, and since
     Jun 2026 bills by token against a monthly AI-credits allowance. An agentic
     harness re-sends a growing conversation every turn, so this burns the
@@ -468,18 +477,22 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
       model-catalog refresh (`/v1/models?client_version=…`; a plain `curl` of
       the same URL returns 200). Only the `/model` picker list is affected;
       completions go through.
-    - **`approvals_reviewer` must be `"user"` on this lane; the wrapper forces
-      it with `-c`.** `auto_review` (and `guardian_subagent`) makes codex issue
-      a *side* `POST /v1/responses` with `model: "codex-auto-review"` to grade
-      each escalation. No Copilot seat serves that model, so the proxy replies
-      400 *"This model does not support the responses endpoint"* and codex turns
-      the failed review into a hard denial — **every** command comes back
-      `the escalation request was rejected` / `Rejected … Automatic approval
-      review failed`. The host wrapper and sandbox force `user` with `-c`,
-      while plain native Codex keeps `auto_review`. Override with
-      `CODEX_COPILOT_APPROVALS_REVIEWER` if a seat ever serves the model.
-      Symptom check: a bare `--> POST /v1/responses 400` in the proxy log with
-      no preceding `<-- model:` line for your chat model.
+    - **Auto-review needs the proxy's `codex-auto-review` mapping.**
+      `auto_review` (the TUI's "Approve for me"; legacy name
+      `guardian_subagent`) makes codex issue a *side* `POST /v1/responses`
+      with `model: "codex-auto-review"` to grade each escalation. No Copilot
+      seat serves that id, so an unmapped proxy replies 400 *"This model does
+      not support the responses endpoint"* and codex turns the failed review
+      into a hard denial — **every** command comes back `the escalation
+      request was rejected` / `Rejected … Automatic approval review failed`.
+      `copilot-proxy` therefore seeds `modelMappings` (see above), which makes
+      the Copilot lane behave like native Codex. The wrapper still defaults
+      `approvals_reviewer` to `user` via `-c` (`CODEX_COPILOT_APPROVALS_REVIEWER`
+      overrides), but that is only the *starting* value: choosing anything
+      under `/permissions` in the TUI re-sends thread settings with
+      `auto_review` and silently replaces it (observed on 0.154). Symptom
+      check for a missing mapping: a bare `--> POST /v1/responses 400` in the
+      proxy log with no preceding `<-- model:` line for your chat model.
     - **`stream disconnected before completion: stream closed before
       response.completed` is upstream and transient — not a config fault.**
       The proxy accepts the request (`200` in ~10–20 ms), then logs
@@ -732,6 +745,13 @@ The default route is Copilot HTTP; local inference is not active.
     links `skills/engineering/*` and `skills/productivity/*`, matching the
     upstream plugin's public set. The `misc`, `in-progress`, and `deprecated`
     buckets remain checked out in the submodule but are not installed.
+  - **`report-in-html` presents transient HTML on headless hosts.** The custom
+    skill's `serve_report.py` binds only remote `127.0.0.1`, lets the kernel
+    choose a free port, and serves one immutable report at a random path for
+    VS Code port forwarding. Agents must run it through an attached background
+    facility, never detach it; session-close cleanup is guaranteed only when
+    the harness documents attached-job teardown. A four-hour maximum lifetime
+    bounds leaks when that guarantee is unavailable.
   - **compound-engineering-plugin is installed at 3 of its 34 skills.**
     The plugin ships a full `ce-*` workflow suite (brainstorm → plan → work →
     review → commit → PR → babysit, plus `lfg`). That is precisely the *process
