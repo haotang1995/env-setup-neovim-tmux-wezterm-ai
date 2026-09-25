@@ -2,7 +2,7 @@ sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 model = "gpt-6-astra"
 personality = "pragmatic"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 approvals_reviewer = "auto_review"
 
 [notice.model_migrations]
@@ -46,5 +46,11 @@ trust_level = "trusted"
 [projects."/home/tanghao"]
 trust_level = "trusted"
 
+[tui]
+screen_reader_detection_done = true
+
 [tui.model_availability_nux]
-gpt-6-astra = 1
+gpt-6-astra = 3
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"

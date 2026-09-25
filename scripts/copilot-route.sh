@@ -16,7 +16,7 @@
 #   CLAUDE_COPILOT_OPUS   default claude-opus-5
 #   CLAUDE_COPILOT_SONNET default claude-sonnet-5
 #   CLAUDE_COPILOT_HAIKU  default claude-haiku-4-5
-#   CODEX_COPILOT_MODEL   default gpt-5.4
+#   CODEX_COPILOT_MODEL   default gpt-5.6-sol-fast
 #   CODEX_COPILOT_EFFORT  default high
 #   CODEX_COPILOT_APPROVALS_REVIEWER default user
 #
@@ -108,7 +108,7 @@ case "${HARNESS}" in
     # Force user approval review on the Copilot lane. auto_review and
     # guardian_subagent call models that Copilot does not serve, turning every
     # escalation into a hard denial.
-    : "${CODEX_COPILOT_MODEL:=gpt-5.4}"
+    : "${CODEX_COPILOT_MODEL:=gpt-5.6-sol-fast}"
     exec codex \
       -c "model_provider=\"copilot_proxy\"" \
       -c "model_providers.copilot_proxy.base_url=\"${PROXY_URL}/v1\"" \

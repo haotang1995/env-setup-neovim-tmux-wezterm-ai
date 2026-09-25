@@ -455,7 +455,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     `[model_providers.copilot_proxy]` (**inert** until selected) with
     `wire_api = "responses"` — mandatory, since Codex removed the
     chat/completions wire API in Feb 2026. Override via `CODEX_COPILOT_MODEL`
-    (default `gpt-5.4`), `CODEX_COPILOT_EFFORT`, and
+    (default `gpt-5.6-sol-fast`), `CODEX_COPILOT_EFFORT`, and
     `CODEX_COPILOT_APPROVALS_REVIEWER`.
     - **Why not `--profile`:** Codex changed the profile mechanism twice in one
       week, and it auto-updates, so `--profile` is a moving target:

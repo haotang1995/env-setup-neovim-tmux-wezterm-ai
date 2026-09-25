@@ -370,7 +370,7 @@ if [[ "${COPILOT_ROUTE}" = "1" ]]; then
     docker_args+=(
       -e "COPILOT_PROXY_KEY=${_proxy_key}"
       -e "COPILOT_PROXY_CONTAINER_URL=${COPILOT_PROXY_CONTAINER_URL}"
-      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.4}"
+      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.6-sol-fast}"
       -e "CODEX_COPILOT_APPROVALS_REVIEWER=${CODEX_COPILOT_APPROVALS_REVIEWER:-user}"
     )
   fi
@@ -837,7 +837,7 @@ exec docker run "${docker_args[@]}" \
             codex --sandbox danger-full-access \
               -c "model_provider=\"copilot_proxy\"" \
               -c "model_providers.copilot_proxy.base_url=\"${COPILOT_PROXY_CONTAINER_URL}/v1\"" \
-              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.4}\"" \
+              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.6-sol-fast}\"" \
               -c "model_reasoning_effort=\"high\"" \
               -c "approvals_reviewer=\"${CODEX_COPILOT_APPROVALS_REVIEWER:-user}\"" \
               "$@"
