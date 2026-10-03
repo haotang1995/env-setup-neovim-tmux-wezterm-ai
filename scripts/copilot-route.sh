@@ -13,8 +13,8 @@
 # The proxy is started on demand if it isn't already up.
 #
 # Model overrides (any value already exported wins):
-#   CLAUDE_COPILOT_OPUS   default claude-opus-5
-#   CLAUDE_COPILOT_SONNET default claude-sonnet-5
+#   CLAUDE_COPILOT_OPUS   default claude-opus-5-5
+#   CLAUDE_COPILOT_SONNET default claude-sonnet-5-5
 #   CLAUDE_COPILOT_HAIKU  default claude-haiku-4-5
 #   CODEX_COPILOT_MODEL   default gpt-5.6-sol-fast
 #   CODEX_COPILOT_EFFORT  default high
@@ -69,8 +69,8 @@ case "${HARNESS}" in
     export ANTHROPIC_BASE_URL="${PROXY_URL}/"
     export ANTHROPIC_AUTH_TOKEN="${PROXY_KEY}"
 
-    : "${ANTHROPIC_DEFAULT_OPUS_MODEL:=${CLAUDE_COPILOT_OPUS:-claude-opus-5}}"
-    : "${ANTHROPIC_DEFAULT_SONNET_MODEL:=${CLAUDE_COPILOT_SONNET:-claude-sonnet-5}}"
+    : "${ANTHROPIC_DEFAULT_OPUS_MODEL:=${CLAUDE_COPILOT_OPUS:-claude-opus-5-5}}"
+    : "${ANTHROPIC_DEFAULT_SONNET_MODEL:=${CLAUDE_COPILOT_SONNET:-claude-sonnet-5-5}}"
     : "${ANTHROPIC_DEFAULT_HAIKU_MODEL:=${CLAUDE_COPILOT_HAIKU:-claude-haiku-4-5}}"
     export ANTHROPIC_DEFAULT_OPUS_MODEL ANTHROPIC_DEFAULT_SONNET_MODEL ANTHROPIC_DEFAULT_HAIKU_MODEL
 

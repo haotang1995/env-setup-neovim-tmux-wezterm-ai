@@ -7,7 +7,7 @@
       "Fetch(http**)"
     ]
   },
-  "model": "claude-fable-5-1[1m]",
+  "model": "fable",
   "worktree": {
     "baseRef": "fresh"
   },
@@ -17,6 +17,7 @@
   "effortLevel": "xhigh",
   "tui": "default",
   "theme": "dark",
+  "switchModelsOnFlag": false,
   "remoteControlAtStartup": true,
   "skipAutoPermissionPrompt": true
 }

@@ -127,6 +127,15 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   Copy uses explicit OSC 52 via `#{pane_tty}` (not tmux's built-in
   `set-clipboard`) for reliable clipboard through multi-hop SSH
   (WezTerm → WSL → SSH → tmux). Mouse drag-release also copies.
+- **Apps that grab the mouse:** tmux forwards drag and right-click to any pane
+  whose app has turned on mouse tracking (`#{mouse_any_flag}`), so tmux's
+  drag-to-copy and right-click menu do nothing in that pane. Codex does this in
+  its alternate-screen mode (any-event tracking, DECSET 1003), so
+  `.codex/config.toml` sets `[tui] alternate_screen = "never"`. Codex then runs
+  inline like Claude Code, and its transcript lands in tmux scrollback. For
+  other such apps: `Shift`+drag (WezTerm's own selection), `Alt`+right-click
+  (tmux menu), or `prefix + [` and then drag.
+  Check a pane with `tmux display -p '#{mouse_any_flag}'`.
 - **Hyperlinks:** OSC 8 passthrough enabled so clickable URLs work inside tmux.
   `Shift+Ctrl+Click` (or `Shift+Cmd+Click` on macOS) to open in browser.
   Shift bypasses tmux mouse capture.
@@ -414,7 +423,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     (2) `serve()` is called without a hostname, so it binds `*:<port>` and is
     reachable from the LAN; `HOST=127.0.0.1` fixes it. `start` refuses to run if
     an anonymous `/v1/models` request does not return 401.
-  - **Model IDs differ by family:** Claude uses dashes (`claude-opus-5`,
+  - **Model IDs differ by family:** Claude uses dashes (`claude-opus-5-5`,
     `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5`), GPT uses dots
     (`gpt-5.5`, `gpt-5.3-codex`). `copilot-proxy models [--claude|--gpt]` lists
     what the seat actually exposes — this varies and can change silently.
@@ -426,7 +435,12 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     Upstream tracks the gap as caozhiyuan/copilot-api#321; PR #343 documents
     the mapping. Each review re-sends the transcript, so on a box whose Linux
     sandbox cannot start (Ubuntu 24.04 `apparmor_restrict_unprivileged_userns`
-    makes every command escalate) this is where the Copilot credits go.
+    makes every command escalate) this is where the Copilot credits go — see
+    "Codex Linux sandbox on Ubuntu 24.04+" under AI integration for the fix.
+    A review that fails is a hard denial (codex retries once), and failures
+    come in bursts: on Oct 2026 the proxy logged `invalid_request_body:
+    Encrypted function output content could not be decrypted or decoded`
+    for transcripts carrying multi-agent `encrypted_content`.
   - **Cost model:** Copilot performs **no prompt-cache writes**, and since
     Jun 2026 bills by token against a monthly AI-credits allowance. An agentic
     harness re-sends a growing conversation every turn, so this burns the
@@ -450,6 +464,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     three `ANTHROPIC_DEFAULT_*_MODEL` tiers, and disables non-essential traffic
     and experimental betas (Copilot rejects beta headers it doesn't know).
     Override models via `CLAUDE_COPILOT_{OPUS,SONNET,HAIKU}`.
+    Defaults are `claude-opus-5-5` / `claude-sonnet-5-5` / `claude-haiku-4-5`.
+    These are hard-coded, so a new model on the seat does **not** appear in
+    claude-copilot's `/model` tiers until the defaults are bumped. Opus 5.5
+    bills *less* than Opus 5 (400/2000 vs 500/2500 AIU per 1M in/out tokens,
+    measured Oct 2026 from `copilot_usage` in the response).
   - codex: selects the provider with **`-c` overrides, never `--profile`**. The
     provider is defined once in `.codex/config.toml` as
     `[model_providers.copilot_proxy]` (**inert** until selected) with
@@ -573,6 +592,35 @@ The default route is Copilot HTTP; local inference is not active.
 - **CLI agents:** `gemini`, `claude`, `codex`, and `copilot` remain
   available for T3 investigation and implementation. Code-producing T3 tasks
   belong in isolated worktrees; the main worktree remains human-owned.
+- **Codex Linux sandbox on Ubuntu 24.04+ needs an AppArmor profile.**
+  `kernel.apparmor_restrict_unprivileged_userns=1` drops Codex's bundled
+  `bwrap` into the stock `unprivileged_userns` profile (`audit deny
+  capability`), so every sandboxed command dies with `bwrap: loopback: Failed
+  RTM_NEWADDR: Operation not permitted`. Even `ls` then escalates, and every
+  escalation goes to auto-review or to you. Codex execs only its bundled copy
+  (`codex-resources/bwrap`, via `/proc/self/fd/3` of the real file), never
+  `/usr/bin/bwrap`, so installing `bubblewrap` does not help. Fix (sudo, once
+  per machine), same shape as Ubuntu's stock `chrome`/`buildah` profiles:
+
+  ```sh
+  printf '%s\n' 'abi <abi/4.0>,' 'include <tunables/global>' '' \
+    'profile codex-bwrap "/home/<user>/.nvm/versions/node/*/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-*/vendor/*/codex-resources/bwrap" flags=(unconfined) {' \
+    '  userns,' '  include if exists <local/codex-bwrap>' '}' \
+    | sudo tee /etc/apparmor.d/codex-bwrap
+  sudo apparmor_parser -r /etc/apparmor.d/codex-bwrap
+  # undo: sudo apparmor_parser -R /etc/apparmor.d/codex-bwrap && sudo rm /etc/apparmor.d/codex-bwrap
+  ```
+
+  Verify from a scratch dir. Bare `codex sandbox` defaults to **read-only**,
+  so pass `-P :workspace` to match a session's workspace-write mode:
+  `codex sandbox -P :workspace -- cat /proc/self/attr/current` must print
+  `codex-bwrap (unconfined)`. A `touch` in cwd should succeed, while `$HOME`,
+  `/etc`, DNS, and `127.0.0.1` stay blocked.
+  **Risk:** the attached file is user-writable, so this effectively lifts the
+  userns restriction for that account. That is negligible where the account
+  already has `NOPASSWD: ALL` sudo, but remove the profile if that changes.
+  If a Codex update moves the helper, the profile silently stops matching and
+  the escalation flood returns. Applied on the GPU box Oct 2026.
 - **In-editor AI uses explicit autonomy tiers.**
 
   | Tier | Plugin | Trigger | Authority |
