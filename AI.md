@@ -800,6 +800,16 @@ The default route is Copilot HTTP; local inference is not active.
     facility, never detach it; session-close cleanup is guaranteed only when
     the harness documents attached-job teardown. A four-hour maximum lifetime
     bounds leaks when that guarantee is unavailable.
+  - **`writing-agent-prompts` prepares specifications for another agent or session.**
+    The custom skill preserves explicit requirements while strengthening goals,
+    methods, and verification. It proposes outcome-driven stretch targets,
+    identifies access prerequisites, and keeps extra product capabilities
+    outside the implementation prompt pending agreement. Invoke it when
+    preparing a handoff prompt; it does not itself implement the specification.
+    Its source is `ai-skills/.repos/my_skills/writing-agent-prompts/SKILL.md`, discovered
+    by the existing custom-skill installer loop. The source commit must be
+    reachable from `my_skills`' remote default branch before publishing the
+    parent gitlink: `install.sh -u` updates submodules with `--remote`.
   - **compound-engineering-plugin is installed at 3 of its 34 skills.**
     The plugin ships a full `ce-*` workflow suite (brainstorm → plan → work →
     review → commit → PR → babysit, plus `lfg`). That is precisely the *process

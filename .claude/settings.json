@@ -11,12 +11,17 @@
   "worktree": {
     "baseRef": "fresh"
   },
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); dir=$(echo \"$input\" | jq -r '.workspace.current_dir'); branch=$(git -C \"$dir\" --no-optional-locks symbolic-ref --short HEAD 2>/dev/null || git -C \"$dir\" --no-optional-locks rev-parse --short HEAD 2>/dev/null); out=\"$model | $dir\"; [ -n \"$branch\" ] && out=\"$out | $branch\"; echo \"$out\""
+  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true
   },
   "effortLevel": "xhigh",
   "tui": "default",
   "theme": "dark",
+  "autoCompactEnabled": true,
   "switchModelsOnFlag": false,
   "remoteControlAtStartup": true,
   "skipAutoPermissionPrompt": true
