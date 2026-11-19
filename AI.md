@@ -424,9 +424,21 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     reachable from the LAN; `HOST=127.0.0.1` fixes it. `start` refuses to run if
     an anonymous `/v1/models` request does not return 401.
   - **Model IDs differ by family:** Claude uses dashes (`claude-opus-5-5`,
-    `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5`), GPT uses dots
-    (`gpt-5.5`, `gpt-5.3-codex`). `copilot-proxy models [--claude|--gpt]` lists
-    what the seat actually exposes — this varies and can change silently.
+    `claude-haiku-5-5`), GPT and Gemini use dots (`gpt-6.1-sol`,
+    `gemini-3.8-flash`). `copilot-proxy models [--claude|--gpt]` lists what the
+    seat exposes; it varies and can change silently. The proxy re-fetches the
+    catalog every ~30 min, so a long-running proxy does not need a restart to
+    see new models.
+  - **Gemini works for Claude Code and direct API calls, not for Codex.**
+    Gemini ids (Nov 2026: `gemini-3.8-flash`, `gemini-4-{argon,carbon,hydrogen}`)
+    advertise only `/chat/completions`. The proxy serves them there and
+    translates `/v1/messages`, so `CLAUDE_COPILOT_SONNET=gemini-4-argon
+    claude-copilot` runs, tool calls included (verified Nov 2026). One quirk:
+    the proxy appends a placeholder `thinking` block after the answer text, so
+    `claude -p` reports an empty `result`; read the text from
+    `--output-format stream-json` instead. `/v1/responses` answers 400 *"This
+    model does not support the responses endpoint"*, and Codex speaks only
+    `responses`, so codex-copilot cannot use Gemini.
   - **Codex auto-review is mapped to a real model.** `ensure_config` seeds
     `modelMappings["codex-auto-review"]` in `config.json` (default
     `gpt-5.6-luna`; `COPILOT_PROXY_AUTO_REVIEW_MODEL` changes the seed, and a
@@ -464,17 +476,27 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     three `ANTHROPIC_DEFAULT_*_MODEL` tiers, and disables non-essential traffic
     and experimental betas (Copilot rejects beta headers it doesn't know).
     Override models via `CLAUDE_COPILOT_{OPUS,SONNET,HAIKU}`.
-    Defaults are `claude-opus-5-5` / `claude-sonnet-5-5` / `claude-haiku-4-5`.
+    Defaults are `claude-opus-5-5` / `claude-sonnet-5-5` / `claude-haiku-5-5`,
+    and `ai-sandbox --copilot-route claude` uses the same three.
     These are hard-coded, so a new model on the seat does **not** appear in
     claude-copilot's `/model` tiers until the defaults are bumped. Opus 5.5
     bills *less* than Opus 5 (400/2000 vs 500/2500 AIU per 1M in/out tokens,
-    measured Oct 2026 from `copilot_usage` in the response).
+    measured Oct 2026 from `copilot_usage` in the response). Haiku 5.5 bills a
+    tenth of Haiku 4.5 (10/50 vs 100/500, Nov 2026 catalog
+    `billing.token_prices`).
   - codex: selects the provider with **`-c` overrides, never `--profile`**. The
     provider is defined once in `.codex/config.toml` as
     `[model_providers.copilot_proxy]` (**inert** until selected) with
     `wire_api = "responses"` — mandatory, since Codex removed the
-    chat/completions wire API in Feb 2026. Override via `CODEX_COPILOT_MODEL`
-    (default `gpt-5.6-sol-fast`), `CODEX_COPILOT_EFFORT`, and
+    chat/completions wire API in Feb 2026.
+    **The model is not overridden by default.** Codex reads `model` from
+    `~/.codex/config.toml`, so plain `codex`, `codex-copilot`, and
+    `ai-sandbox --copilot-route codex` all run the same model. Bumping it
+    there moves every lane at once. The configured model must also be on the
+    seat, so check `copilot-proxy models --gpt` after a bump.
+    `CODEX_COPILOT_MODEL` pins a different model for the Copilot lane only.
+    Other overrides: `CODEX_COPILOT_EFFORT` (default `high`, deliberately
+    below the config's effort to save credits) and
     `CODEX_COPILOT_APPROVALS_REVIEWER`.
     - **Why not `--profile`:** Codex changed the profile mechanism twice in one
       week, and it auto-updates, so `--profile` is a moving target:
@@ -653,17 +675,22 @@ The default route is Copilot HTTP; local inference is not active.
     max prompt, `supported_endpoints: ["/responses", "ws:/responses"]`).
     `ai_tiers_test.lua` asserts the id so `auto` cannot creep back.
   - **Model availability is per-organisation and shifts.** The seat's raw
-    catalog (`GET https://api.githubcopilot.com/models`) marks most of the
-    frontier ids `policy: disabled`; `copilot-proxy models` does **not** filter
-    on that, so it lists models the seat cannot actually use. Check
-    `policy.state` in the raw catalog, or `:CodeCompanionModels`, before
-    pinning. CodeCompanion routes to `/responses` only when the catalog entry
-    advertises it (`adapters/utils/models/transform.lua:70`).
-    Re-verified Aug 2026 on the `tanghao_microsoft` seat: the whole 5.6 family
-    (`luna`, `sol`, `terra`) plus `gpt-5.4`/`gpt-5.5`, `claude-opus-5`,
-    `claude-sonnet-5` and the gemini tier are all `enabled`, so the earlier
-    "only enabled 5.6 model" note no longer holds. `gpt-5.3-codex`, `grok-4.*`
-    and the `gpt-4o` family carry **no** `policy` block at all.
+    catalog (`GET https://api.githubcopilot.com/models`) can mark ids
+    `policy: disabled`. The pinned proxy (copilot-api 1.14.22) drops those, and
+    any entry without `model_picker_enabled`, before serving `/v1/models`, so
+    `copilot-proxy models` now lists only what the seat can use.
+    `:CodeCompanionModels` is the in-editor check. CodeCompanion routes to
+    `/responses` only when the catalog entry advertises it
+    (`adapters/utils/models/transform.lua:70`).
+    Re-verified Nov 2026 (28 ids): GPT `5.3-codex`, `5.6-{luna,sol,sol-fast}`,
+    `6-{astra,luna,sol}`, `6.1-{sol,terra}`, `6.2-{astra,sol}`; Claude
+    `opus-5-5`, `sonnet-5`, `sonnet-5-5`, `haiku-4-5`, `haiku-5-5`; Gemini
+    `3.8-flash`, `4-{argon,carbon,hydrogen}`; `grok-4.{6,7}`;
+    `mai-code-{1.1-flash,2,2-flash}`; three embedding models. No longer
+    listed since the Aug 2026 check: `claude-opus-5`, `gpt-5.4`, `gpt-5.5`,
+    and the `gpt-4o` family. `claude-opus-5` now fails upstream with
+    `model_not_supported`. `gpt-5.6-luna` (inline lane and auto-review
+    target) is still `enabled`.
   - **CodeCompanion reads the Copilot OAuth token itself — not via copilot.lua.**
     `adapters/http/copilot/token.lua` tries `github-copilot/hosts.json` then
     `apps.json`, and only then falls back to

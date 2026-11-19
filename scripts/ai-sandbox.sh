@@ -358,19 +358,21 @@ if [[ "${COPILOT_ROUTE}" = "1" ]]; then
     docker_args+=(
       -e "ANTHROPIC_BASE_URL=${COPILOT_PROXY_CONTAINER_URL}/"
       -e "ANTHROPIC_AUTH_TOKEN=${_proxy_key}"
-      -e "ANTHROPIC_DEFAULT_OPUS_MODEL=${CLAUDE_COPILOT_OPUS:-claude-opus-5}"
-      -e "ANTHROPIC_DEFAULT_SONNET_MODEL=${CLAUDE_COPILOT_SONNET:-claude-sonnet-5}"
-      -e "ANTHROPIC_DEFAULT_HAIKU_MODEL=${CLAUDE_COPILOT_HAIKU:-claude-haiku-4-5}"
+      -e "ANTHROPIC_DEFAULT_OPUS_MODEL=${CLAUDE_COPILOT_OPUS:-claude-opus-5-5}"
+      -e "ANTHROPIC_DEFAULT_SONNET_MODEL=${CLAUDE_COPILOT_SONNET:-claude-sonnet-5-5}"
+      -e "ANTHROPIC_DEFAULT_HAIKU_MODEL=${CLAUDE_COPILOT_HAIKU:-claude-haiku-5-5}"
       -e "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"
       -e "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1"
     )
   else
     # codex has no env passthrough for provider config, so the entrypoint
     # selects the provider and resolved base URL with -c overrides.
+    # An empty CODEX_COPILOT_MODEL keeps the model from the host config.toml
+    # (re-seeded into the container on every launch), as copilot-route does.
     docker_args+=(
       -e "COPILOT_PROXY_KEY=${_proxy_key}"
       -e "COPILOT_PROXY_CONTAINER_URL=${COPILOT_PROXY_CONTAINER_URL}"
-      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-gpt-5.6-sol-fast}"
+      -e "CODEX_COPILOT_MODEL=${CODEX_COPILOT_MODEL:-}"
       -e "CODEX_COPILOT_APPROVALS_REVIEWER=${CODEX_COPILOT_APPROVALS_REVIEWER:-user}"
     )
   fi
@@ -837,7 +839,7 @@ exec docker run "${docker_args[@]}" \
             codex --sandbox danger-full-access \
               -c "model_provider=\"copilot_proxy\"" \
               -c "model_providers.copilot_proxy.base_url=\"${COPILOT_PROXY_CONTAINER_URL}/v1\"" \
-              -c "model=\"${CODEX_COPILOT_MODEL:-gpt-5.6-sol-fast}\"" \
+              ${CODEX_COPILOT_MODEL:+-c "model=\"${CODEX_COPILOT_MODEL}\""} \
               -c "model_reasoning_effort=\"high\"" \
               -c "approvals_reviewer=\"${CODEX_COPILOT_APPROVALS_REVIEWER:-user}\"" \
               "$@"

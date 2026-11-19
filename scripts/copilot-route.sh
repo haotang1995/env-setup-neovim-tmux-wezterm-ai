@@ -15,8 +15,8 @@
 # Model overrides (any value already exported wins):
 #   CLAUDE_COPILOT_OPUS   default claude-opus-5-5
 #   CLAUDE_COPILOT_SONNET default claude-sonnet-5-5
-#   CLAUDE_COPILOT_HAIKU  default claude-haiku-4-5
-#   CODEX_COPILOT_MODEL   default gpt-5.6-sol-fast
+#   CLAUDE_COPILOT_HAIKU  default claude-haiku-5-5
+#   CODEX_COPILOT_MODEL   default: `model` from ~/.codex/config.toml
 #   CODEX_COPILOT_EFFORT  default high
 #   CODEX_COPILOT_APPROVALS_REVIEWER default user
 #
@@ -71,7 +71,7 @@ case "${HARNESS}" in
 
     : "${ANTHROPIC_DEFAULT_OPUS_MODEL:=${CLAUDE_COPILOT_OPUS:-claude-opus-5-5}}"
     : "${ANTHROPIC_DEFAULT_SONNET_MODEL:=${CLAUDE_COPILOT_SONNET:-claude-sonnet-5-5}}"
-    : "${ANTHROPIC_DEFAULT_HAIKU_MODEL:=${CLAUDE_COPILOT_HAIKU:-claude-haiku-4-5}}"
+    : "${ANTHROPIC_DEFAULT_HAIKU_MODEL:=${CLAUDE_COPILOT_HAIKU:-claude-haiku-5-5}}"
     export ANTHROPIC_DEFAULT_OPUS_MODEL ANTHROPIC_DEFAULT_SONNET_MODEL ANTHROPIC_DEFAULT_HAIKU_MODEL
 
     # Don't phone home to api.anthropic.com when a gateway is in front.
@@ -108,11 +108,17 @@ case "${HARNESS}" in
     # Force user approval review on the Copilot lane. auto_review and
     # guardian_subagent call models that Copilot does not serve, turning every
     # escalation into a hard denial.
-    : "${CODEX_COPILOT_MODEL:=gpt-5.6-sol-fast}"
+    #
+    # The model is NOT overridden by default: codex reads `model` from
+    # ~/.codex/config.toml, so both lanes share one model and a bump there
+    # carries over. CODEX_COPILOT_MODEL pins a Copilot-only model instead.
+    # (The `${a[@]+…}` form: an empty "${a[@]}" trips `set -u` on bash 3.2.)
+    model_args=()
+    [[ -n "${CODEX_COPILOT_MODEL:-}" ]] && model_args=(-c "model=\"${CODEX_COPILOT_MODEL}\"")
     exec codex \
       -c "model_provider=\"copilot_proxy\"" \
       -c "model_providers.copilot_proxy.base_url=\"${PROXY_URL}/v1\"" \
-      -c "model=\"${CODEX_COPILOT_MODEL}\"" \
+      ${model_args[@]+"${model_args[@]}"} \
       -c "model_reasoning_effort=\"${CODEX_COPILOT_EFFORT:-high}\"" \
       -c "approvals_reviewer=\"${CODEX_COPILOT_APPROVALS_REVIEWER:-user}\"" \
       "$@"

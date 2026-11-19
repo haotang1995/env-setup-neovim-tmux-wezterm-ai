@@ -186,6 +186,33 @@ which port the provider resolved to.
 > that block (`config's`, `there's`) silently terminates the quote and breaks the
 > whole script. Keep comments in that region quote-free.
 
+## Model refresh (2026-11-18) — Gemini check, codex model follows config
+
+- **Catalog is live.** copilot-api 1.14.22 re-fetches models every ~30 min
+  (`MODELS_REFRESH_BASE_MS`) and drops `policy: disabled` / non-picker entries,
+  so a 6-day-old proxy listed the current 28 ids, incl. `gpt-6.2-*`.
+- **Gemini** (`gemini-3.8-flash`, `gemini-4-{argon,carbon,hydrogen}`):
+  `/chat/completions` only. All four answered `/v1/chat/completions`;
+  `/v1/messages` translation works incl. tool use; `/v1/responses` → 400, so
+  Codex cannot use them. `CLAUDE_COPILOT_SONNET=gemini-4-argon claude-copilot -p`
+  read `probe.txt` via the Read tool and answered correctly, but `result` was
+  empty: the proxy appends a placeholder `thinking` block after the text.
+- **Stale default found:** `ai-sandbox --copilot-route claude` still used
+  `claude-opus-5`, which now returns `model_not_supported`. Aligned the sandbox
+  with `copilot-route.sh` and bumped Haiku to `claude-haiku-5-5` (10/50 vs
+  100/500 AIU per 1M tokens).
+- **codex-copilot model now follows `~/.codex/config.toml`.** The hard-coded
+  `gpt-5.6-sol-fast` default is gone from both `copilot-route.sh` and the
+  sandbox; `CODEX_COPILOT_MODEL` still overrides.
+
+Verified:
+- [x] `codex-copilot exec` (config `gpt-6.1-sol`) → `model: gpt-6.1-sol`,
+      `provider: copilot_proxy`, correct answer.
+- [x] `CODEX_COPILOT_MODEL=gpt-6-luna codex-copilot exec` → `model: gpt-6-luna`.
+- [x] `claude-copilot -p --model haiku` → `modelUsage` keyed `claude-haiku-5-5`.
+- [x] `bash -n` clean on `copilot-route.sh`, `ai-sandbox.sh`.
+- [ ] `ai-sandbox --copilot-route codex` not launched (Docker path unexercised).
+
 ## Remaining
 
 - [ ] Multi-turn agentic run to shake out tool-call translation and the 90s
