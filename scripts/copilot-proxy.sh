@@ -99,6 +99,39 @@ listen_addr() {
 
 port_in_use() { [[ -n "$(listen_addr "$1")" ]]; }
 
+# Print the inode of the listening socket on $1 (Linux), or nothing.
+# Cheap: unlike `ss -p`, `ss -e` does not walk every /proc/*/fd.
+listen_inode() {
+  ss -ltne 2>/dev/null | awk -v p=":${1}$" '$4 ~ p {
+    if (match($0, /ino:[0-9]+/)) { print substr($0, RSTART + 4, RLENGTH - 4); exit } }' || true
+}
+
+# Print the pid holding the listening socket on $1, or nothing if unknown.
+# Without root, `ss -p` / `lsof` only see the caller's own processes. That
+# covers the case that matters: a stray proxy of ours squatting the port.
+# Slow on busy hosts (`ss -p` scans every process's fds: ~1.6s at 70k pids),
+# so only error paths call it.
+listen_pid() {
+  local port="$1"
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltnp 2>/dev/null | awk -v p=":${port}$" '$4 ~ p {
+      if (match($0, /pid=[0-9]+/)) { print substr($0, RSTART + 4, RLENGTH - 4); exit } }' || true
+  elif command -v lsof >/dev/null 2>&1; then
+    lsof -nP -iTCP:"${port}" -sTCP:LISTEN -t 2>/dev/null | head -1 || true
+  fi
+  return 0
+}
+
+# One-line description of a pid: its systemd unit (Linux) and command line.
+describe_pid() {
+  local pid="$1" cmd unit=""
+  cmd="$(ps -o args= -p "${pid}" 2>/dev/null | cut -c1-120 || true)"
+  if [[ -r "/proc/${pid}/cgroup" ]]; then
+    unit="$(awk -F/ '$NF ~ /\.service$/ {print $NF}' "/proc/${pid}/cgroup" 2>/dev/null | tail -1 || true)"
+  fi
+  printf 'pid %s%s: %s' "${pid}" "${unit:+ (systemd --user unit ${unit})}" "${cmd:-?}"
+}
+
 # stat helpers: GNU `-c` vs BSD `-f`.
 file_size() {
   stat -c %s "$1" 2>/dev/null || stat -f %z "$1" 2>/dev/null || echo "?"
@@ -191,14 +224,67 @@ is_healthy() {
   curl -fsS -o /dev/null -m 3 "${PROXY_URL}/" 2>/dev/null
 }
 
+# True only if the pid in PID_FILE holds the listening socket.
+# is_running + is_healthy are not enough. Upstream swallows EADDRINUSE
+# (srvx: `this.serve().catch(() => {})`), so a proxy started on a taken port
+# stays alive with no socket, and *another* server answers every check —
+# with its own account and its own bind address.
+# $! is the listener itself: nohup and the npm shim's `env node` both exec.
+owns_port() {
+  is_running || return 1
+  local pid ino; pid="$(cat "${PID_FILE}")"
+  if [[ -d "/proc/${pid}/fd" ]] && command -v ss >/dev/null 2>&1; then
+    ino="$(listen_inode "${PROXY_PORT}")"
+    [[ -n "${ino}" && "$(ls -l "/proc/${pid}/fd" 2>/dev/null)" == *"socket:[${ino}]"* ]]
+  elif command -v lsof >/dev/null 2>&1; then
+    [[ -n "$(lsof -nP -a -p "${pid}" -iTCP:"${PROXY_PORT}" -sTCP:LISTEN -t 2>/dev/null || true)" ]]
+  else
+    is_healthy   # cannot tell owners apart here; fall back to the old check
+  fi
+}
+
+# Wait up to ~20s for our pid to bind the port and answer. Stops early if it dies.
+wait_owned() {
+  local i
+  for i in $(seq 1 40); do
+    owns_port && is_healthy && return 0
+    is_running || return 1
+    sleep 0.5
+  done
+  return 1
+}
+
+# Describe whatever holds PROXY_PORT.
+port_owner_desc() {
+  local owner; owner="$(listen_pid "${PROXY_PORT}")"
+  if [[ -n "${owner}" ]]; then describe_pid "${owner}"; else printf 'owner not visible (another user?)'; fi
+}
+
+die_port_taken() {
+  warn "port ${PROXY_PORT} is held by another process — $(port_owner_desc)"
+  warn "it would serve every request with its own GitHub account, quota, and bind address"
+  die "free the port (systemctl --user stop <unit> / kill <pid>) or set COPILOT_PROXY_PORT, then retry"
+}
+
 authed() { [[ -s "${TOKEN_FILE}" ]]; }
 
 # ── Actions ───────────────────────────────────────────────────────────────
 do_start() {
-  if is_running && is_healthy; then
+  if owns_port && is_healthy; then
     log "already running on ${PROXY_URL} (pid $(cat "${PID_FILE}"))"
     return 0
   fi
+  if is_running; then
+    # Our pid is alive without the port. It is either still booting (a
+    # concurrent `start`), or it lost a bind race and will never listen.
+    if ! port_in_use "${PROXY_PORT}" && wait_owned; then
+      log "already running on ${PROXY_URL} (pid $(cat "${PID_FILE}"))"
+      return 0
+    fi
+    warn "pid $(cat "${PID_FILE}") is alive but not serving ${PROXY_URL} — stopping it"
+    do_stop >/dev/null
+  fi
+  port_in_use "${PROXY_PORT}" && die_port_taken
   authed || die "not authenticated — run: copilot-proxy auth"
 
   ensure_installed
@@ -212,15 +298,12 @@ do_start() {
     >>"${LOG_FILE}" 2>&1 &
   echo $! > "${PID_FILE}"
 
-  local i
-  for i in $(seq 1 40); do
-    sleep 0.5
-    is_healthy && break
-  done
-
-  if ! is_healthy; then
+  if ! wait_owned; then
+    # Covers a bind race too: someone took the port after the check above.
+    port_in_use "${PROXY_PORT}" && ! owns_port && { do_stop >/dev/null; die_port_taken; }
     warn "did not become healthy; last log lines:"
     tail -15 "${LOG_FILE}" >&2 || true
+    do_stop >/dev/null
     die "start failed"
   fi
 
@@ -266,7 +349,15 @@ do_status() {
     printf '  %-14s %s\n' "github auth" "✗ missing — run: copilot-proxy auth"
   fi
 
-  if is_running && is_healthy; then
+  if port_in_use "${PROXY_PORT}" && ! owns_port; then
+    # Foreign server on our port: every check below would describe IT.
+    printf '  %-14s %s\n' "state" "🔴 port ${PROXY_PORT} held by another process"
+    printf '  %-14s %s\n' "owner" "$(port_owner_desc)"
+    if is_running; then
+      printf '  %-14s %s\n' "managed pid" "$(cat "${PID_FILE}") alive but has no socket (bind failed silently)"
+    fi
+    printf '  %-14s %s\n' "fix" "stop that process, then: copilot-proxy restart"
+  elif owns_port && is_healthy; then
     local bind anon
     bind="$(listen_addr "${PROXY_PORT}")"
     anon="$(curl -s -o /dev/null -w '%{http_code}' -m 5 "${PROXY_URL}/v1/models" || echo 000)"
@@ -277,6 +368,8 @@ do_status() {
     else
       printf '  %-14s %s\n' "auth"  "🔴 NOT ENFORCED (anonymous → ${anon})"
     fi
+  elif is_running; then
+    printf '  %-14s %s\n' "state" "✗ pid $(cat "${PID_FILE}") alive but not listening (starting, or bind failed)"
   else
     printf '  %-14s %s\n' "state" "✗ stopped"
   fi

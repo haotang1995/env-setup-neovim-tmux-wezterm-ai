@@ -423,6 +423,22 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     (2) `serve()` is called without a hostname, so it binds `*:<port>` and is
     reachable from the LAN; `HOST=127.0.0.1` fixes it. `start` refuses to run if
     an anonymous `/v1/models` request does not return 401.
+  - **A port already in use fails silently upstream, so `start` checks first.**
+    srvx swallows `EADDRINUSE` (`this.serve().catch(() => {})`). A proxy started
+    on a taken port stays alive with **no socket and no log line**, and whatever
+    already holds the port answers every request with *its own* GitHub account,
+    quota, and bind address. Health, auth, and bind checks then all pass against
+    the wrong server. Seen Nov 2026: a transient `systemd --user` unit started by
+    an experiment (`codex-swarmresearch-proxy-r1.service`, bound to `*:6868`)
+    kept serving an exhausted account for two weeks, so `copilot-proxy auth`
+    plus a restart under another account changed nothing. `start` and `status`
+    therefore require the pidfile's pid to own the listening socket. They match
+    the socket inode from `ss -e` against `/proc/<pid>/fd` (`lsof -p` on macOS).
+    If the port is taken, they name the holder (pid, systemd unit, command) and
+    `start` refuses. Don't use `ss -p` for the routine check: it walks every
+    process's fds, about 1.6s per call at this box's ~70k pids.
+    **Run experiment proxies on their own `COPILOT_PROXY_PORT`.** Two proxies on
+    one port is exactly this failure.
   - **Model IDs differ by family:** Claude uses dashes (`claude-opus-5-5`,
     `claude-haiku-5-5`), GPT and Gemini use dots (`gpt-6.1-sol`,
     `gemini-3.8-flash`). `copilot-proxy models [--claude|--gpt]` lists what the
@@ -545,6 +561,14 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
       payloads, so it is not context size, reasoning effort, or payload shape.
       Just retry the turn; if a model keeps failing, switch models
       (`CODEX_COPILOT_MODEL`) rather than editing config.
+      **Exception — `code: 'quota_exceeded'` gives the same Codex error but is
+      not transient.** The WARN line reads `You have exceeded your monthly
+      quota`, and *every* model fails within ~3 ms. The seat's AI-credits
+      allowance is spent: `copilot-proxy usage` shows
+      `premium_interactions.percent_remaining: 0`, and `overage_permitted:
+      false` blocks further use until `quota_reset_date`. Retrying and switching
+      models both fail. Switch accounts with `copilot-proxy auth` + `restart`,
+      then confirm `Logged in as` in `copilot-proxy logs`.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.
