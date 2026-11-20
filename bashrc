@@ -99,6 +99,12 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+# bun (only when installed; bun's installer appends an unguarded copy of this)
+if [ -d "$HOME/.bun" ]; then
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
+fi
+
 # kubectl/helm shortcuts (kpods, klogs, ksh, kgpu, knodes, kh, ...).
 # Sourced before ~/.shellrc.local so the latter can override KNS / KUSER.
 [ -f "$HOME/.k_shortcuts.sh" ] && source "$HOME/.k_shortcuts.sh"
