@@ -4,7 +4,12 @@
       "Read(./**)",
       "WebSearch",
       "WebFetch",
-      "Fetch(http**)"
+      "Fetch(http**)",
+      "Read(//data/tanghao/rl_nle/**)",
+      "Edit(//data/tanghao/rl_nle/**)"
+    ],
+    "additionalDirectories": [
+      "/data/tanghao/rl_nle"
     ]
   },
   "model": "fable",
@@ -19,6 +24,14 @@
     "frontend-design@claude-plugins-official": true
   },
   "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    },
+    "claude-fable-5-2": {
+      "effortLevel": "xhigh"
+    }
+  },
   "tui": "default",
   "theme": "dark",
   "autoCompactEnabled": true,
