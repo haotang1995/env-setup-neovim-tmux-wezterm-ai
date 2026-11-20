@@ -1,4 +1,5 @@
 - One skill to check consistency of documents vs local
+- Push `my_skills` to `haotang1995/my_skills` `master` (fast-forward `04d3e50` → `6514423`: `writing-agent-prompts` + `report-in-html`). The gitlink on `origin/main` is unfetchable on fresh clones until then. See `writing-agent-prompts_progress.md`.
 - sub-agents
 - self-evolving skills
 - chat history, keep track for all ai-agents, especially which skill, etc.; Get context maybe doable as a fake tool?
