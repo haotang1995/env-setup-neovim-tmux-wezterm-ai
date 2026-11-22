@@ -1004,7 +1004,7 @@ The default route is Copilot HTTP; local inference is not active.
     What survives is the academic writing / figure / poster / literature
     toolchain, a thin slice of OpenAI media-and-document skills, this machine's
     own MSR-specific skills (`trapi-llm`, `azureml-singularity-jobs`,
-    `wandb-microsoft-research`) plus the rest of `my_skills`, and the explicitly
+    `wandb-microsoft-research`, `bonete-b200`) plus the rest of `my_skills`, and the explicitly
     added mattpocock/skills promoted set. Don't re-enable the pruned ones as a
     side effect of adding a submodule; `keep: false` in
     `skill-decisions.json` is the record. Note the `scripts` entry there is
