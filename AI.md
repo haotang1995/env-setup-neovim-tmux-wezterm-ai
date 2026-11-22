@@ -194,11 +194,53 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   and `~/.shellrc.local` sourcing.
 - **kubectl/helm shortcuts (`k_shortcuts.sh`):** symlinked to `~/.k_shortcuts.sh`
   and sourced by both `zshrc` and `bashrc`. Provides `kpods`, `klogs`, `ksh`,
-  `krun`, `kev`, `kpf`, `kgpu`, `knodes`, `kgpumon`, `kduc`, `kducs`, `kduci`,
-  `kduc-install`, `kh`, `khrm`, `khclean`. Defaults
+  `krun`, `kev`, `kpf`, `kgpu`, `knodes`, `kgpumon`, `kq`, `kvj`, `kvjrm`,
+  `kopp`, `kduc`, `kducs`, `kduci`, `kduc-install`, `kh`, `khrm`, `khclean`.
+  Defaults
   to namespace `bonete51` and user `$(whoami | cut -d@ -f1)`; override via
   `KNS=otherns KUSER=somebody <cmd>` or by setting them in `~/.shellrc.local`
   (sourced after `k_shortcuts.sh`, so those overrides win).
+  The file must work in both zsh and bash. zsh arrays are 1-based, zsh prints
+  a `local` that is re-declared inside a loop, and zsh `echo` expands `\n` in
+  JSON. Each of these broke `klogs <pod>` or `knodes` under zsh until Nov 2026.
+  Pipe data with `printf '%s\n'`. The view helpers (`kq`, `knodes`, `kgpu`,
+  `kvj`) capture each kubectl call and exit 1 if any fails. Never pipe or
+  process-substitute kubectl straight into the table: a failed query would
+  render as an empty or all-zero table with exit 0.
+  - **Opportunistic GPUs (Volcano `$KNS-opp` queue):** every namespace has a
+    capped dedicated queue (`bonete51`, 96 GPUs) and an uncapped opp queue
+    (`bonete51-opp`). The opp queue borrows idle GPUs from other namespaces at
+    priority `low`, and the owner can preempt them at any time. GCR enabled it
+    on 2026-08-03. A regular user cannot list other queues, priority classes,
+    or cluster-wide pods (Forbidden). Nothing shows how much can be borrowed,
+    so submit and watch whether the job starts.
+    - `kq` shows both queues: GPUs used vs cap, running jobs, and waiting jobs
+      with GPUs, age, and podgroup reason (e.g. `NotEnoughResources`).
+    - `kgpu` and `knodes` gain QUEUE/PRIO and OPP columns, and split totals
+      into own vs borrowed.
+    - `kvj [me|pattern]` / `kvjrm <job>` are the vcjob twins of `kh`/`khrm`.
+      RESTARTS is `.status.retryCount`, the total number of job retries for
+      any cause (eviction, pod failure, ...). It does not count evictions or
+      say why a retry happened. The cause shows in `kubectl describe vcjob`
+      only while Kubernetes events last, about an hour.
+    - `kopp <job.yaml> [--dry-run]` rewrites a Volcano Job in flight (the file
+      is untouched). It sets the queue to `$KNS-opp`, `priorityClassName: low`
+      on the job and every task, `volcano.sh/preemptable: "true"`, and
+      `cooldown-time` (default 60s). It then runs a server-side dry run and
+      `kubectl create`s the job. It warns when a task would not restart on
+      eviction. It finds the policy that applies, task-level before
+      job-level, matching event `PodEvicted` or `*` and `events:` lists, then
+      checks that the policy exists and its action is `RestartJob`,
+      `RestartTask`, `RestartPod`, or `RestartPartition`. `PodEvicted →
+      CompleteJob`/`TerminateJob`/`AbortJob` would end or halt the job on
+      the first preemption. It also warns when `maxRetry` is 1–2, since each
+      restart uses one retry. Warnings do not block submission. The Volcano
+      webhook itself rejects a `*` policy combined with any other policy.
+      **`maxRetry: 0` means 3 here:** Bonete admission rewrites 0 to the
+      default (verified with a server dry run, Nov 2026).
+    - Only resumable work belongs on opp (eval/inference batches, runs that
+      checkpoint to the PVC). Moving a waiting job there is a manual
+      `kvjrm` + `kopp`, which gives up its place in the dedicated queue.
   - **PVC disk usage (`kduc`):** wraps the GCR `kubectl duc` plugin (PVC Storage
     Viewer / gcr-duc), injecting `-n $KNS` unless the caller passes
     `-n/--namespace`. Bare `kduc` opens the interactive disk-usage UI; `-p NAME`
