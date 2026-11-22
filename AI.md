@@ -46,8 +46,8 @@ shellrc.local.example            ← Template for ~/.shellrc.local (machine-loca
 scripts/                         ← Utility scripts for global use
   install.sh                     ← Installer (symlinks scripts + configs + skills)
   init-ai.sh                     ← Unified AI context bootstrapper
-  ai-sandbox.sh                  ← Unified Docker sandbox (claude/gemini/codex/copilot)
-  ai-sandbox.Dockerfile          ← Shared sandbox image (ubuntu:24.04 + Node 22 + all four CLIs)
+  ai-sandbox.sh                  ← Unified Docker sandbox (claude/gemini/codex/copilot/agy)
+  ai-sandbox.Dockerfile          ← Shared sandbox image (ubuntu:24.04 + Node 22 + all five CLIs)
   openclaw-sandbox.sh            ← Long-running OpenClaw dev sandbox (start/stop/exec/status/destroy)
   openclaw-sandbox.Dockerfile    ← OpenClaw sandbox image (ubuntu:24.04 + Node 24 + sudo user)
   checkpoint-openclaw.sh         ← Checkpoint openclaw-live (docker commit + volume backup)
@@ -55,7 +55,10 @@ scripts/                         ← Utility scripts for global use
   review_skills.py               ← Interactive keep/remove review for skills
   gpu-util-monitor.sh            ← Cheap long-horizon GPU-util tracking (cron sample + report)
   copilot-proxy.sh               ← Local GitHub Copilot → OpenAI/Anthropic bridge (start/stop/status/env)
-  copilot-route.sh               ← claude-copilot / codex-copilot wrappers (harness → Copilot proxy)
+  copilot-route.sh               ← claude-/codex-/agy-copilot wrappers (harness → Copilot proxy)
+  gemini_bridge.py               ← Gemini API → chat/completions bridge (per agy-copilot session)
+  tests/gemini_bridge_test.py    ← offline regression test for the bridge's agy-specific translation
+third_party/litellm/             ← git submodule: BerriAI/litellm @ v1.99.4 (reference only; update = none)
 ai-skills/                       ← Shared AI skill library
   README.md                      ← Skill format docs & cross-agent reference
   .repos/superpowers/            ← git submodule: obra/superpowers
@@ -279,14 +282,15 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     update AI skill submodules, and re-run the linking process.
 - **Naming:** Scripts are symlinked without the `.sh` extension for cleaner CLI usage.
 - **`init-ai`:** Bootstraps `AI.md`, `TODO/TODO.md`, copies the default sandbox `Dockerfile` (`ai-sandbox.Dockerfile`), initializes a no-op `install.sh` when missing, and links `AI.md` to `CLAUDE.md`, `GEMINI.md`, `CODEX.md`, and `.github/copilot-instructions.md` in the current directory.
-- **`ai-sandbox`:** Unified Docker sandbox for all four AI CLI agents. Usage:
-  `ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] <claude|gemini|codex|copilot> [args...]`,
+- **`ai-sandbox`:** Unified Docker sandbox for all five AI CLI agents. Usage:
+  `ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] <claude|gemini|codex|copilot|agy> [args...]`,
   or via backward-compat symlinks (`claude-sandbox`, `gemini-sandbox`,
-  `codex-sandbox`, `copilot-sandbox`). Run `ai-sandbox --help` (or `-h`) for
+  `codex-sandbox`, `copilot-sandbox`, `agy-sandbox`). Run `ai-sandbox --help` (or `-h`) for
   the full list of flags, env vars, and image-selection rules.
   All agents share a single Docker image (built from `scripts/ai-sandbox.Dockerfile`,
   based on `ubuntu:24.04` with python3, build-essential, ripgrep, Node.js 22, all
-  four CLIs, and `wandb`) pre-installed at build time for near-instant startup.
+  five CLIs, and `wandb`) pre-installed at build time for near-instant startup.
+  `agy` is the last layer, so adding it to an existing image reuses the cache.
   **Biweekly auto-rebuild:** the default image uses a rotating tag (`ai-sandbox:w0`
   / `ai-sandbox:w1`) based on ISO week number, so every other week the tag flips,
   the old image is unused, and a fresh build picks up the latest CLI versions.
@@ -311,7 +315,7 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   grants root-equivalent access to the host Docker daemon — only use on
   machines you control.
   **Copilot routing:** pass `--copilot-route` (or `SANDBOX_COPILOT_ROUTE=1`) with
-  `claude` or `codex` to back the sandboxed agent with the host's `copilot-proxy`
+  `claude`, `codex`, or `agy` to back the sandboxed agent with the host's `copilot-proxy`
   instead of its native auth. Reaching a loopback-bound host process from a
   container is **platform-specific**:
   - **Linux/WSL** — `--add-host host.docker.internal:host-gateway` maps to the
@@ -329,8 +333,13 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   `127.0.0.1` into a bridged container, so the URL is rewritten per platform. For
   codex there is no env passthrough for provider config at all, so the container's
   `config.toml` `base_url` is rewritten at startup and the provider is selected
-  with `-c model_provider=…`. Fails fast if the proxy isn't running or the key is
-  missing.
+  with `-c model_provider=…`. For agy the entrypoint starts
+  `scripts/gemini_bridge.py` inside the container (from the read-only repo
+  mount), pointed at the rewritten proxy URL, exactly as `agy-copilot` does on
+  the host. Its log is `/root/.gemini/agy-bridge.log` in the `agy-home` volume.
+  The proxy key reaches docker as `-e COPILOT_PROXY_KEY` (name only), so it
+  stays out of the host's `ps`. Fails fast if the proxy isn't running or the
+  key is missing.
   **W&B (Weights & Biases):** token is resolved from `WANDB_KEY` > `WANDB_TOKEN`
   > `WANDB_API_KEY` env vars > `~/.bashrc` extraction, and passed into the
   container as both `WANDB_API_KEY` (Python library) and `WANDB_KEY` (MS Research
@@ -400,9 +409,22 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
   `GITHUB_TOKEN`/`GH_TOKEN` env, macOS Keychain (`copilot-cli`), or
   `gh auth token` (GitHub CLI) and passes it as `GITHUB_TOKEN`;
   drops to non-root user matching host UID/GID via `setpriv`,
-  launches with `--yolo`.
+  launches with `--yolo`;
+  **agy** — `agy-home` volume at `/root/.gemini`; mounts only host
+  `~/.gemini/antigravity-cli` (read-only) and seeds its `settings.json`
+  no-clobber; pre-trusts `/workspace` in `trustedWorkspaces`; maps
+  `play.googleapis.com` to `127.0.0.1` **and** `::1` with `--add-host` (an
+  IPv4-only entry lets AAAA lookups fall through to real DNS), which blocks agy's
+  usage-log upload for every process in the container (it holds with
+  `--network host` too). With `--copilot-route` the bridge proxy refuses it as
+  well and logs each refusal; a caller-supplied `--settings` is refused, as on
+  the host. Without `--copilot-route` agy needs its own
+  Google sign-in inside the volume. Drops to the host UID/GID via `setpriv` and
+  launches with `--dangerously-skip-permissions`. Not on npm, so the fallback
+  for custom Dockerfiles runs Google's installer into `/usr/local/bin`.
   Bootstraps skills when missing/empty or only broken symlinks are present.
-  Falls back to `npm i -g` only when the CLI binary is not found (custom Dockerfiles).
+  Falls back to `npm i -g` (Google's installer for agy) only when the CLI binary
+  is not found (custom Dockerfiles).
   **Writable agent config:** the repo is bind-mounted read-only at its host
   path, and `install.sh` (run inside the container for the skill bootstrap)
   symlinks `~/.codex/config.toml` and `~/.<agent>/settings.json` back into it.
@@ -496,7 +518,8 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     `claude -p` reports an empty `result`; read the text from
     `--output-format stream-json` instead. `/v1/responses` answers 400 *"This
     model does not support the responses endpoint"*, and Codex speaks only
-    `responses`, so codex-copilot cannot use Gemini.
+    `responses`, so codex-copilot cannot use Gemini. `agy-copilot`
+    (below) reaches the same models from the Antigravity CLI.
   - **Codex auto-review is mapped to a real model.** `ensure_config` seeds
     `modelMappings["codex-auto-review"]` in `config.json` (default
     `gpt-5.6-luna`; `COPILOT_PROXY_AUTO_REVIEW_MODEL` changes the seed, and a
@@ -522,10 +545,11 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
     contracting party is the employer. Sanctioned alternatives that need no proxy:
     OpenCode on Copilot, the Copilot CLI, or `CLAUDE_CODE_USE_FOUNDRY=1` for
     Claude Code on Microsoft Foundry.
-- **`copilot-route`** (`claude-copilot`, `codex-copilot`): argv[0]-dispatched
-  wrappers — same idiom as the `*-sandbox` symlinks — that start the proxy if
-  needed and launch the harness against it. **Plain `claude` and `codex` are
-  untouched and keep native auth.** This split is deliberate:
+- **`copilot-route`** (`claude-copilot`, `codex-copilot`, `agy-copilot`):
+  argv[0]-dispatched wrappers — same idiom as the `*-sandbox` symlinks — that
+  start the proxy if needed and launch the harness against it. **Plain
+  `claude`, `codex`, and `agy` are untouched and keep native auth.** This split
+  is deliberate:
   `~/.claude/settings.json` and `~/.codex/config.toml` are symlinks *into this
   repo*, so putting proxy env in them would route every session through Copilot
   and hard-fail whenever the proxy is down.
@@ -611,6 +635,111 @@ nvim-config/                     ← Neovim config  (→ ~/.config/nvim/)
       false` blocks further use until `quota_reset_date`. Retrying and switching
       models both fail. Switch accounts with `copilot-proxy auth` + `restart`,
       then confirm `Logged in as` in `copilot-proxy logs`.
+  - agy (`agy-copilot`): Google's Antigravity CLI (`agy`, successor
+    to Gemini CLI) driven by the seat's **Gemini** models. agy speaks only
+    Gemini's native API (`POST /v1beta/models/<id>:streamGenerateContent?alt=sse`,
+    key in `x-goog-api-key`), which the proxy does not serve. So each session
+    also starts **`scripts/gemini_bridge.py`**: stdlib-only Python on
+    loopback, kernel-chosen port, per-session random key (passed by env,
+    never argv). The wrapper's EXIT trap stops it, and it exits by itself if
+    its parent dies. It forwards to `/v1/chat/completions`, where Copilot
+    serves Gemini natively. Same ⚠️ policy caveat as the proxy.
+    - **Install agy:** `curl -fsSL https://antigravity.google/cli/install.sh | bash`
+      puts it in `~/.local/bin/agy`, and agy then self-updates in the
+      background. The installer's last step (`agy install`) appends
+      `export PATH="/home/<you>/.local/bin:$PATH"` to `~/.zshrc` **and**
+      `~/.bashrc`, which are symlinks into this repo. Delete those lines
+      before committing (`zshrc` already has `$HOME/.local/bin`).
+    - **API-key mode is per session.** The wrapper exports `GEMINI_API_KEY` and
+      `GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:<port>` (bare host; agy appends
+      `/v1beta/…`), and passes `--settings '{"modelProvider":"gemini"}'`. Per
+      Google's docs the key alone does nothing. The global
+      `~/.gemini/antigravity-cli/settings.json` is never touched, so plain `agy`
+      keeps the Google login. **A second `--settings` replaces ours** (verified
+      on agy 1.5.14), and agy then silently falls back to the Google login, so
+      the wrapper refuses a caller-supplied `--settings`.
+    - **Models are mapped in the bridge.** agy always asks for
+      `gemini-3.1-pro-preview`, and its status bar keeps saying "Gemini 3.1
+      Pro". That is agy's label, not the model serving the request. An id the
+      seat serves passes through. A name containing `flash`/`lite` maps to
+      `AGY_COPILOT_SMALL_MODEL` (default `gemini-3.8-flash`); anything else
+      maps to `AGY_COPILOT_MODEL` (default `gemini-4-argon`). `--effort low`
+      sends `thinkingBudget: 1024` (→ `reasoning_effort: low`) and
+      `--effort high` sends `-1` (→ `high`); `--effort max` is not accepted.
+      `max_tokens` is clamped to the catalog's `max_output_tokens`.
+    - **Confirm routing in `~/.local/state/copilot-proxy/agy-bridge.log`**,
+      one line per request, e.g. `gemini-3.1-pro-preview -> gemini-4-argon
+      stream finish=tool_calls tools=2 in=12603 out=200`. Upstream errors
+      reach agy with Copilot's own message (e.g. `model_not_supported`).
+    - **The translation is adapted from LiteLLM, not imported.**
+      `third_party/litellm` is a submodule pinned at `v1.99.4` with
+      `update = none` and `shallow = true`. It is reference only: a fresh
+      clone doesn't check it out, and `install.sh -u` prints `Skipping
+      submodule`. The source is
+      `litellm/google_genai/adapters/transformation.py` (MIT; the notice is
+      kept in the bridge). Upstream misses what agy needs, and each fix is
+      guarded by `python3 -I scripts/tests/gemini_bridge_test.py`
+      (→ `GEMINI_BRIDGE_OK`):
+      agy sends tool results as `functionResponse` under role **`model`**
+      (upstream reads them only from `user`, and Copilot then 400s on the
+      unanswered call); tool-call ids must round-trip through
+      `functionCall.id` (upstream's `call_<name>` collides on repeated calls);
+      `reasoning_opaque` ↔ `thoughtSignature`; thought parts stay out of
+      history; camelCase `inlineData`. Two more are the bridge's own:
+      **streams fail closed** (a Copilot error event, a stream that ends
+      before `finish_reason`, or unparseable tool arguments ends the turn with
+      a Gemini `{"error": 503 UNAVAILABLE}` event and *no* tool calls; agy
+      reads it as an API error and retries with backoff, verified on 1.5.14),
+      and a user message (e.g. an image from one tool result) is held until
+      all of that assistant turn's tool results are in, since OpenAI requires
+      them back to back. To re-sync, fetch a newer tag
+      (`git -C third_party/litellm fetch --depth 1 origin tag <v>`), check it
+      out, diff that one file, and port what applies.
+    - **End-to-end check** (about 3 model turns, real credits), from a scratch
+      dir containing `hello.txt`: `agy-copilot -p "Read hello.txt, then
+      create out.txt containing its first word" --dangerously-skip-permissions
+      --output-format json --print-timeout 240s`. Verified Nov 2026 on agy
+      1.5.14: read, write, answer; parallel tool calls; bridge gone after exit.
+    - **⚠️ agy uploads usage logs to Google even in API-key mode, and
+      "Enable Telemetry: off" does not stop it.** Measured with `strace` on
+      agy 1.5.14: every session opens a TLS connection to
+      `play.googleapis.com` (Google's logging endpoint) and writes ~43 KB per
+      short `-p` run. That is 42,956 bytes with the default setting and
+      42,832 with telemetry declined at onboarding (`/config` then shows
+      `Enable Telemetry off`). The content is encrypted. Its size is in the
+      range of the 33 KB system prompt plus a transcript, so prompts may be in
+      it. Google's docs say the toggle is stored "with your account", which
+      API-key mode does not have. So the **bridge is also agy's HTTPS proxy**:
+      the wrapper sets `HTTPS_PROXY`/`https_proxy` to it, and `NO_PROXY` to
+      loopback. It refuses `CONNECT play.googleapis.com` (`BLOCKED_HOSTS` in
+      the bridge) and tunnels everything else. Commands agy runs (curl, pip,
+      git) inherit the proxy and work through the tunnel. The bridge log
+      shows `proxy: blocked CONNECT play.googleapis.com:443` (about 4 per
+      session) and one `proxy: CONNECT host:port` line per tunnel, which is
+      an audit trail of every HTTPS host the session touched. Verified: no
+      connection to Google remains, and a `curl https://pypi.org` run by agy
+      returns 200. The wrapper **always** replaces `HTTPS_PROXY` and
+      `NO_PROXY` for the session, with a note on stderr when it does: an
+      inherited proxy would carry the upload past the bridge, and an
+      inherited `NO_PROXY` entry such as `.googleapis.com` or `*` makes Go
+      skip the proxy (verified with both set: still blocked, no Google
+      connection). Consequences: a corporate egress proxy isn't used inside
+      agy sessions (the bridge dials hosts directly), and processes agy leaves
+      running lose their proxy when the session ends. agy does not
+      appear to queue failed uploads on disk (`implicit/` holds ~434 B per
+      conversation, `crashes/` stays empty). **Re-run the check after agy
+      self-updates**, since a new logging host would pass the deny-list:
+      `strace -f -e trace=connect,write -s 600 -o t.txt agy-copilot -p …`,
+      then `grep -oaE '[a-z0-9.-]+\.googleapis\.com' t.txt | sort | uniq -c`.
+    - **The first interactive run walks through agy's onboarding:** a color
+      scheme, then the Terms of Service with the *interaction-data
+      collection* checkbox **pre-ticked**. Untick it (Enter toggles; ↓ → to
+      `Done`); agy accepts that and continues. This machine's choice was
+      declined in Nov 2026. `-p` print mode skips onboarding entirely.
+    - **Sandbox:** `ai-sandbox --copilot-route agy` (or `agy-sandbox
+      --copilot-route`) runs the same lane in Docker; see `ai-sandbox`.
+    - **Gaps:** non-image attachments (PDF/video from `read_file`) are
+      replaced by a placeholder note; `countTokens` is a chars/4 estimate.
 - **`review_skills.py`:** Interactive skill decision tool (`y/n/q`) that writes
   `ai-skills/skill-decisions.json` and, by default, applies each answer
   immediately to `~/.claude/skills`, `~/.codex/skills`, `~/.gemini/skills`, and `~/.copilot/skills`.

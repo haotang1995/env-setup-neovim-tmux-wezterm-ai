@@ -5,5 +5,6 @@
 - chat history, keep track for all ai-agents, especially which skill, etc.; Get context maybe doable as a fake tool?
 - Got an online always running agent, especially regarding privacy, it should be able to run local models for parsing and private tasks, etc.
 - ~~Docker image outdated issue~~ — solved: biweekly rotating tags (`w0`/`w1`) + `--rebuild` flag
+- `ai-sandbox` images don't actually rotate. A tag is built only when missing, and once `w0` and `w1` both exist nothing rebuilds them (`w0` was 3 months old on 2026-11-21). `w0` also has no `agy`, so run `ai-sandbox --rebuild agy` in ISO week 48 (from 2026-11-23). Separately, `$(( $(date +%V) % 2 ))` errors in weeks 08–09 (bash reads `08` as octal).
 - ~~Dockerfile add python3, rg~~ — already in base image
 - Fix `prefix + A` tmux binding — `$S` shell variable gets expanded by tmux's format engine before the shell sees it; use `#{session_name}` inline instead

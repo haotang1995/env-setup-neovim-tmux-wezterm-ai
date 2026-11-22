@@ -79,3 +79,10 @@ RUN HOME=/opt/claude-cli curl -fsSL https://claude.ai/install.sh | HOME=/opt/cla
 
 # W&B (Weights & Biases) — pre-install so training scripts can log metrics
 RUN pip install --no-cache-dir --break-system-packages wandb
+
+# Antigravity CLI (agy) — for `ai-sandbox agy` / `--copilot-route agy`. Google's
+# installer checks the binary's SHA-512 against its release manifest. --dir puts
+# it on PATH for every user (the default ~/.local/bin would be root's, mode 700).
+# Kept last so adding it reuses the cache for every layer above.
+RUN curl -fsSL https://antigravity.google/cli/install.sh | bash -s -- --dir /usr/local/bin \
+  && agy --version

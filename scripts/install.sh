@@ -123,13 +123,13 @@ for old_name in claude-sandbox gemini-sandbox codex-sandbox copilot-sandbox; do
 done
 
 # Backward-compat symlinks: old names -> unified ai-sandbox.sh
-for compat_name in claude-sandbox gemini-sandbox codex-sandbox copilot-sandbox; do
+for compat_name in claude-sandbox gemini-sandbox codex-sandbox copilot-sandbox agy-sandbox; do
   safe_link "$SCRIPT_DIR/ai-sandbox.sh" "$BIN_DIR/$compat_name"
 done
 
 # argv[0]-dispatched wrappers: harness routed through the local Copilot proxy.
-# Plain `claude` / `codex` stay on native auth.
-for route_name in claude-copilot codex-copilot; do
+# Plain `claude` / `codex` / `agy` stay on native auth.
+for route_name in claude-copilot codex-copilot agy-copilot; do
   safe_link "$SCRIPT_DIR/copilot-route.sh" "$BIN_DIR/$route_name"
 done
 

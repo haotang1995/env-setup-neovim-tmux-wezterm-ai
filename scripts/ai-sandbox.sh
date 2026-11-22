@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Unified AI sandbox — launch Claude Code, Gemini CLI, Codex, or Copilot CLI
-# inside a Docker container scoped to the current directory.
+# Unified AI sandbox — launch Claude Code, Gemini CLI, Codex, Copilot CLI, or
+# Antigravity CLI (agy) inside a Docker container scoped to the current directory.
 #
 # Usage:
 #   ai-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] <agent> [agent args...]
@@ -8,6 +8,7 @@
 #   gemini-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]
 #   codex-sandbox  [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]
 #   copilot-sandbox [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]
+#   agy-sandbox     [--rebuild] [--gpu|--no-gpu] [--gpu-device ID] [--docker-sock] [args...]
 #
 # Sibling containers (--docker-sock / SANDBOX_DOCKER_SOCK=1):
 #   Mounts /var/run/docker.sock into the sandbox so the agent can start
@@ -35,14 +36,16 @@ REPO_DIR="$(cd "$(dirname "$_source")/.." && pwd)"
 # ── Help ─────────────────────────────────────────────────────────────────
 usage() {
   cat <<'EOF'
-ai-sandbox — Unified Docker sandbox for Claude Code, Gemini CLI, Codex, and Copilot CLI.
+ai-sandbox — Unified Docker sandbox for Claude Code, Gemini CLI, Codex, Copilot CLI,
+and Antigravity CLI (agy).
 
 Usage:
-  ai-sandbox       [OPTIONS] <claude|gemini|codex|copilot> [agent args...]
+  ai-sandbox       [OPTIONS] <claude|gemini|codex|copilot|agy> [agent args...]
   claude-sandbox   [OPTIONS] [agent args...]   (compat symlinks)
   gemini-sandbox   [OPTIONS] [agent args...]
   codex-sandbox    [OPTIONS] [agent args...]
   copilot-sandbox  [OPTIONS] [agent args...]
+  agy-sandbox      [OPTIONS] [agent args...]
 
 Options:
   -h, --help              Show this help and exit
@@ -57,8 +60,10 @@ Options:
                           Grants root-equivalent access — host-only.
                           (env: SANDBOX_DOCKER_SOCK=1)
       --no-docker-sock    Do not mount the host Docker socket (default)
-      --copilot-route     [claude|codex] Route the agent through the host's
+      --copilot-route     [claude|codex|agy] Route the agent through the host's
                           local Copilot proxy instead of its native auth.
+                          agy also gets the Gemini bridge (scripts/
+                          gemini_bridge.py) inside the container.
                           Requires `copilot-proxy start` on the host. On
                           Linux/WSL this implies --network host (the proxy
                           binds loopback, which a bridged container cannot
@@ -101,6 +106,12 @@ Other environment passthrough (all agents):
   HF_HOME / HF_HUB_CACHE / HF_ENDPOINT
   ~/.azure (read-only bind-mount → copied into container for AzureCliCredential)
 
+agy: play.googleapis.com (usage-log upload, sent even with telemetry off) is
+  mapped to 127.0.0.1 inside the container. With --copilot-route the bridge
+  is also agy's HTTPS proxy and logs the refused uploads to
+  /root/.gemini/agy-bridge.log. Models: AGY_COPILOT_MODEL (gemini-4-argon),
+  AGY_COPILOT_SMALL_MODEL (gemini-3.8-flash).
+
 Claude-specific env passthrough:
   ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN, CLAUDE_CODE_OAUTH_TOKEN,
   ANTHROPIC_BASE_URL, ANTHROPIC_MODEL
@@ -111,6 +122,7 @@ Examples:
   SANDBOX_REBUILD=1 gemini-sandbox
   claude-sandbox --login --workspace myproj
   copilot-sandbox --docker-sock
+  ai-sandbox --copilot-route agy
 EOF
 }
 
@@ -180,13 +192,14 @@ case "${INVOKED_AS}" in
   gemini-sandbox)  AGENT="gemini"  ;;
   codex-sandbox)   AGENT="codex"   ;;
   copilot-sandbox) AGENT="copilot" ;;
+  agy-sandbox)     AGENT="agy"     ;;
 esac
 
 if [[ -z "${AGENT}" ]]; then
   case "${1:-}" in
-    claude|gemini|codex|copilot) AGENT="$1"; shift ;;
+    claude|gemini|codex|copilot|agy) AGENT="$1"; shift ;;
     *)
-      echo "ai-sandbox: missing agent (claude|gemini|codex|copilot). Run with --help for usage." >&2
+      echo "ai-sandbox: missing agent (claude|gemini|codex|copilot|agy). Run with --help for usage." >&2
       exit 1
       ;;
   esac
@@ -230,6 +243,16 @@ case "${AGENT}" in
     AGENT_HOME_VOL="copilot-home"
     AGENT_CMD="copilot"
     AGENT_NPM_PKG="@github/copilot"
+    ;;
+  agy)
+    # Only agy's own dir is mounted (read-only), for its settings.json. A
+    # Google sign-in, if used instead of --copilot-route, lives in agy-home.
+    AGENT_HOST="${HOME}/.gemini/antigravity-cli"
+    AGENT_CONTAINER="/root/.gemini"
+    AGENT_HOME_VOL="agy-home"
+    AGENT_CMD="agy"
+    AGENT_NPM_PKG=""  # not on npm; the entrypoint fallback uses Google's installer
+    mkdir -p "${AGENT_HOST}"
     ;;
 esac
 
@@ -314,8 +337,8 @@ docker_args=(
 # container. Map host.docker.internal to the gateway and rewrite the URL.
 COPILOT_PROXY_CONTAINER_URL=""
 if [[ "${COPILOT_ROUTE}" = "1" ]]; then
-  if [[ "${AGENT}" != "claude" && "${AGENT}" != "codex" ]]; then
-    echo "ai-sandbox: --copilot-route only applies to claude and codex (got ${AGENT})" >&2
+  if [[ "${AGENT}" != "claude" && "${AGENT}" != "codex" && "${AGENT}" != "agy" ]]; then
+    echo "ai-sandbox: --copilot-route only applies to claude, codex, and agy (got ${AGENT})" >&2
     exit 1
   fi
 
@@ -364,6 +387,27 @@ if [[ "${COPILOT_ROUTE}" = "1" ]]; then
       -e "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"
       -e "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1"
     )
+  elif [[ "${AGENT}" = "agy" ]]; then
+    # The entrypoint passes --settings to switch agy to API-key mode. A second
+    # --settings replaces it (agy 1.5.14), and agy then falls back to a Google
+    # sign-in, silently skipping Copilot; refuse it, as agy-copilot does.
+    for _arg in "$@"; do
+      case "${_arg}" in
+        --settings|--settings=*|-settings|-settings=*)
+          echo "ai-sandbox: --copilot-route agy passes --settings itself; put other keys in" >&2
+          echo "            ~/.gemini/antigravity-cli/settings.json (seeded into the container)" >&2
+          exit 2 ;;
+      esac
+    done
+    # The entrypoint starts gemini_bridge.py in the container, pointed at the
+    # proxy. The key goes by name (-e VAR), so it stays out of docker argv.
+    export COPILOT_PROXY_KEY="${_proxy_key}"
+    docker_args+=(
+      -e COPILOT_PROXY_KEY
+      -e "COPILOT_PROXY_CONTAINER_URL=${COPILOT_PROXY_CONTAINER_URL}"
+      -e "AGY_COPILOT_MODEL=${AGY_COPILOT_MODEL:-gemini-4-argon}"
+      -e "AGY_COPILOT_SMALL_MODEL=${AGY_COPILOT_SMALL_MODEL:-gemini-3.8-flash}"
+    )
   else
     # codex has no env passthrough for provider config, so the entrypoint
     # selects the provider and resolved base URL with -c overrides.
@@ -396,6 +440,15 @@ fi
 # in-place npm updates corrupt the binary and crash on restart).
 if [[ "${AGENT}" = "gemini" ]]; then
   docker_args+=(-e NO_UPDATE_NOTIFIER=1 -e GEMINI_AUTO_UPDATE=false)
+fi
+
+# agy uploads usage logs to play.googleapis.com even with "Enable Telemetry"
+# off. Resolve it to loopback for everything in the container (nothing listens
+# on 443, so the upload fails at once). Holds with --network host as well.
+# Both families are needed: with only the IPv4 entry, AAAA lookups fall
+# through to DNS and return Google's real IPv6 addresses.
+if [[ "${AGENT}" = "agy" ]]; then
+  docker_args+=(--add-host "play.googleapis.com:127.0.0.1" --add-host "play.googleapis.com:::1")
 fi
 
 # Git config mounts (all agents)
@@ -728,6 +781,17 @@ exec docker run "${docker_args[@]}" \
         fi
 
         ;;
+      agy)
+        # Seed preferences once (no-clobber) and pre-trust /workspace, as for
+        # codex: the sandbox already runs agy with permissions bypassed.
+        mkdir -p "${AGENT_CONTAINER}/antigravity-cli"
+        _agy_settings="${AGENT_CONTAINER}/antigravity-cli/settings.json"
+        cp -an /host-agent-home/settings.json "${_agy_settings}" 2>/dev/null || true
+        [ -s "${_agy_settings}" ] || echo "{}" > "${_agy_settings}"
+        jq ".trustedWorkspaces = ((.trustedWorkspaces // []) + [\"/workspace\"] | unique)" \
+          "${_agy_settings}" > "${_agy_settings}.tmp" 2>/dev/null \
+          && mv -f "${_agy_settings}.tmp" "${_agy_settings}" || rm -f "${_agy_settings}.tmp"
+        ;;
     esac
 
     # ── Git config (shared) ──
@@ -784,7 +848,12 @@ exec docker run "${docker_args[@]}" \
 
     # ── Fallback npm install (custom Dockerfiles without pre-installed CLIs) ──
     if ! command -v "${AGENT}" >/dev/null 2>&1; then
-      npm i -g "${AGENT_NPM_PKG}" >/dev/null 2>&1
+      if [ "${AGENT}" = "agy" ]; then
+        curl -fsSL https://antigravity.google/cli/install.sh \
+          | bash -s -- --dir /usr/local/bin >/dev/null 2>&1
+      else
+        npm i -g "${AGENT_NPM_PKG}" >/dev/null 2>&1
+      fi
     fi
 
     # Allow Git operations in bind-mounted repositories with differing ownership.
@@ -853,6 +922,42 @@ exec docker run "${docker_args[@]}" \
         chown -R "${_UID}:${_GID}" /root/.cache /root/.azure 2>/dev/null || true
         exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
           copilot --yolo "$@"
+        ;;
+      agy)
+        _ensure_host_user
+        mkdir -p /root/.cache 2>/dev/null || true
+        chown -R "${_UID}:${_GID}" /root/.cache /root/.azure 2>/dev/null || true
+        if [ -n "${COPILOT_PROXY_CONTAINER_URL:-}" ]; then
+          # Same lane as agy-copilot on the host (scripts/copilot-route.sh):
+          # agy speaks only the Gemini API, so gemini_bridge.py translates to
+          # the proxy. The bridge is also agy HTTPS proxy and refuses the
+          # usage-log upload, logging each refusal.
+          _blog="${AGENT_CONTAINER}/agy-bridge.log"
+          _bdir="$(mktemp -d)"
+          chown "${_UID}:${_GID}" "${_bdir}"
+          _bkey="$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")"
+          BRIDGE_KEY="${_bkey}" UPSTREAM_URL="${COPILOT_PROXY_CONTAINER_URL}" \
+          UPSTREAM_KEY="${COPILOT_PROXY_KEY}" BRIDGE_MODEL="${AGY_COPILOT_MODEL}" \
+          BRIDGE_SMALL_MODEL="${AGY_COPILOT_SMALL_MODEL}" BRIDGE_PORT_FILE="${_bdir}/port" \
+            setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
+            python3 -I "${REPO_DIR}/scripts/gemini_bridge.py" </dev/null >/dev/null 2>>"${_blog}" &
+          for _i in $(seq 150); do [ -s "${_bdir}/port" ] && break; sleep 0.1; done
+          _bport="$(cat "${_bdir}/port" 2>/dev/null)"
+          if [ -z "${_bport}" ]; then
+            echo "ai-sandbox: Gemini bridge did not start:" >&2
+            tail -n 20 "${_blog}" >&2
+            exit 1
+          fi
+          echo "ai-sandbox: agy -> gemini_bridge 127.0.0.1:${_bport} -> ${COPILOT_PROXY_CONTAINER_URL} (${AGY_COPILOT_MODEL}); log: ${_blog}" >&2
+          unset COPILOT_PROXY_KEY
+          export GEMINI_API_KEY="${_bkey}" GOOGLE_GEMINI_BASE_URL="http://127.0.0.1:${_bport}"
+          export HTTPS_PROXY="http://127.0.0.1:${_bport}" https_proxy="http://127.0.0.1:${_bport}"
+          export NO_PROXY="127.0.0.1,localhost,::1" no_proxy="127.0.0.1,localhost,::1"
+          exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
+            agy --dangerously-skip-permissions --settings "{\"modelProvider\":\"gemini\"}" "$@"
+        fi
+        exec setpriv --reuid="${_UID}" --regid="${_GID}" --init-groups -- \
+          agy --dangerously-skip-permissions "$@"
         ;;
     esac
   ' _ "$@"

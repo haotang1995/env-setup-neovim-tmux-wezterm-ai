@@ -25,3 +25,8 @@
 [submodule "ai-skills/.repos/mattpocock-skills"]
 	path = ai-skills/.repos/mattpocock-skills
 	url = https://github.com/mattpocock/skills.git
+[submodule "third_party/litellm"]
+	path = third_party/litellm
+	url = https://github.com/BerriAI/litellm.git
+	shallow = true
+	update = none
